@@ -1,5 +1,4 @@
 package domain_model;
-import utilities.CreditCard;
 
 import java.util.ArrayList;
 

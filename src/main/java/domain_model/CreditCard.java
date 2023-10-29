@@ -1,4 +1,4 @@
-package utilities;
+package domain_model;
 
 public class CreditCard {
     //Region Fields
