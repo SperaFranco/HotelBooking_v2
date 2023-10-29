@@ -1,7 +1,5 @@
 package domain_model;
 
-import utilities.User;
-
 import java.util.ArrayList;
 
 public class HotelManager extends User {
