@@ -7,6 +7,8 @@ public class Guest extends User {
     //Region fields
     private ArrayList<Reservation> reservations;
     private CreditCard card;
+
+    //TODO forse va aggiunta pure la carta d'identità(?)
     //end Region
 
     public Guest(String id, String name, String surname, String email, String password, String telephone) {

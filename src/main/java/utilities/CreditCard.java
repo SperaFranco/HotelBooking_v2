@@ -1,7 +1,5 @@
 package utilities;
 
-import java.util.Date;
-
 public class CreditCard {
     //Region Fields
     private String cardHolderName;
