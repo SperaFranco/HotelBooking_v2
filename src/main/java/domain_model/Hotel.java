@@ -5,12 +5,9 @@ import utilities.IdGenerator;
 import utilities.RoomType;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-public class Hotel {
+public class Hotel extends Observable {
     //Region fields
     private String id;
     private String name;
@@ -21,8 +18,10 @@ public class Hotel {
     private HotelRating rating;
     private String description;
     private ArrayList<Room> rooms;
-    private HotelCalendar calendar;
+    private HotelCalendar calendar; //TODO occhio c'è dà installare la dipendenza --> quando farlo?
     private HotelManager manager;
+    private ArrayList<Reservation> reservations; //TODO occhio forse l'hotel gestisce troppa roba!
+
     //end Region
 
 
@@ -52,6 +51,7 @@ public class Hotel {
             }
 
         }
+
         this.calendar = new HotelCalendar();
 
         LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), 1,1);
@@ -63,6 +63,7 @@ public class Hotel {
             }
         }
 
+        this.reservations = new ArrayList<>();
     }
 
     //Region getters and setters
@@ -138,6 +139,12 @@ public class Hotel {
     public void setManager(HotelManager manager) {
         this.manager = manager;
     }
-
     //end Region
+
+    public void addReservation(Reservation reservation) {
+        //TODO metodo da spostare in una classe dei controller (o da invocare tramite questo)
+        this.reservations.add(reservation);
+        setChanged();
+        notifyObservers(reservation);
+    }
 }

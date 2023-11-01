@@ -1,22 +1,25 @@
 package domain_model;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Observable;
 
 public class Reservation {
     //Region fields
     private String id;
-    private Date checkIn;
-    private Date checkOut;
+    private LocalDate checkIn;
+    private LocalDate checkOut;
     private Guest client; //chi ha effettuato la prenotazione
     private int numOfGuests; //TODO bisogna garantire che il numero di ospiti sia coerente con il tipo di camera prentotata
     private String description;
     private Room roomReserved;
+
     //end Region
 
 
-    public Reservation(String id, Date checkIn, Date checkOut, Guest client, int numOfGuests, String description, Room roomReserved) {
+    public Reservation(String id, LocalDate checkIn, LocalDate checkOut, Guest client, int numOfGuests, String description, Room roomReserved) {
         this.id = id;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
@@ -25,6 +28,7 @@ public class Reservation {
         this.description = description;
         this.roomReserved = roomReserved; //nel uml settiamolo a 1 --> potremmo rendere possibile che uno stesso utente compia
         // più prenotazioni, ma può prenotare solo una camera alla volta
+
     }
 
     //Region getters and setters
@@ -37,19 +41,19 @@ public class Reservation {
         this.id = id;
     }
 
-    public Date getCheckIn() {
+    public LocalDate getCheckIn() {
         return checkIn;
     }
 
-    public void setCheckIn(Date checkIn) {
+    public void setCheckIn(LocalDate checkIn) {
         this.checkIn = checkIn;
     }
 
-    public Date getCheckOut() {
+    public LocalDate getCheckOut() {
         return checkOut;
     }
 
-    public void setCheckOut(Date checkOut) {
+    public void setCheckOut(LocalDate checkOut) {
         this.checkOut = checkOut;
     }
 
@@ -84,6 +88,6 @@ public class Reservation {
     public void setDescription(String description) {
         this.description = description;
     }
-
     //end Region
+
 }

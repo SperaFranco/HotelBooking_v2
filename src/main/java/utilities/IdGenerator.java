@@ -7,6 +7,7 @@ public class IdGenerator {
     // gli ID delle prenotazioni
     // gli ID delle strutture
     // gli ID delle camere
+
     public static String generateRoomID(String hotelID, RoomType type){
         String roomType = getPrefixForRoomType(type);
         String roomID = hotelID + "-" + roomType + "-" + roomCounter;
