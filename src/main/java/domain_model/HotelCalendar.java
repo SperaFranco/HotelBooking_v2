@@ -12,12 +12,12 @@ public class HotelCalendar implements Observer {
 
     //Region fields
     private Map<LocalDate, Map<String, Room>> roomStatusMap;
-    private Hotel hotel;
+    private Reservation reservation;
     //end Region
 
     public HotelCalendar() {
         roomStatusMap = new HashMap<>();
-        hotel.addObserver(this);
+        reservation.addObserver(this);
     }
 
     public void addRoom(LocalDate date, String roomNumber, Room room) {

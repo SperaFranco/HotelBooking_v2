@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class Guest extends User {
     //Region fields
-    private ArrayList<Reservation> reservations;
     private CreditCard card;
 
     //TODO forse va aggiunta pure la carta d'identità(?)
@@ -12,7 +11,6 @@ public class Guest extends User {
 
     public Guest(String id, String name, String surname, String email, String password, String telephone) {
         super(id, name, surname, email, password, telephone);
-        this.reservations = new ArrayList<>();
         this.card = null;
     }
 

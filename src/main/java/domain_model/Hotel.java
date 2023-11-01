@@ -20,7 +20,6 @@ public class Hotel extends Observable {
     private ArrayList<Room> rooms;
     private HotelCalendar calendar; //TODO occhio c'è dà installare la dipendenza --> quando farlo?
     private HotelManager manager;
-    private ArrayList<Reservation> reservations; //TODO occhio forse l'hotel gestisce troppa roba!
 
     //end Region
 
@@ -63,7 +62,6 @@ public class Hotel extends Observable {
             }
         }
 
-        this.reservations = new ArrayList<>();
     }
 
     //Region getters and setters
@@ -141,10 +139,5 @@ public class Hotel extends Observable {
     }
     //end Region
 
-    public void addReservation(Reservation reservation) {
-        //TODO metodo da spostare in una classe dei controller (o da invocare tramite questo)
-        this.reservations.add(reservation);
-        setChanged();
-        notifyObservers(reservation);
-    }
+
 }

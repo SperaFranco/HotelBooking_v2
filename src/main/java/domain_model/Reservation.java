@@ -6,28 +6,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 
-public class Reservation {
+public class Reservation extends Observable{
     //Region fields
     private String id;
     private LocalDate checkIn;
     private LocalDate checkOut;
-    private Guest client; //chi ha effettuato la prenotazione
     private int numOfGuests; //TODO bisogna garantire che il numero di ospiti sia coerente con il tipo di camera prentotata
     private String description;
+
+    private Hotel hotel;
+
     private Room roomReserved;
+    private Guest client; //chi ha effettuato la prenotazione
+
 
     //end Region
 
 
-    public Reservation(String id, LocalDate checkIn, LocalDate checkOut, Guest client, int numOfGuests, String description, Room roomReserved) {
+    public Reservation(String id, LocalDate checkIn, LocalDate checkOut, int numOfGuests, String description,
+                       Hotel hotel, Room roomReserved, Guest client) {
         this.id = id;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
-        this.client = client;
         this.numOfGuests = numOfGuests;
         this.description = description;
+        this.hotel = hotel;
         this.roomReserved = roomReserved; //nel uml settiamolo a 1 --> potremmo rendere possibile che uno stesso utente compia
         // più prenotazioni, ma può prenotare solo una camera alla volta
+        this.client = client;
 
     }
 
@@ -90,4 +96,9 @@ public class Reservation {
     }
     //end Region
 
+    public void addReservation() {
+        //TODO metodo da spostare in una classe dei controller (o da invocare tramite questo)
+        setChanged();
+        notifyObservers(this);
+    }
 }
