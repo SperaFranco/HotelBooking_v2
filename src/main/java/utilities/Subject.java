@@ -21,11 +21,11 @@ public abstract class Subject {
         observers.remove(o);
     }
 
-    public void notifyObservers() {
-        notifyObservers(null);
+    public void notifyObservers(String messagge) {
+        notifyObservers(null, messagge);
     }
 
-    public void notifyObservers(Object arg) {
+    public void notifyObservers(Object arg, String message) {
         Object[] arrLocal;
 
         synchronized (this) {
@@ -37,7 +37,7 @@ public abstract class Subject {
 
         for (int i = arrLocal.length-1; i>=0; i--) {
             ((Observer) arrLocal[i]).updateAvailability(this, arg);
-            ((Observer) arrLocal[i]).updateReservations(this, arg);
+            ((Observer) arrLocal[i]).updateReservations(this, arg, message);
         }
     }
 

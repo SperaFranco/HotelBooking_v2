@@ -10,7 +10,6 @@ public class Reservation
     private LocalDate checkOut;
     private int numOfGuests; //TODO bisogna garantire che il numero di ospiti sia coerente con il tipo di camera prentotata
     private String description;
-
     private Hotel hotel;
 
     private Room roomReserved;
@@ -91,6 +90,15 @@ public class Reservation
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public Hotel getHotel() {
+        return hotel;
+    }
+
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
+    }
+
     //end Region
 
 

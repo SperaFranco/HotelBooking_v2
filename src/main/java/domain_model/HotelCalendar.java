@@ -42,7 +42,7 @@ public class HotelCalendar implements Observer {
         }
     }
 
-    public void updateReservations(Subject o, Object arg) {
+    public void updateReservations(Subject o, Object arg, String message) {
         //Fake implementation ??
     }
 }

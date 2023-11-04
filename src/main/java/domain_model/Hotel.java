@@ -19,13 +19,13 @@ public class Hotel extends Observable {
     private String description;
     private ArrayList<Room> rooms;
     private HotelCalendar calendar; //TODO occhio c'è dà installare la dipendenza --> quando farlo?
-    private HotelManager manager;
+    private HotelDirector manager;
 
     //end Region
 
 
     public Hotel(String id, String name, String city, String address, String telephone,
-                 String email, HotelRating rating, String description, HotelManager manager) {
+                 String email, HotelRating rating, String description, HotelDirector manager) {
         this.id = id;
         this.name = name;
         this.city = city;
@@ -130,11 +130,11 @@ public class Hotel extends Observable {
     }
 
 
-    public HotelManager getManager() {
+    public HotelDirector getManager() {
         return manager;
     }
 
-    public void setManager(HotelManager manager) {
+    public void setManager(HotelDirector manager) {
         this.manager = manager;
     }
     //end Region
