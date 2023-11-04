@@ -1,12 +1,9 @@
 package domain_model;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Observable;
-
-public class Reservation extends Observable{
+import utilities.Subject;
+public class Reservation
+{
     //Region fields
     private String id;
     private LocalDate checkIn;
@@ -96,9 +93,5 @@ public class Reservation extends Observable{
     }
     //end Region
 
-    public void addReservation() {
-        //TODO metodo da spostare in una classe dei controller (o da invocare tramite questo)
-        setChanged();
-        notifyObservers(this);
-    }
+
 }

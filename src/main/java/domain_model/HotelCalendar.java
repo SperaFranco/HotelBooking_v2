@@ -3,8 +3,10 @@ package domain_model;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+
+import service_layer.ReservationManager;
+import utilities.Observer;
+import utilities.Subject;
 
 public class HotelCalendar implements Observer {
     //TODO manca da realizzare la logica di observer insieme alle prenotazioni
@@ -12,7 +14,7 @@ public class HotelCalendar implements Observer {
 
     //Region fields
     private Map<LocalDate, Map<String, Room>> roomStatusMap;
-    private Reservation reservation;
+    private ReservationManager reservation;
     //end Region
 
     public HotelCalendar() {
@@ -27,7 +29,7 @@ public class HotelCalendar implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void updateAvailability(Subject o, Object arg) {
         //Aggiorna il calendario quando viene effettuata una prenotazione
         Reservation reservation = (Reservation) arg;
         Room roomReserved = reservation.getRoomReserved();
@@ -38,5 +40,9 @@ public class HotelCalendar implements Observer {
         for (LocalDate date = checkInDate; !date.isAfter(checkOutDate); date = date.plusDays(1)){
             roomReserved.setAvailability(false);
         }
+    }
+
+    public void updateReservations(Subject o, Object arg) {
+        //Fake implementation ??
     }
 }
