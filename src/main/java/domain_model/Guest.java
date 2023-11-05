@@ -20,6 +20,7 @@ public class Guest extends User implements Observer {
         this.reservations = new ArrayList<>();
     }
 
+    //Region getters and setters
     public CreditCard getCard() {
         return card;
     }
@@ -28,6 +29,16 @@ public class Guest extends User implements Observer {
         this.card = new CreditCard(cardHolderName, cardNumber, expiryDate, CVV); //TODO rivedere il setCard
         // --> magari durante le registrazioni nel caso di clienti gli viene chiesto di inserire le info della carta di credito
     }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    //end Region
 
     @Override
     public void updateAvailability(Subject subject, Object argument) {

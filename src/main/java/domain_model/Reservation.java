@@ -11,7 +11,6 @@ public class Reservation
     private int numOfGuests; //TODO bisogna garantire che il numero di ospiti sia coerente con il tipo di camera prentotata
     private String description;
     private Hotel hotel;
-
     private Room roomReserved;
     private Guest client; //chi ha effettuato la prenotazione
 

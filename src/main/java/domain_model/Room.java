@@ -11,6 +11,8 @@ public class Room {
     // il tipo e numero di letti, le amenities se presenti (bagno, wifi, tv ecc...) e altro se serve
     private boolean availability;
     private int minimumStay; //è il numero soggiorni minimo
+
+    //TODO forse andrebbe aggiunto un campo hotel per indicare la camera di quale hotel fà parte
     //end Region
 
     public Room(String id, RoomType type, double price, int minimumStay, String description) {
@@ -62,5 +64,14 @@ public class Room {
     public void setAvailability(boolean availability) {
         this.availability = availability;
     }
+
+    public int getMinimumStay() {
+        return minimumStay;
+    }
+
+    public void setMinimumStay(int minimumStay) {
+        this.minimumStay = minimumStay;
+    }
+
     //end Region
 }

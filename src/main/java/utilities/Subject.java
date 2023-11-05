@@ -1,5 +1,8 @@
 package utilities;
 
+import service_layer.HotelManager;
+import service_layer.ReservationManager;
+
 import java.util.Vector;
 import java.util.Observable;
 public abstract class Subject {
@@ -36,8 +39,14 @@ public abstract class Subject {
         }
 
         for (int i = arrLocal.length-1; i>=0; i--) {
-            ((Observer) arrLocal[i]).updateAvailability(this, arg);
-            ((Observer) arrLocal[i]).updateReservations(this, arg, message);
+            if (this instanceof ReservationManager) {
+                ((Observer) arrLocal[i]).updateAvailability(this, arg);
+                ((Observer) arrLocal[i]).updateReservations(this, arg, message);
+            }
+            else if(this instanceof HotelManager) {
+                ((Observer) arrLocal[i]).updateHotels(this, arg, message);
+
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import service_layer.HotelManager;
 import service_layer.ReservationManager;
 import utilities.Observer;
 import utilities.Subject;
@@ -15,14 +16,16 @@ public class HotelCalendar implements Observer {
     //Region fields
     private Map<LocalDate, Map<String, Room>> roomStatusMap;
     private ReservationManager reservation;
+    private HotelManager manager;
     //end Region
 
     public HotelCalendar() {
         roomStatusMap = new HashMap<>();
+        manager.addObserver(this);
         reservation.addObserver(this);
     }
 
-    public void addRoom(LocalDate date, String roomNumber, Room room) {
+    public void addRoomToCalendar(LocalDate date, String roomNumber, Room room) {
         Map<String, Room> roomStatus = new HashMap<>();
         roomStatus.put(roomNumber, room);
         roomStatusMap.put(date, roomStatus);
@@ -44,5 +47,10 @@ public class HotelCalendar implements Observer {
 
     public void updateReservations(Subject o, Object arg, String message) {
         //Fake implementation ??
+    }
+
+    @Override
+    public void updateHotels(Subject subject, Object argument, String message) {
+        //Qui i casi che ci interessano sono quando è stato modificato qualcosa relativo alle camere
     }
 }

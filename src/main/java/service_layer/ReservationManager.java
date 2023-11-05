@@ -21,8 +21,9 @@ public class ReservationManager extends Subject {
 
     public void insertReservation(Reservation reservation) {
         //TODO Da implementare aggiungendo l'oggetto nel database
-        //Dopo aver chiesto di inserire tutti i dati della prenotazione (bisogna
-        // a quel punto tramite il database andrò a inserire la mia prenotazione
+        //TODO chiarire se questo metodo serve come ultimo aspetto di inserimento prenotazione (si simula prima)
+        // oppure se in questo metodo si chiede di inserire tutte le info richieste
+
         String idReservation = reservation.getId();
         reservationMap.put(idReservation, reservation);
         setChanged();
@@ -37,7 +38,7 @@ public class ReservationManager extends Subject {
         boolean modified = false;
 
         //Recupero inzialmente la prenotazione richiesta
-        Reservation reservation = reservationMap.get(id);
+        Reservation reservation = findReservationById(id);
         System.out.print("Please enter what you to modify:" +
                 "\n1) Check in Date" +
                 "\n2) Check out Date " +
@@ -76,6 +77,7 @@ public class ReservationManager extends Subject {
     }
 
     public void deleteReservation(String id) {
+        //TODO da implementare facendo rimozione dal db
         //Allo stesso modo recupero la prenotazione e la elimino
         Reservation reservationRemoved = findReservationById(id);
         reservationMap.remove(id);
