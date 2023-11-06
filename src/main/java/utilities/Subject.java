@@ -40,11 +40,10 @@ public abstract class Subject {
 
         for (int i = arrLocal.length-1; i>=0; i--) {
             if (this instanceof ReservationManager) {
-                ((Observer) arrLocal[i]).updateAvailability(this, arg);
-                ((Observer) arrLocal[i]).updateReservations(this, arg, message);
+                ((Observer) arrLocal[i]).update(this, arg, message);
+
             }
             else if(this instanceof HotelManager) {
-                ((Observer) arrLocal[i]).updateHotels(this, arg, message);
 
             }
         }

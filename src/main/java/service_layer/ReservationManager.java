@@ -1,4 +1,6 @@
 package service_layer;
+import domain_model.Guest;
+import domain_model.Hotel;
 import domain_model.Reservation;
 import utilities.Subject;
 
@@ -27,7 +29,7 @@ public class ReservationManager extends Subject {
         String idReservation = reservation.getId();
         reservationMap.put(idReservation, reservation);
         setChanged();
-        notifyObservers( reservation,"Add reservation");
+        notifyObservers(reservation,"Add reservation");
     }
 
     public void updateReservation(String id) {
@@ -64,7 +66,7 @@ public class ReservationManager extends Subject {
                 String description;
                 System.out.print("Then please insert the new description:");
                 description = scanner.nextLine();
-                reservation.setDescription(description);
+                reservation.setNotes(description);
                 modified = true;
                 break;
             default:
@@ -85,6 +87,29 @@ public class ReservationManager extends Subject {
         notifyObservers(reservationRemoved, "Delete reservation");
     }
 
+    public void getReservations(Guest guest) {
+        //TODO a seconda del guest ricavo tutte le sue prenotazioni e le stampo
+        ArrayList<Reservation> reservations = guest.getReservations();
+        System.out.println("These are " + guest.getName() + " reservations:");
+        for (Reservation reservation:reservations) {
+            System.out.print(reservation.getInfoReservation());
+        }
+    }
 
+    public void getAllReservations(Hotel hotel) {
+        //TODO qui invece a seconda dell'hotel stampo le prenotazioni
+        ArrayList<Reservation> reservationsForHotel = new ArrayList<>();
+
+        //lascio le prenotazioni che mi servono (probabilmente con il db ci sarà da fare una query)
+        for (Map.Entry<String, Reservation> entry:reservationMap.entrySet()) {
+            Reservation reservation = entry.getValue();
+            if(reservation.getHotel().getId().equals(hotel.getId()))
+                reservationsForHotel.add(reservation);
+        }
+        System.out.println("These are " + hotel.getName() + " reservations:" );
+        for(Reservation reservation:reservationsForHotel) {
+            reservation.getInfoReservation();
+        }
+    }
 
 }

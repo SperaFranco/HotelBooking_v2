@@ -6,7 +6,7 @@ import domain_model.HotelDirector;
 
 import java.util.Scanner;
 
-public class LoginManager {
+public class AccountManager {
 
     private void addUser(User user) {
         //In questo metodo si effettua la registrazione dell'utente

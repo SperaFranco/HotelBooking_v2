@@ -1,7 +1,7 @@
 package domain_model;
 
 import java.time.LocalDate;
-import utilities.Subject;
+
 public class Reservation
 {
     //Region fields
@@ -9,7 +9,7 @@ public class Reservation
     private LocalDate checkIn;
     private LocalDate checkOut;
     private int numOfGuests; //TODO bisogna garantire che il numero di ospiti sia coerente con il tipo di camera prentotata
-    private String description;
+    private String notes;
     private Hotel hotel;
     private Room roomReserved;
     private Guest client; //chi ha effettuato la prenotazione
@@ -24,7 +24,7 @@ public class Reservation
         this.checkIn = checkIn;
         this.checkOut = checkOut;
         this.numOfGuests = numOfGuests;
-        this.description = description;
+        this.notes = description;
         this.hotel = hotel;
         this.roomReserved = roomReserved; //nel uml settiamolo a 1 --> potremmo rendere possibile che uno stesso utente compia
         // più prenotazioni, ma può prenotare solo una camera alla volta
@@ -82,12 +82,12 @@ public class Reservation
         this.roomReserved = roomReserved;
     }
 
-    public String getDescription() {
-        return description;
+    public String getNotes() {
+        return notes;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public Hotel getHotel() {
@@ -96,6 +96,21 @@ public class Reservation
 
     public void setHotel(Hotel hotel) {
         this.hotel = hotel;
+    }
+
+    public String getInfoReservation() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Reservation ID: ").append(id).append("\n");
+        builder.append("Check-in date: ").append(checkIn).append("\n");
+        builder.append("Check-out date: ").append(checkOut).append("\n");
+        builder.append("Number of guests: ").append(numOfGuests).append("\n");
+        builder.append("Description: ").append(notes).append("\n");
+        builder.append("Hotel: ").append(hotel.getName()).append("\n");
+        builder.append("Room Reserved: ").append(roomReserved.getId()).append("\n");
+        builder.append("Client: ").append(client.getName()).append("\n");
+
+        return builder.toString();
+
     }
 
     //end Region

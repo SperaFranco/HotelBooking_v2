@@ -27,37 +27,15 @@ public class HotelDirector extends User implements Observer {
     }
 
     @Override
-    public void updateAvailability(Subject subject, Object argument) {
-        //TODO va presa la camera dell'hotel e messa la disponibilità a falso (se proprio si vuole implementare)
-        //Inizialmente ottengo tutte le camere dell'hotel
-        Reservation reservation = (Reservation) argument;
-        Hotel hotelReserved = reservation.getHotel();
-        Room roomReserved = reservation.getRoomReserved();
-
-        Hotel hotelToModify = findHotelByID(hotelReserved.getId());
-        if (hotelToModify!= null) {
-            //ottenuto le camere vado a ricercare la camera e imposto la disponibilità a falso
-            Room roomToModify = hotelToModify.findRoomByID(roomReserved.getId());
-            if (roomToModify != null)
-                roomToModify.setAvailability(false);
+    public void update(Subject subject, Object argument, String message) {
+        if (argument instanceof Hotel) {
+            Hotel hotel = (Hotel) argument;
+            this.updateHotels(hotel, message);
         }
     }
 
-    @Override
-    public void updateReservations(Subject subject, Object argument, String message) {
-        //Fake implementation ??
-    }
 
-    public void updateHotels(Subject subject, Object argument, String message) {
-        Hotel newHotel = (Hotel) argument;
-        if(message.equals("New hotel added")){
-            hotels.add(newHotel);
-        }
-        else if(message.equals("Hotel removed")){
-            hotels.remove(newHotel);
-        }
 
-    }
 
     //Region helper methods
     public Hotel findHotelByID(String id){
@@ -70,6 +48,33 @@ public class HotelDirector extends User implements Observer {
         }
         return myHotel;
     }
+
+    public void updateHotels(Hotel hotel, String message) {
+        if(message.equals("New hotel added")){
+            hotels.add(hotel);
+        }
+        else if(message.equals("Hotel removed")){
+            hotels.remove(hotel);
+        }
+
+    }
+
+    private void updateAvailability(Subject subject, Object argument) {
+        //TODO va presa la camera dell'hotel e messa la disponibilità a falso (se proprio si vuole implementare)
+        //Inizialmente ottengo tutte le camere dell'hotel
+        Reservation reservation = (Reservation) argument;
+        Hotel hotelReserved = reservation.getHotel();
+        Room roomReserved = reservation.getRoomReserved();
+
+        Hotel hotelToModify = findHotelByID(hotelReserved.getId());
+        if (hotelToModify!= null) {
+            //ottenuto le camere vado a ricercare la camera e imposto la disponibilità a falso
+            Room roomToModify = hotelToModify.findRoomByID(roomReserved.getId());
+            if (roomToModify != null);
+            //roomToModify.setAvailability(false);
+        }
+    }
+
 
     //end Region
 }

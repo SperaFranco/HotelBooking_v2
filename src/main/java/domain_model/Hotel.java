@@ -154,7 +154,7 @@ public class Hotel {
                 System.out.print("And a brief description" +
                         "(like the dimensions of the room and/or if it has some amenities like tv or wifi):");
                 description = scanner.nextLine();
-                Room room = new Room(roomID, types[i], price, minimumStay, description);
+                Room room = new Room(roomID, types[i], description);
                 rooms.add(room);
             }
         }
@@ -168,7 +168,9 @@ public class Hotel {
 
         for(LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)){
             for (Room room : rooms) {
-                calendar.addRoomToCalendar(date, room.getId(), room);
+                String roomID = room.getId();
+                RoomInfo roomInfo = new RoomInfo(roomID);
+                calendar.addRoomToCalendar(date, roomID, roomInfo);
             }
         }
     }

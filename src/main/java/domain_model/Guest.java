@@ -38,31 +38,37 @@ public class Guest extends User implements Observer {
         this.idCard = idCard;
     }
 
+    public ArrayList<Reservation> getReservations() {
+        return reservations;
+    }
+
     //end Region
 
     @Override
-    public void updateAvailability(Subject subject, Object argument) {
-        //Fake implementation?
+    public void update(Subject subject, Object argument, String message) {
+        if(argument instanceof Reservation) {
+            Reservation reservation = (Reservation) argument;
+            this.updateReservations(reservation, message);
+        }
     }
 
-    @Override
-    public void updateReservations(Subject subject, Object argument, String message) {
-        Reservation newReservation = (Reservation)argument;
-        if(newReservation.getClient() == this) {
+    private void updateReservations(Reservation reservation, String message) {
+        //Controllare se tenere
+        if(reservation.getClient() == this) {
             if(message.equals("Add reservation"))
-                reservations.add(newReservation);
+                reservations.add(reservation);
             else if (message.equals("Delete reservation"))
-                reservations.remove(newReservation);
+                reservations.remove(reservation);
             else if (message.contains("Update reservation")) {
                 for (Reservation res : reservations) {
-                    if (Objects.equals(res.getId(), newReservation.getId()))
+                    if (Objects.equals(res.getId(), reservation.getId()))
                     {
                         if(message.contains("Check in Date")) {
-                            res.setCheckIn(newReservation.getCheckIn());
+                            res.setCheckIn(reservation.getCheckIn());
                         } else if (message.contains("Check out Date")) {
-                            res.setCheckOut(newReservation.getCheckOut());
+                            res.setCheckOut(reservation.getCheckOut());
                         } else if (message.contains("Description")) {
-                            res.setDescription(newReservation.getDescription());
+                            res.setNotes(reservation.getNotes());
                         }
                     }
                 }
