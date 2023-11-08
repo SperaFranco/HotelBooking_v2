@@ -21,7 +21,7 @@ public class ReservationManager extends Subject {
         return reservationMap.get(id);
     }
 
-    public void insertReservation(Reservation reservation) {
+    public void addReservation(Reservation reservation) {
         //TODO Da implementare aggiungendo l'oggetto nel database
         //TODO chiarire se questo metodo serve come ultimo aspetto di inserimento prenotazione (si simula prima)
         // oppure se in questo metodo si chiede di inserire tutte le info richieste

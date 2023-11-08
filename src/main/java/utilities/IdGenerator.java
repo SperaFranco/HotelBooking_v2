@@ -1,12 +1,13 @@
 package utilities;
 
 public class IdGenerator {
+    private static int userCounter = 1;
     private static int hotelCounter = 1;
     private static int roomCounter = 1;
 
     //TODO classe statica che mi serve per generare
-    // gli ID degli user alla loro registrazione
-    // gli ID delle prenotazioni
+    // gli ID degli user alla loro registrazione --> fatto
+    // gli ID delle prenotazioni --> manca
     // gli ID delle strutture --> fatto
     // gli ID delle camere --> fatto
 
@@ -53,5 +54,27 @@ public class IdGenerator {
 
     public static void resetRoomCounter() {
         roomCounter = 1;
+    }
+
+    public static String generateUserID(UserType type, String name, String username) {
+        String prefix = getPrefixForUserType(type);
+        String userID = prefix + "-" + name.substring(0,1).toUpperCase() + username.substring(0,1).toUpperCase()+userCounter;
+        userCounter++;
+        return userID;
+    }
+
+    private static String getPrefixForUserType(UserType type) {
+        switch (type){
+            case GUEST:
+                return "G";
+            case HOTEL_DIRECTOR:
+                return "HD";
+            default:
+                throw new IllegalArgumentException("User type not valid!");
+        }
+    }
+
+    public static String generateReservationID() {
+        return null;
     }
 }

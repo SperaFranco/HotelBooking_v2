@@ -4,7 +4,7 @@ public class RoomInfo {
     //Classe che mi tiene conto delle principali informazioni che variano della camera
 
     //Region fields
-    private String roomID;
+    private String roomID; //uso l'id della camera per riferimermi a questa
     private double price;
     private int minimumStay; //è il numero soggiorni minimo
     private boolean availability;

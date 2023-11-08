@@ -1,11 +1,11 @@
 package service_layer;
 
-import domain_model.Hotel;
-import domain_model.HotelDirector;
+import domain_model.*;
 import utilities.HotelRating;
 import utilities.IdGenerator;
 import utilities.Subject;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class HotelManager extends Subject {
     //TODO nell'hotel manager aggiungiamo pure i metodi per modificare le camere dell'hotel?
     private Map<String, Hotel> hotelMap;
-
+    private ReservationManager reservationManager; //va qui???
     public HotelManager(){
         hotelMap = new HashMap<>();
     }
@@ -48,7 +48,6 @@ public class HotelManager extends Subject {
     public void modifyHotel() {
         //Cosa modificare? hotel stesso oppure camere? e cosa delle camere?
     }
-
     public void removeHotel(HotelDirector director) {
         //Attenzione cancellare un hotel significa anche eliminare l'arrayList di tutte le camere
         //Dalla lista di strutture il gestore decide quale hotel eliminare
@@ -69,4 +68,46 @@ public class HotelManager extends Subject {
         setChanged();
         notifyObservers(hotelRemoved, "Hotel removed");
     }
+
+    public void doHotelReseach(User user){
+        //Chiedo tutte le info (check-in, check-out, luogo, numero di persone)
+
+        //lascio i risultati secondo le richieste fatte dall'utente
+
+        //Chiedo all'utente di inserire il numero della camera scelta oppure zero se non gli interessa nessuna
+        //nel caso invoco la prenotazione
+        int numOfGuests = 0;
+
+        LocalDate checkIn = LocalDate.now();
+        LocalDate checkOut = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth() +1);
+        //Dalla camera scelta prendo
+        String idHotel = null;
+        String idRoom = null;
+
+        doReservation(user, checkIn, checkOut, numOfGuests, idHotel, idRoom);
+    }
+
+
+    private void doReservation(User user, LocalDate checkIn, LocalDate checkOut, int numOfGuests,String idHotel, String idRoom) {
+        //Trova l'hotel secondo l'id;
+        Hotel hotelReserved = findHotelByID(idHotel);
+        //Trova la camera secondo l'id
+        Room roomReserverd = findRoomByID(idRoom);
+
+        //Chiedi per la description
+        String description = "";
+        Reservation newReservation = new Reservation(IdGenerator.generateReservationID(), checkIn,checkOut,
+                1, description,hotelReserved, roomReserverd, (Guest) user);
+        reservationManager.addReservation(newReservation);
+    }
+
+    private Hotel findHotelByID(String idHotel) {
+        return null;
+    }
+
+    private Room findRoomByID(String idRoom) {
+        return null;
+    }
+
+
 }
