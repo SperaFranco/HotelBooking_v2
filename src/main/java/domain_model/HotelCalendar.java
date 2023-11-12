@@ -55,5 +55,25 @@ public class HotelCalendar implements Observer {
     private void updateHotels(Subject subject, Object argument, String message) {
         //Qui i casi che ci interessano sono quando è stato modificato qualcosa relativo alle camere
     }
-    //end Helpers Methos
+
+    public boolean isRoomAvailable(LocalDate checkIn, LocalDate checkOut, String roomID) {
+        //Controllo se la camera risulta disponibile per tutti i giorni indicati dal checkin al checkout
+        //TODO Ci sarebbe anche da fare il controllo per il numero minimo di pernottamenti
+
+        for (LocalDate date = checkIn; !date.isAfter(checkOut); date = date.plusDays(1)) {
+            Map<String, RoomInfo> roomInfoMap = roomStatusMap.get(date);
+            RoomInfo info = roomInfoMap.get(roomID);
+            if(!info.isAvailable())
+                //Basta che un giorno sia falso e la camera non è più disponibile
+                return false;
+        }
+        return true;
+    }
+
+    public String getPrice(LocalDate checkIn, String id) {
+        //Mi stampo le Info della camera per il primo giorno --> può essere un errore
+        RoomInfo roomInfo = roomStatusMap.get(checkIn).get(id);
+        return "Actual Price: " + roomInfo.getPrice();
+    }
+    //end Helpers Methods
 }

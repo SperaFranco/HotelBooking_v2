@@ -43,7 +43,7 @@ public class RoomInfo {
         this.minimumStay = minimumStay;
     }
 
-    public boolean isAvailability() {
+    public boolean isAvailable() {
         return availability;
     }
 

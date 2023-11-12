@@ -12,8 +12,6 @@ import java.util.Scanner;
 public class AccountManager {
     ArrayList<User> users = new ArrayList<>();
 
-
-
     public void addGuest(UserType guest) {
         //Dopo aver richiesto tutte le credenziali di cui si ha bisogno
         //si inseriscono nella stringa sql

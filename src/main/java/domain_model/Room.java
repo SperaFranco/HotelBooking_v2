@@ -42,5 +42,10 @@ public class Room {
     public void setDescription(String description) {
         this.description = description;
     }
+
     //end Region
+    public boolean canRoomAccomodate(int numOfGuests) {
+        return numOfGuests <= RoomType.getRoomCapacity(type);
+    }
+
 }

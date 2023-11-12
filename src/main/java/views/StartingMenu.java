@@ -27,19 +27,20 @@ public class StartingMenu {
         User user = null;
 
         while(choice != 4) {
-            System.out.println("Welcome to the new Hotel Booking System!\n\n" +
-                    "Please enter a option below:" +
-                    "\n1) To search for a hotel " +
-                    "\n2) To create a new account " +
-                    "\n3) To login" +
-                    "\n4) To exit" +
-                    "\nChoice:");
+            System.out.print("""
+                    Welcome to the new Hotel Booking System!
+                    Please enter an option below:
+                    1) To search for a hotel\s
+                    2) To create a new account\s
+                    3) To login
+                    4) To exit
+                    Choice:""");
             choice = scanner.nextInt();
             scanner.nextLine();
 
             switch (choice) {
                 case 1:
-                    hotelManager.doHotelReseach(user);
+                    hotelManager.doHotelResearch(user);
                     break;
                 case 2:
                     //Dalla registrazione si torna indietro oppure si va direttamente ai menu?

@@ -3,9 +3,15 @@ package utilities;
 import java.util.Scanner;
 
 public enum RoomType {
-    SINGLE_ROOM,
-    DOUBLE_ROOM,
-    TRIPLE_ROOM;
+    SINGLE_ROOM("Single room"),
+    DOUBLE_ROOM("Double room"),
+    TRIPLE_ROOM("Triple room");
+
+    private String displayName;
+
+    RoomType(String displayName) {
+        this.displayName = displayName;
+    }
 
     public static int[] getRoomPreference() {
         //TODO vedere dove va messo questo metodo
@@ -31,5 +37,21 @@ public enum RoomType {
             rooms[i] = scanner.nextInt();
         }
         return rooms;
+    }
+
+    public static int getRoomCapacity(RoomType type) {
+        switch (type) {
+            case SINGLE_ROOM:
+                return 1;
+
+            case DOUBLE_ROOM:
+                return 2;
+
+            case TRIPLE_ROOM:
+                return 3;
+
+            default:
+                return 0;
+        }
     }
 }

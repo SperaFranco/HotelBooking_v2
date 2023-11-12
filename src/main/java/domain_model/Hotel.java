@@ -18,10 +18,10 @@ public class Hotel {
     private String email;
     private HotelRating rating;
     private String description;
-    private ArrayList<Room> rooms; //TODO c'è da farlo diventare anche lui un observer
+    private ArrayList<Room> rooms; //TODO c'è da farlo diventare anche lui un observer (?)
     private HotelCalendar calendar; //TODO occhio c'è dà installare la dipendenza --> quando farlo?
     private HotelDirector manager;
-
+    private ArrayList<Room> roomsAvailable; //mi tiene conto delle camere disponibili di un hotel --> occhio potrebbe dare problemi
     //end Region
 
 
@@ -128,6 +128,9 @@ public class Hotel {
         this.rooms = rooms;
     }
 
+    public ArrayList<Room> getRoomsAvailable() {
+        return roomsAvailable;
+    }
     //end Region
 
     private void createRooms(String id) {
@@ -174,11 +177,10 @@ public class Hotel {
             }
         }
     }
-
     public Room findRoomByID(String id) {
         Room myRoom = null;
         for (Room room : rooms) {
-            if(room.equals(id)){
+            if(room.getId().equals(id)){
                 myRoom = room;
                 break;
             }
@@ -186,14 +188,54 @@ public class Hotel {
         return myRoom;
     }
 
-    public String printHotelInfo() {
+    public String printHotelInfo(int i) {
         StringBuilder info = new StringBuilder();
-        info.append("Hotel Information:\n");
-        info.append("ID: " + id + "\n");
+        info.append("Hotel number " + i + " informations:\n");
         info.append("Name: " + name + "\n");
         info.append("City: " + city + "\n");
         info.append("Address: " + address + "\n");
         info.append("Number of Roooms: "+ rooms.size() + "\n");
+
+        return info.toString();
+    }
+
+    public int getHotelTotalCapacity() {
+        //In questo metodo scorro fra tutte le camere dell'hotel e
+        // ne ritorno il numero totale di persone che l'hotel è in grado di ospitare
+        //per una versione migliore dovrei ciclare solo sulle camere che risultano disponibili su un certo periodo
+        int capacity = 0;
+
+        for (Room room:rooms) {
+            capacity += RoomType.getRoomCapacity(room.getType());
+        }
+
+        return capacity;
+    }
+
+    public boolean isHotelAvailable(LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms) {
+        //Controllo nel calendario se ho delle camere disponibili per le richieste indicate
+        // e ritorno vero se il numero di camere è diverso da zero
+        //Se serve potrei ritornare direttamente le camere che mi risultano disponibili
+        //al momento non uso numOfRooms ma lo dovrei usare per dividere le persone fra le camere
+        ArrayList<Room> availableRooms = new ArrayList<>();
+
+        for (Room room : rooms) {
+            String roomID = room.getId();
+            if(calendar.isRoomAvailable(checkIn, checkOut, roomID) && room.canRoomAccomodate(numOfGuests))
+                availableRooms.add(room);
+        }
+
+        return !availableRooms.isEmpty();
+    }
+
+
+    public String getAllRoomInfo(int index, LocalDate checkIn, String id) {
+        StringBuilder info = new StringBuilder();
+        info.append("Room number " + index + " informations:\n");
+        Room room = findRoomByID(id);
+        info.append("Room type: " + room.getType());
+        info.append(calendar.getPrice(checkIn, id));
+        info.append("Description: " + room.getDescription());
 
         return info.toString();
     }
