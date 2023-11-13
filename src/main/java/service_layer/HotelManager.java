@@ -12,15 +12,16 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class HotelManager extends Subject {
+    //Classe per la gestione e la modifica delle strutture degli hotel
     //TODO nell'hotel manager aggiungiamo pure i metodi per modificare le camere dell'hotel?
     private Map<String, Hotel> hotelMap;
     private ReservationManager reservationManager; //va qui???
     private AccountManager accountManager;
 
-    public HotelManager(){
+    public HotelManager(AccountManager accountManager, ReservationManager reservationManager){
         hotelMap = new HashMap<>();
-        reservationManager = new ReservationManager();
-        accountManager = new AccountManager();
+        this.reservationManager = reservationManager;
+        this.accountManager = accountManager;
     }
     public void addHotel(HotelDirector director) {
         Scanner scanner = new Scanner(System.in);
@@ -36,10 +37,11 @@ public class HotelManager extends Subject {
         telephone = scanner.nextLine();
         System.out.print("Please insert the email of the hotel:");
         email = scanner.nextLine();
-        System.out.print("Please insert the rating of the hotel (for example One star or Two stars):");
+        System.out.print("Please insert the rating of the hotel (for example \"One star\" or \"Two stars\" etc...):");
         rating = HotelRating.getRatingFromString(scanner.nextLine());
         System.out.print("Please insert a brief description of the hotel:");
         description = scanner.nextLine();
+        scanner.close();
 
         Hotel newHotel = new Hotel(IdGenerator.generateHotelID(city),
                 name, city, address, telephone, email, rating, description, director);
@@ -147,7 +149,6 @@ public class HotelManager extends Subject {
         else
             throw new RuntimeException("Hotel not on the list!");
     }
-
     private ArrayList<Hotel> filterHotels(String city, LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms) {
         //Di tutti gli hotel nella map mi tengo solo quelli che soddisfano i criteri
         ArrayList<Hotel> filteredHotels = new ArrayList<>();
@@ -167,8 +168,8 @@ public class HotelManager extends Subject {
         }
         return filteredHotels;
     }
-
     private void doReservation(User user, LocalDate checkIn, LocalDate checkOut, int numOfGuests,Hotel hotelReserved, Room roomReserverd) {
+        //TODO si lascia qui o si sposta in reservationManager?
         Scanner scanner = new Scanner(System.in);
         String response;
         //Nel caso l'user sia nullo chiedo di fare il login oppure di fare un nuovo account

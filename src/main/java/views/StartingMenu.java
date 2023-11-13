@@ -2,9 +2,11 @@ package views;
 
 import domain_model.Guest;
 import domain_model.HotelDirector;
+import domain_model.Reservation;
 import domain_model.User;
 import service_layer.AccountManager;
 import service_layer.HotelManager;
+import service_layer.ReservationManager;
 import utilities.UserType;
 
 import java.util.Scanner;
@@ -14,11 +16,15 @@ public class StartingMenu {
     //Region Controllers
     private AccountManager accountManager;
     private HotelManager hotelManager;
+    private ReservationManager reservationManager;
     //endregion
+    private HotelDirectorMenu hotelDirectorMenu;
+    private GuestMenu guestMenu;
 
     public StartingMenu() {
         accountManager = new AccountManager();
-        hotelManager = new HotelManager();
+        reservationManager = new ReservationManager();
+        hotelManager = new HotelManager(accountManager, reservationManager);
     }
 
 
@@ -55,6 +61,8 @@ public class StartingMenu {
                     }
                     else if(user instanceof HotelDirector) {
                         //Fai partire l'hotelDirectorMenu
+                        hotelDirectorMenu = new HotelDirectorMenu(hotelManager, reservationManager,(HotelDirector) user);
+                        hotelDirectorMenu.startMenu();
                     }
                     break;
                 case 3:

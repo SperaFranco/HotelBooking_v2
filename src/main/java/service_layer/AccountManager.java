@@ -77,6 +77,7 @@ public class AccountManager {
     }
     public void logout() {
         //TODO vedere se utile
+        //Potrei ad esempio risettare lo user a null
     }
     public Guest addGuest(UserType guest) {
         //Dopo aver richiesto tutte le credenziali di cui si ha bisogno

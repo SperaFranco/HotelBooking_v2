@@ -134,7 +134,7 @@ public class Hotel {
     //end Region
 
     private void createRooms(String id) {
-        //TODO price, minimumStay e description devono essere variabili da passare come argomenti
+        //TODO ecco magari la funzione dovrebbe andare nel roomManager
         int[] numRooms = RoomType.getRoomPreference(); //qui chiederò il numero di camere singole - doppie - triple
         RoomType[] types = RoomType.values();
 
@@ -164,6 +164,7 @@ public class Hotel {
     }
 
     private void createCalendar(ArrayList<Room> rooms) {
+        //TODO mentre questa nel CalendarManager
         this.calendar = new HotelCalendar();
 
         LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), 1,1);

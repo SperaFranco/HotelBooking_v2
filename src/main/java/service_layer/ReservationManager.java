@@ -1,6 +1,7 @@
 package service_layer;
 import domain_model.Guest;
 import domain_model.Hotel;
+import domain_model.HotelDirector;
 import domain_model.Reservation;
 import utilities.Subject;
 
@@ -96,8 +97,19 @@ public class ReservationManager extends Subject {
         }
     }
 
-    public void getAllReservations(Hotel hotel) {
-        //TODO qui invece a seconda dell'hotel stampo le prenotazioni
+    public void getAllReservations(HotelDirector director) {
+        //TODO qui invece a seconda dell'hotel tutte le prenotazioni stampo le prenotazioni
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter the hotel number to view its reservation:");
+        for(Hotel hotel : director.getHotels()) {
+            int index = 1;
+            hotel.printHotelInfo(index++);
+        }
+        System.out.print("Hotel number:");
+        int hotelNumber = scanner.nextInt();
+        scanner.nextLine();
+        Hotel hotel = director.getHotels().get(hotelNumber);
+
         ArrayList<Reservation> reservationsForHotel = new ArrayList<>();
 
         //lascio le prenotazioni che mi servono (probabilmente con il db ci sarà da fare una query)
