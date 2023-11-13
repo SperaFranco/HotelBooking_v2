@@ -15,8 +15,12 @@ public class HotelManager extends Subject {
     //TODO nell'hotel manager aggiungiamo pure i metodi per modificare le camere dell'hotel?
     private Map<String, Hotel> hotelMap;
     private ReservationManager reservationManager; //va qui???
+    private AccountManager accountManager;
+
     public HotelManager(){
         hotelMap = new HashMap<>();
+        reservationManager = new ReservationManager();
+        accountManager = new AccountManager();
     }
     public void addHotel(HotelDirector director) {
         Scanner scanner = new Scanner(System.in);
@@ -165,19 +169,32 @@ public class HotelManager extends Subject {
     }
 
     private void doReservation(User user, LocalDate checkIn, LocalDate checkOut, int numOfGuests,Hotel hotelReserved, Room roomReserverd) {
+        Scanner scanner = new Scanner(System.in);
+        String response;
         //Nel caso l'user sia nullo chiedo di fare il login oppure di fare un nuovo account
         if(user == null){
-
+            System.out.println("Please do the login to proceed or registrate if you don't have an account!");
+            System.out.print("Do you have already an account?\nPlease answer \"yes\" or \"no\":");
+            response = scanner.nextLine();
+            if (response.equalsIgnoreCase("yes")) {
+                user = accountManager.login();
+            }else if (response.equalsIgnoreCase("no")){
+                user = accountManager.doRegistration();
+            }else {
+                throw new RuntimeException("Option not in the list!");
+            }
         }
 
         //Altrimenti chiedi per la description e aggiungi la prenotazione
-        Scanner scanner = new Scanner(System.in);
         System.out.print("Write something if there is anything you need in your reservation:");
         String description = scanner.nextLine();
         Reservation newReservation = new Reservation(IdGenerator.generateReservationID(), checkIn, checkOut,
                 numOfGuests, description, hotelReserved, roomReserverd, (Guest) user);
         reservationManager.addReservation(newReservation);
+        //TODO ci sarebbe da aggiungere il controllo per il pagamento da qualche parte
+
         System.out.println("Reservation added! Thank you! :)");
+        scanner.close();
     }
 
     private Hotel findHotelByID(String idHotel) {

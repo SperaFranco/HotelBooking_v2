@@ -1,5 +1,7 @@
 package views;
 
+import domain_model.Guest;
+import domain_model.HotelDirector;
 import domain_model.User;
 import service_layer.AccountManager;
 import service_layer.HotelManager;
@@ -9,8 +11,11 @@ import java.util.Scanner;
 
 public class StartingMenu {
     //qui ci saranno i vari controllers
+    //Region Controllers
     private AccountManager accountManager;
     private HotelManager hotelManager;
+    //endregion
+
     public StartingMenu() {
         accountManager = new AccountManager();
         hotelManager = new HotelManager();
@@ -23,7 +28,6 @@ public class StartingMenu {
         // nel caso di gestore faremo in modo che si passi subito all'inserimento di una struttura(?)
         Scanner scanner = new Scanner(System.in);
         int choice = 0;
-        String userType = null;
         User user = null;
 
         while(choice != 4) {
@@ -44,20 +48,31 @@ public class StartingMenu {
                     break;
                 case 2:
                     //Dalla registrazione si torna indietro oppure si va direttamente ai menu?
-                    System.out.println("Are you a guest or a hotel manager?");
-                    System.out.print("I am a:");
-                    userType = scanner.nextLine();
-                    if (userType.contains("guest"))
-                        accountManager.addGuest(UserType.GUEST);
-                    else if (userType.contains("hotel") || userType.contains("manager")) {
-                        accountManager.addHotelDirector(UserType.HOTEL_DIRECTOR);
+                    user = accountManager.doRegistration();
+
+                    if(user instanceof Guest) {
+                        //Fai partire il guestMenu
                     }
-                    else {
-                        System.out.println("Please try again your registration...");
+                    else if(user instanceof HotelDirector) {
+                        //Fai partire l'hotelDirectorMenu
                     }
                     break;
                 case 3:
+                    user = accountManager.login();
 
+                    if(user instanceof Guest) {
+                        //Fai partire il guestMenu
+                    }
+                    else if(user instanceof HotelDirector) {
+                        //Fai partire l'hotelDirectorMenu
+                    }
+                    break;
+                case 4:
+                    //Qui esco semplicemente
+                    break;
+
+                default:
+                    System.out.println("Please one of the options in the list!");
             }
         }
 
