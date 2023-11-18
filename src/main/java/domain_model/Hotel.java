@@ -36,14 +36,7 @@ public class Hotel {
         this.rating = rating;
         this.description = description;
         this.manager = manager;
-
-        System.out.println("Hotel created! Now add your rooms...");
-
-        //TODO capire meglio come gestire la creazione delle camere e del calendario
-        createRooms(id);
-        createCalendar(rooms);
-
-
+        this.rooms = new ArrayList<>();
     }
 
     //Region getters and setters
@@ -133,50 +126,8 @@ public class Hotel {
     }
     //end Region
 
-    private void createRooms(String id) {
-        //TODO ecco magari la funzione dovrebbe andare nel roomManager
-        int[] numRooms = RoomType.getRoomPreference(); //qui chiederò il numero di camere singole - doppie - triple
-        RoomType[] types = RoomType.values();
-
-        Scanner scanner = new Scanner(System.in);
-        this.rooms = new ArrayList<>();
-        IdGenerator.resetRoomCounter(); //rimette a 1 il counter delle stanze per l'hotel
-
-        for (int i = 0; i < numRooms.length; i++) {
-            for (int j = 0; j < numRooms[i]; j++) {
-                double price;
-                int minimumStay;
-                String description, roomID;
-
-                roomID = IdGenerator.generateRoomID(id, types[i]);
-                System.out.println("Please insert more info for room " + roomID + ":");
-                System.out.print("The price (for example 100.0):");
-                price = scanner.nextDouble();
-                System.out.print("The number of minimum days to stay:");
-                minimumStay = scanner.nextInt();
-                System.out.print("And a brief description" +
-                        "(like the dimensions of the room and/or if it has some amenities like tv or wifi):");
-                description = scanner.nextLine();
-                Room room = new Room(roomID, types[i], description);
-                rooms.add(room);
-            }
-        }
-    }
-
     private void createCalendar(ArrayList<Room> rooms) {
-        //TODO mentre questa nel CalendarManager
-        this.calendar = new HotelCalendar();
 
-        LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), 1,1);
-        LocalDate endDate = LocalDate.of(LocalDate.now().getYear(), 12,31);
-
-        for(LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)){
-            for (Room room : rooms) {
-                String roomID = room.getId();
-                RoomInfo roomInfo = new RoomInfo(roomID);
-                calendar.addRoomToCalendar(date, roomID, roomInfo);
-            }
-        }
     }
     public Room findRoomByID(String id) {
         Room myRoom = null;
@@ -188,14 +139,20 @@ public class Hotel {
         }
         return myRoom;
     }
-
     public String printHotelInfo(int i) {
+        return "Hotel number " + i + " informations:\n" +
+                "Name: " + name + "\n" +
+                "City: " + city + "\n" +
+                "Address: " + address + "\n" +
+                "Number of Rooms: " + rooms.size() + "\n";
+    }
+    public String getAllRoomInfo(int index, LocalDate checkIn, String id) {
         StringBuilder info = new StringBuilder();
-        info.append("Hotel number " + i + " informations:\n");
-        info.append("Name: " + name + "\n");
-        info.append("City: " + city + "\n");
-        info.append("Address: " + address + "\n");
-        info.append("Number of Roooms: "+ rooms.size() + "\n");
+        info.append("Room number " + index + " informations:\n");
+        Room room = findRoomByID(id);
+        info.append("Room type: " + room.getType());
+        info.append(calendar.getPrice(checkIn, id));
+        info.append("Description: " + room.getDescription());
 
         return info.toString();
     }
@@ -212,7 +169,6 @@ public class Hotel {
 
         return capacity;
     }
-
     public boolean isHotelAvailable(LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms) {
         //Controllo nel calendario se ho delle camere disponibili per le richieste indicate
         // e ritorno vero se il numero di camere è diverso da zero
@@ -229,15 +185,4 @@ public class Hotel {
         return !availableRooms.isEmpty();
     }
 
-
-    public String getAllRoomInfo(int index, LocalDate checkIn, String id) {
-        StringBuilder info = new StringBuilder();
-        info.append("Room number " + index + " informations:\n");
-        Room room = findRoomByID(id);
-        info.append("Room type: " + room.getType());
-        info.append(calendar.getPrice(checkIn, id));
-        info.append("Description: " + room.getDescription());
-
-        return info.toString();
-    }
 }

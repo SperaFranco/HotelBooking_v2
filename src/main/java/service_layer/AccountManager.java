@@ -11,9 +11,11 @@ import java.util.Scanner;
 
 public class AccountManager {
     ArrayList<User> users = new ArrayList<>();
-
+    Scanner scanner;
+    public AccountManager(Scanner scanner){
+        this.scanner = scanner;
+    }
     public User doRegistration() {
-        Scanner scanner = new Scanner(System.in);
         String userType = null;
         User newUser = null;
 
@@ -29,13 +31,11 @@ public class AccountManager {
         else {
             System.out.println("Please try again your registration...");
         }
-        scanner.close();
         return newUser;
     }
     public User login() {
         //TODO ricordarsi di fare il close del resultset
         int maxAttemps = 5;
-        Scanner scanner = new Scanner(System.in);
         User loginUser = null;
         String email = null;
         for(int attempt = 1; attempt <= maxAttemps; attempt++) {
@@ -77,7 +77,7 @@ public class AccountManager {
     }
     public void logout() {
         //TODO vedere se utile
-        //Potrei ad esempio risettare lo user a null
+        //Potrei ad esempio risettare l'user a null
     }
     public Guest addGuest(UserType guest) {
         //Dopo aver richiesto tutte le credenziali di cui si ha bisogno
@@ -101,7 +101,6 @@ public class AccountManager {
     private String[] askUserInfo() {
         //TODO al momento non chiedo di inserire il numero di telefono
         String name, surname, email, telephone, password;
-        Scanner scanner = new Scanner(System.in);
 
         System.out.print("Please enter your name:");
         name = scanner.nextLine();
@@ -112,7 +111,6 @@ public class AccountManager {
         System.out.print("Please enter your password:");
         password = scanner.nextLine();
 
-        scanner.close();
         return new String[]{name, surname, email, password};
     }
     private User findUserByEmail(String email) {

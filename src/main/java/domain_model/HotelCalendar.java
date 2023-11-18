@@ -25,6 +25,10 @@ public class HotelCalendar implements Observer {
         reservation.addObserver(this);
     }
 
+    public Map<LocalDate,Map<String, RoomInfo>> getRoomStatusMap(){
+        return roomStatusMap;
+    }
+
     public void addRoomToCalendar(LocalDate date, String roomNumber, RoomInfo roomInfo) {
         Map<String, RoomInfo> roomStatus = new HashMap<>();
         roomStatus.put(roomNumber, roomInfo);
@@ -51,9 +55,6 @@ public class HotelCalendar implements Observer {
         for (LocalDate date = checkInDate; !date.isAfter(checkOutDate); date = date.plusDays(1)){
             roomStatusMap.get(date).get(roomReservedID).setAvailability(false);
         }
-    }
-    private void updateHotels(Subject subject, Object argument, String message) {
-        //Qui i casi che ci interessano sono quando è stato modificato qualcosa relativo alle camere
     }
 
     public boolean isRoomAvailable(LocalDate checkIn, LocalDate checkOut, String roomID) {

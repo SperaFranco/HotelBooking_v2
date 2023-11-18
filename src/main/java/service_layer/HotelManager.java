@@ -3,6 +3,7 @@ package service_layer;
 import domain_model.*;
 import utilities.HotelRating;
 import utilities.IdGenerator;
+import utilities.RoomType;
 import utilities.Subject;
 
 import java.time.LocalDate;
@@ -15,13 +16,19 @@ public class HotelManager extends Subject {
     //Classe per la gestione e la modifica delle strutture degli hotel
     //TODO nell'hotel manager aggiungiamo pure i metodi per modificare le camere dell'hotel?
     private Map<String, Hotel> hotelMap;
-    private ReservationManager reservationManager; //va qui???
+    private ReservationManager reservationManager;
     private AccountManager accountManager;
+    private CalendarManager calendarManager;
+    private final Scanner scanner;
 
-    public HotelManager(AccountManager accountManager, ReservationManager reservationManager){
+
+    public HotelManager(AccountManager accountManager, ReservationManager reservationManager, CalendarManager calendarManager, Scanner scanner){
         hotelMap = new HashMap<>();
         this.reservationManager = reservationManager;
         this.accountManager = accountManager;
+        this.calendarManager = calendarManager;
+        this.scanner = scanner;
+
     }
     public void addHotel(HotelDirector director) {
         Scanner scanner = new Scanner(System.in);
@@ -45,10 +52,17 @@ public class HotelManager extends Subject {
 
         Hotel newHotel = new Hotel(IdGenerator.generateHotelID(city),
                 name, city, address, telephone, email, rating, description, director);
+        System.out.println("Hotel created! Now add your rooms...");
+        //TODO capire meglio come gestire la creazione delle camere e del calendario
+        ArrayList<Room> rooms = createRooms(newHotel.getId());
+        newHotel.setRooms(rooms);
+
+        System.out.println("Rooms added!");
+        calendarManager.createCalendar(rooms);
 
         hotelMap.put(newHotel.getId(), newHotel);
         setChanged();
-        notifyObservers(newHotel, "New hotel added");
+        notifyObservers(newHotel, "New hotel added"); //TODO stare attenti con gli observer controllare dove finiscono le notifiche
     }
 
     public void modifyHotel() {
@@ -58,7 +72,6 @@ public class HotelManager extends Subject {
         //Attenzione cancellare un hotel significa anche eliminare l'arrayList di tutte le camere
         //Dalla lista di strutture il gestore decide quale hotel eliminare
         // (immagino che ogni gestore di hotel possa vedere solo le proprie strutture)
-        Scanner scanner = new Scanner(System.in);
         String id;
 
         ArrayList<Hotel> hotels = director.getHotels();
@@ -75,10 +88,8 @@ public class HotelManager extends Subject {
         setChanged();
         notifyObservers(hotelRemoved, "Hotel removed");
     }
-
     public void doHotelResearch(User user){
         //Chiedo tutte le info (check-in, check-out, luogo, numero di persone)
-        Scanner scanner = new Scanner(System.in);
         LocalDate checkIn, checkOut;
         String city;
         int numOfGuests;
@@ -117,6 +128,7 @@ public class HotelManager extends Subject {
 
         if(hotelNumber > 0 && hotelNumber < hotels.size()) {
             Hotel hotelToReserve = hotels.get(hotelNumber - 1);
+            //TODO in realtà ancora non implementata
             ArrayList<Room> roomsAvailable = hotelToReserve.getRoomsAvailable(); //qui ci saranno le camere disponibili
 
             //A questo punto ne stampo le camere e le info ma solo delle camere disponibili
@@ -141,7 +153,6 @@ public class HotelManager extends Subject {
             }
             else if (roomNumber == 0){
                 //Ho fatto una semplice ricerca e non voglio prenotare
-                scanner.close();
             }
             else
                 throw new RuntimeException("Room not on the list!");
@@ -149,6 +160,7 @@ public class HotelManager extends Subject {
         else
             throw new RuntimeException("Hotel not on the list!");
     }
+
     private ArrayList<Hotel> filterHotels(String city, LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms) {
         //Di tutti gli hotel nella map mi tengo solo quelli che soddisfano i criteri
         ArrayList<Hotel> filteredHotels = new ArrayList<>();
@@ -197,14 +209,32 @@ public class HotelManager extends Subject {
         System.out.println("Reservation added! Thank you! :)");
         scanner.close();
     }
-
     private Hotel findHotelByID(String idHotel) {
         return null;
     }
-
     private Room findRoomByID(String idRoom) {
         return null;
     }
+    private ArrayList<Room> createRooms(String id){
+        //Al momento lo lasciamo qui magari il roomManager non ci serve
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<Room> rooms = new ArrayList<>();
+        int[] numRooms = RoomType.getRoomPreference(); //qui chiederò il numero di camere singole - doppie - triple
+        RoomType[] types = RoomType.values();
+        IdGenerator.resetRoomCounter(); //rimette a 1 il counter delle stanze per l'hotel
 
+        for (int i = 0; i < numRooms.length; i++) {
+            for (int j = 0; j < numRooms[i]; j++) {
+                String description, roomID;
+                roomID = IdGenerator.generateRoomID(id, types[i]);
+                System.out.println("Please insert more info for room " + roomID +
+                        " (like the dimensions of the room and/or if it has some amenities like tv or wifi):");
+                description = scanner.nextLine();
+                Room room = new Room(roomID, types[i], description);
+                rooms.add(room);
+            }
+        }
+        return rooms;
+    }
 
 }

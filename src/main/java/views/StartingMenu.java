@@ -2,29 +2,31 @@ package views;
 
 import domain_model.Guest;
 import domain_model.HotelDirector;
-import domain_model.Reservation;
 import domain_model.User;
 import service_layer.AccountManager;
+import service_layer.CalendarManager;
 import service_layer.HotelManager;
 import service_layer.ReservationManager;
-import utilities.UserType;
 
 import java.util.Scanner;
 
 public class StartingMenu {
-    //qui ci saranno i vari controllers
     //Region Controllers
     private AccountManager accountManager;
     private HotelManager hotelManager;
     private ReservationManager reservationManager;
+    private CalendarManager calendarManager;
     //endregion
     private HotelDirectorMenu hotelDirectorMenu;
     private GuestMenu guestMenu;
+    private Scanner scanner;
 
     public StartingMenu() {
-        accountManager = new AccountManager();
-        reservationManager = new ReservationManager();
-        hotelManager = new HotelManager(accountManager, reservationManager);
+        this.scanner = new Scanner(System.in);
+        accountManager = new AccountManager(scanner);
+        reservationManager = new ReservationManager(scanner); //le prenotazioni sono condivise fra guest e hoteldirector
+        calendarManager = new CalendarManager(scanner);
+        hotelManager = new HotelManager(accountManager, reservationManager, calendarManager, scanner);
     }
 
 
@@ -32,7 +34,6 @@ public class StartingMenu {
         //Alla richiesta del crea nuovo account
         // chiedi inizialmente se è un cliente oppure se è un gestore
         // nel caso di gestore faremo in modo che si passi subito all'inserimento di una struttura(?)
-        Scanner scanner = new Scanner(System.in);
         int choice = 0;
         User user = null;
 
@@ -60,9 +61,9 @@ public class StartingMenu {
                         //Fai partire il guestMenu
                     }
                     else if(user instanceof HotelDirector) {
-                        //Fai partire l'hotelDirectorMenu
-                        hotelDirectorMenu = new HotelDirectorMenu(hotelManager, reservationManager,(HotelDirector) user);
-                        hotelDirectorMenu.startMenu();
+                        //Fai partire l'hotelDirectorMenu --> il director fa le sue azioni tramite il suo menu
+                        hotelDirectorMenu = new HotelDirectorMenu(hotelManager, reservationManager, calendarManager,(HotelDirector) user);
+                        hotelDirectorMenu.startMenuDirector();
                     }
                     break;
                 case 3:
@@ -83,7 +84,7 @@ public class StartingMenu {
                     System.out.println("Please one of the options in the list!");
             }
         }
-
+        scanner.close();
     }
 
 

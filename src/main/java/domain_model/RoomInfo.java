@@ -12,8 +12,8 @@ public class RoomInfo {
 
     public RoomInfo(String roomID) {
         this.roomID = roomID;
-        this.price = 0.0;
-        this.minimumStay = 0;
+        this.price = 1000.0;
+        this.minimumStay = 1;
         this.availability = true;
     }
 

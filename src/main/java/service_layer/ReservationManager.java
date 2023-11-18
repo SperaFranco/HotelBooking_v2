@@ -9,11 +9,11 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class ReservationManager extends Subject {
-
     private Map<String, Reservation> reservationMap;
-
-    public ReservationManager() {
+    private Scanner scanner;
+    public ReservationManager(Scanner scanner) {
         reservationMap = new HashMap<>();
+        this.scanner = scanner;
     }
 
     //Notare che TUTTE queste operazioni mi vanno a fare delle notifiche agli observer!
