@@ -52,6 +52,7 @@ public class Room {
 
     public String getRoomInfo(int index) {
         return "Room number " + index + " informations:\n" +
+                "RoomID: " + id +
                 "Room type: " + type +
                 "Description: " + description;
     }

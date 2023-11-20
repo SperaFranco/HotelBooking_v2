@@ -88,11 +88,10 @@ public class HotelManager extends Subject {
             notifyObservers(hotelRemoved, "Hotel removed");
         }
     }
-
     public void doHotelResearch(User user){
         //TODO capire se effettivamente ci serve chiedere il numero di camere
         //Chiedo tutte le info (check-in, check-out, luogo, numero di persone)
-        Research info =  askResearchInfo();
+        Research info =  askResearchInfo(true);
 
         //filtro i risultati secondo le richieste fatte dall'utente
         ArrayList<Hotel> hotels = filterHotels(info.getCity(), info.getCheckIn(),
@@ -129,9 +128,7 @@ public class HotelManager extends Subject {
             if(roomNumber > 0 && roomNumber < roomsAvailable.size()) {
                 //Allora facciamo la prenotazione
                 Room roomToReserve = roomsAvailable.get(roomNumber - 1);
-                String idHotel = hotelToReserve.getId();
-                String idRoom = roomToReserve.getId();
-                reservationManager.addReservation(user, info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), hotelToReserve, roomToReserve);
+                reservationManager.addReservation(user, info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), hotelToReserve.getId(), roomToReserve.getId());
             }
             else if (roomNumber == 0){
                 //Ho fatto una semplice ricerca e non voglio prenotare
@@ -143,7 +140,6 @@ public class HotelManager extends Subject {
         else
             throw new RuntimeException("Hotel not on the list!");
     }
-
     public Hotel chooseHotel(HotelDirector director) {
         ArrayList<Hotel> hotels = findHotelsByDirector(director);
 
@@ -162,6 +158,7 @@ public class HotelManager extends Subject {
         }
         return null;
     }
+
     //Region Helpers
     private ArrayList<Hotel> filterHotels(String city, LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms){
         //Di tutti gli hotel nella map mi tengo solo quelli che soddisfano i criteri
@@ -214,15 +211,18 @@ public class HotelManager extends Subject {
 
         return hotelsByDirector;
     }
-    public Research askResearchInfo() {
+
+    public Research askResearchInfo(boolean forGuests) {
         //TODO creare oggetto ricerca magari anche static
         LocalDate checkIn, checkOut;
-        String city;
+        String city = null;
         int numOfGuests;
         int numOfRooms = 0; //mi serve per capire in quante camere l'utente vorrebbe stare
 
-        System.out.print("Please insert your destination:");
-        city = scanner.nextLine();
+        if (forGuests) {
+            System.out.print("Please insert your destination:");
+            city = scanner.nextLine();
+        }
         System.out.print("Please insert the check-in date:");
         checkIn = LocalDate.parse(scanner.nextLine());
         System.out.print("And then the check-out date:");
@@ -240,7 +240,6 @@ public class HotelManager extends Subject {
         return new Research(city, checkIn, checkOut, numOfGuests);
 
     }
-
     //End Region
 
 }

@@ -20,6 +20,12 @@ public class Guest extends User implements Observer {
         this.reservations = new ArrayList<>();
     }
 
+    public Guest(String id, String name, String surname, String telephone) {
+        //Cliente senza account
+        super(id, name, surname, null, telephone, null);
+        this.reservations = new ArrayList<>();
+    }
+
     //Region getters and setters
     public CreditCard getCard() {
         return card;
@@ -61,6 +67,5 @@ public class Guest extends User implements Observer {
                 reservations.remove(reservation.getId());
             }
         }
-    }
 
 }

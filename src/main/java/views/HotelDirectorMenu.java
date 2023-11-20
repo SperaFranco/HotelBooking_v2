@@ -1,20 +1,23 @@
 package views;
 
+import domain_model.Guest;
 import domain_model.Hotel;
 import domain_model.HotelDirector;
+import domain_model.Room;
 import service_layer.AccountManager;
 import service_layer.CalendarManager;
 import service_layer.HotelManager;
 import service_layer.ReservationManager;
 import utilities.Research;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class HotelDirectorMenu {
     private final AccountManager accountManager;
-    private HotelManager hotelManager;
-    private ReservationManager reservationManager;
-    private CalendarManager calendarManager;
+    private final HotelManager hotelManager;
+    private final ReservationManager reservationManager;
+    private final CalendarManager calendarManager;
     private HotelDirector director;
     private Hotel hotel;
     private Scanner scanner;
@@ -37,14 +40,6 @@ public class HotelDirectorMenu {
                     1)  To add a new hotel property
                     2)  To remove the hotel
                     3)  To choose an hotel
-                    4)  To display the hotel calendar
-                    5)  To modify a price of a room
-                    6)  To make a room unavailable
-                    7)  To insert the number of minimum days to stay for a room
-                    8)  To display all the hotel reservations
-                    9)  To add a reservation
-                    10)  To modify a reservation
-                    11) To remove a reservation
                     0)  To logout
                     Choice:""");
             choice = scanner.nextInt();
@@ -57,9 +52,10 @@ public class HotelDirectorMenu {
                     break;
                 case 2:
                     hotelManager.removeHotel(director);
+                    System.out.println("Hotel Removed!");
                     break;
                 case 3:
-                    hotel = hotelManager.chooseHotel(director); //Notare setto qui l'hotel su qui si sta lavorando
+                    hotel = hotelManager.chooseHotel(director);
                     secondMenuDirector(hotel);
                     break;
                 case 0:
@@ -78,7 +74,7 @@ public class HotelDirectorMenu {
 
         while (choice != 0) {
             System.out.print("""
-                    Please enter an option between 1-:
+                    Please enter an option between 1-8:
                     1)  To display the hotel calendar
                     2)  To modify a price of a room
                     3)  To make a room unavailable
@@ -86,8 +82,8 @@ public class HotelDirectorMenu {
                     5)  To display all the hotel reservations
                     6)  To add a reservation
                     7)  To modify a reservation
-                    8) To remove a reservation
-                    0)  To logout
+                    8)  To remove a reservation
+                    0)  To return at the start menu
                     Choice:""");
             choice = scanner.nextInt();
             scanner.nextLine();
@@ -110,23 +106,36 @@ public class HotelDirectorMenu {
                     break;
                 case 6:
                     //Chiedere prima per l'id della prenotazione
-                    Research info = hotelManager.askResearchInfo();
-                    //TODO va chiesto per quale camera si vuole aggiungere la prenotazione
-                    //TODO si chiede per quale cliente si vuol aggiungere la prenotazione
-                    // oppure si intende semplicemente chi ha inserito la prenotazione?
-                    reservationManager.addReservation(null, info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), hotel, null);
-                    break;
-                case 10:
+                    Research info = hotelManager.askResearchInfo(false);
 
-                    reservationManager.updateReservation("19");
+                    String roomID;
+                    System.out.println("Which room is to reserve?");
+                    ArrayList<Room> rooms = hotel.getRoomsAvailable(info.getCheckIn(), info.getCheckOut());
+
+                    if(!rooms.isEmpty()) {
+                        System.out.println("These are the rooms available:");
+                        for (Room room: rooms) {
+                            int index = 1;
+                            room.getRoomInfo(index++);
+                        }
+
+                        System.out.println("Please enter the id of the room to book");
+                        roomID = scanner.nextLine();
+                        System.out.println("Please enter all the client information's:");
+                        reservationManager.addReservation(accountManager.addGuestWithoutAccount()
+                        ,info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), hotel.getId(), roomID);
+                    }else
+                        System.out.println("No rooms are available for these days...");
+
                     break;
-                case 11:
-                    reservationManager.deleteReservation("10");
+                case 7:
+                    reservationManager.updateReservation(hotel);
+                    break;
+                case 8:
+                    reservationManager.deleteReservation(hotel);
                     break;
                 case 0:
-                    //Chiamo la funzione di logout?
-                    accountManager.logout(director);
-                    director = null; //Forse non necessario
+                    System.out.println("Returning to the starting menu...");
                     break;
                 default:
                     System.out.print("Not a option on the list... please try again!");

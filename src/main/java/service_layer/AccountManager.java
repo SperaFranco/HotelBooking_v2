@@ -83,13 +83,27 @@ public class AccountManager {
     }
 
     //Region helper methods
-    private Guest addGuest() {
+    public Guest addGuest() {
         //Dopo aver richiesto tutte le credenziali di cui si ha bisogno
         //si inseriscono nella stringa sql
         //e si esegue la query
         Guest newGuest = (Guest)createUser(UserType.GUEST);
         if (newGuest != null)
             users.add(newGuest);
+        return newGuest;
+    }
+
+    public Guest addGuestWithoutAccount() {
+        String name, surname, telephone;
+        System.out.print("Name:");
+        name = scanner.nextLine();
+        System.out.print("Surname:");
+        surname = scanner.nextLine();
+        System.out.print("Telephone:");
+        telephone = scanner.nextLine();
+
+        Guest newGuest = new Guest(IdGenerator.generateUserID(UserType.GUEST, name, surname), name, surname, telephone);
+        users.add(newGuest);
         return newGuest;
     }
     private HotelDirector addHotelDirector() {

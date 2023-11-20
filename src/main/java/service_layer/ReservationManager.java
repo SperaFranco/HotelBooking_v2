@@ -16,10 +16,8 @@ public class ReservationManager extends Subject {
         this.accountManager = accountManager;
     }
 
-    public void addReservation(User user, LocalDate checkIn, LocalDate checkOut,int numOfGuests, Hotel hotelReserved, Room roomReserverd) {
+    public void addReservation(User user, LocalDate checkIn, LocalDate checkOut, int numOfGuests, String hotelReserved, String roomReserverd) {
         //TODO Da implementare aggiungendo l'oggetto nel database
-        //TODO chiarire se questo metodo serve come ultimo aspetto di inserimento prenotazione (si simula prima)
-        // oppure se in questo metodo si chiede di inserire tutte le info richieste
         String response;
 
         //Nel caso l'user sia nullo chiedo di fare il login oppure di fare un nuovo account
@@ -40,7 +38,7 @@ public class ReservationManager extends Subject {
         System.out.print("Is anything else you need in your reservation??:");
         String description = scanner.nextLine();
         Reservation newReservation = new Reservation(IdGenerator.generateReservationID(), checkIn, checkOut,
-                numOfGuests, description, hotelReserved.getId(), roomReserverd.getId(), user.getId());
+                numOfGuests, description, hotelReserved, roomReserverd, user.getId());
         //TODO ci sarebbe da aggiungere il controllo per il pagamento da qualche parte
 
         reservationMap.put(newReservation.getId(), newReservation);
@@ -49,89 +47,113 @@ public class ReservationManager extends Subject {
         notifyObservers(newReservation,"Add reservation");
     }
 
-    public void updateReservation(String id) {
+    public void updateReservation(Hotel hotel) {
         //TODO Da implementare cambiando l'oggetto nel database
         //TODO capire come modificare l'oggetto nel db --> tolgo e inserisco oppure cambio sul posto?
-        Scanner scanner = new Scanner(System.in);
-        String choice;
-        boolean modified = false;
+        if (hotel != null) {
+            int choice;
+            boolean modified = false;
+            String id;
+            getAllReservations(hotel); //le stampa direttamente
 
-        //Recupero inzialmente la prenotazione richiesta
-        Reservation reservation = findReservationById(id);
-        System.out.print("Please enter what you to modify:" +
-                "\n1) Check in Date" +
-                "\n2) Check out Date " +
-                "\n3) Description " +
-                "\nChoice:");
-        choice = scanner.nextLine();
-        switch (choice) {
-            case "Check in Date":
-                LocalDate newCheckInDate;
-                System.out.print("Then please insert the new check in date(for example 2007-12-01): ");
-                newCheckInDate = LocalDate.parse(scanner.nextLine());
-                reservation.setCheckIn(newCheckInDate);
-                modified = true;
-                break;
-            case "Check out Date":
-                LocalDate newCheckOutDate;
-                System.out.print("Then please insert the new check out date(for example 2007-10-1): ");
-                newCheckOutDate = LocalDate.parse(scanner.nextLine());
-                reservation.setCheckIn(newCheckOutDate);
-                modified = true;
-                break;
-            case "Description":
-                String description;
-                System.out.print("Then please insert the new description:");
-                description = scanner.nextLine();
-                reservation.setNotes(description);
-                modified = true;
-                break;
-            default:
-                System.out.println("Other options are not editable... ");
+            System.out.print("Choose the reservation to modify:");
+            id = scanner.nextLine();
+            //Recupero inzialmente la prenotazione richiesta
+            Reservation reservation = findReservationById(id);
+            if (reservation != null) {
+                System.out.print("What do you want to modify?:" +
+                        "\n1) Check in Date" +
+                        "\n2) Check out Date " +
+                        "\n3) Description " +
+                        "\nChoice:");
+                choice = scanner.nextInt();
+                scanner.nextLine();
+                switch (choice) {
+                    case 1:
+                        LocalDate newCheckInDate;
+                        System.out.print("Then please insert the new check in date(for example 2007-12-01): ");
+                        newCheckInDate = LocalDate.parse(scanner.nextLine());
+                        reservation.setCheckIn(newCheckInDate);
+                        modified = true;
+                        break;
+                    case 2:
+                        LocalDate newCheckOutDate;
+                        System.out.print("Then please insert the new check out date(for example 2007-10-1): ");
+                        newCheckOutDate = LocalDate.parse(scanner.nextLine());
+                        reservation.setCheckIn(newCheckOutDate);
+                        modified = true;
+                        break;
+                    case 3:
+                        String description;
+                        System.out.print("Then please insert the new description:");
+                        description = scanner.nextLine();
+                        reservation.setNotes(description);
+                        modified = true;
+                        break;
+                    default:
+                        System.out.println("Other options are not editable... ");
+                }
+            } else
+                System.out.println("Reservation not found!");
+
+            if (modified)
+                System.out.println("Reservation modified correctly!");
+        }else {
+            System.out.println("Please choose a hotel first");
         }
         // e a seconda di cosa voglio modificare nella prenotazione la modifico nel db
-        if (modified)
-            setChanged();
-        notifyObservers(reservation, "Update reservation" + choice);
     }
 
-    public void deleteReservation(String id) {
+    public void deleteReservation(Hotel hotel) {
         //TODO da implementare facendo rimozione dal db
-        //Allo stesso modo recupero la prenotazione e la elimino
-        Reservation reservationRemoved = findReservationById(id);
-        reservationMap.remove(id);
-        setChanged();
-        notifyObservers(reservationRemoved, "Delete reservation");
-    }
+        if (hotel != null) {
+            //Allo stesso modo recupero la prenotazione e la elimino
+            String id;
+            getAllReservations(hotel); //le stampa direttamente
 
+            System.out.print("Choose the reservation to modify:");
+            id = scanner.nextLine();
+            Reservation reservationRemoved = findReservationById(id);
+            reservationMap.remove(id);
+            setChanged();
+            notifyObservers(reservationRemoved, "Delete reservation");
+        }else
+            System.out.println("Please choose a hotel first");
+
+    }
     public void getReservations(Guest guest) {
-        //TODO a seconda del guest ricavo tutte le sue prenotazioni e le stampo
+        //TODO a seconda del guest ricavo tutte le sue prenotazioni e le stampo (per guestMenu)
         System.out.println("These are " + guest.getName() + " reservations:");
         for (Reservation reservation: findReservationByGuest(guest.getId())) {
             System.out.print(reservation.getInfoReservation());
         }
     }
-
     public void getAllReservations(Hotel hotel) {
-        //TODO qui invece a seconda dell'hotel tutte le prenotazioni stampo le prenotazioni
-        ArrayList<Reservation> reservationsForHotel = new ArrayList<>();
+        // A seconda dell'hotel tutte le prenotazioni stampo le prenotazioni
+        if (hotel != null){
+            ArrayList<Reservation> reservationsForHotel = new ArrayList<>();
 
         //lascio le prenotazioni che mi servono (probabilmente con il db ci sarà da fare una query)
-        for (Map.Entry<String, Reservation> entry:reservationMap.entrySet()) {
+        for (Map.Entry<String, Reservation> entry : reservationMap.entrySet()) {
             Reservation reservation = entry.getValue();
-            if(reservation.getHotel().equals(hotel.getId()))
+            if (reservation.getHotel().equals(hotel.getId()))
                 reservationsForHotel.add(reservation);
         }
-        System.out.println("These are " + hotel.getName() + " reservations:" );
-        for(Reservation reservation:reservationsForHotel) {
-            reservation.getInfoReservation();
-        }
+
+        if (!reservationsForHotel.isEmpty()) {
+            System.out.println("These are " + hotel.getName() + " reservations:");
+            for (Reservation reservation : reservationsForHotel) {
+                System.out.println(reservation.getInfoReservation());
+            }
+        } else
+            System.out.println("No reservations for the hotel " + hotel.getName());
+        }else
+            System.out.println("Please choose an hotel first!");
     }
     private Reservation findReservationById(String id) {
         //TODO Da Implementare facendo il recupero della prenotazione dal database
         return reservationMap.get(id);
     }
-
     private ArrayList<Reservation> findReservationByGuest(String guestID) {
         ArrayList<Reservation> reservations = new ArrayList<>(reservationMap.values());
         ArrayList<Reservation> myReservations = new ArrayList<>();

@@ -10,9 +10,9 @@ public class Reservation
     private LocalDate checkOut;
     private int numOfGuests; //TODO bisogna garantire che il numero di ospiti sia coerente con il tipo di camera prentotata
     private String notes;
-    private String hotelID; //potrei anche passargli l'id piuttosto che l'oggetto intero
-    private String roomReservedID; //uguale qui
-    private String clientID; //e anche qui
+    private String hotelID;
+    private String roomReservedID;
+    private String userID;
 
 
     //end Region
@@ -28,7 +28,7 @@ public class Reservation
         this.hotelID = hotel;
         this.roomReservedID = roomReserved; //nel uml settiamolo a 1 --> potremmo rendere possibile che uno stesso utente compia
         // più prenotazioni, ma può prenotare solo una camera alla volta
-        this.clientID = client;
+        this.userID = client;
 
     }
 
@@ -58,11 +58,11 @@ public class Reservation
         this.checkOut = checkOut;
     }
     public String getClient() {
-        return clientID;
+        return userID;
     }
 
     public void setClient(String client) {
-        this.clientID = client;
+        this.userID = client;
     }
 
     public int getNumOfGuests() {
@@ -99,19 +99,19 @@ public class Reservation
 
     public String getInfoReservation() {
         StringBuilder builder = new StringBuilder();
+
         builder.append("Reservation ID: ").append(id).append("\n");
         builder.append("Check-in date: ").append(checkIn).append("\n");
         builder.append("Check-out date: ").append(checkOut).append("\n");
         builder.append("Number of guests: ").append(numOfGuests).append("\n");
         builder.append("Description: ").append(notes).append("\n");
-        builder.append("Hotel: ").append(hotel.getName()).append("\n");
-        builder.append("Room Reserved: ").append(roomReserved.getId()).append("\n");
-        builder.append("Client: ").append(client.getName()).append("\n");
+        //Mi stampo gli id e non il nome... non proprio il massimo
+        builder.append("Hotel reserved: ").append(hotelID).append("\n");
+        builder.append("Room Reserved: ").append(roomReservedID).append("\n");
+        builder.append("Client: ").append(userID).append("\n");
 
         return builder.toString();
-
     }
-
     //end Region
 
 
