@@ -28,8 +28,7 @@ public class HotelDirector extends User implements Observer {
 
     @Override
     public void update(Subject subject, Object argument, String message) {
-        if (argument instanceof Hotel) {
-            Hotel hotel = (Hotel) argument;
+        if (argument instanceof Hotel hotel) {
             this.updateHotels(hotel, message);
         }
     }

@@ -18,10 +18,9 @@ public class Hotel {
     private String email;
     private HotelRating rating;
     private String description;
-    private ArrayList<Room> rooms; //TODO c'è da farlo diventare anche lui un observer (?)
-    private HotelCalendar calendar; //TODO occhio c'è dà installare la dipendenza --> quando farlo?
+    private ArrayList<Room> rooms;
+    private HotelCalendar calendar;
     private HotelDirector manager;
-    private ArrayList<Room> roomsAvailable; //mi tiene conto delle camere disponibili di un hotel --> occhio potrebbe dare problemi
     //end Region
 
 
@@ -121,14 +120,28 @@ public class Hotel {
         this.rooms = rooms;
     }
 
-    public ArrayList<Room> getRoomsAvailable() {
+    public ArrayList<Room> getRoomsAvailable(LocalDate checkIn, LocalDate checkOut) {
+
+        ArrayList<Room> roomsAvailable = new ArrayList<>();
+
+        for (Room room : rooms) {
+            String roomID = room.getId();
+            if(calendar.isRoomAvailable(checkIn, checkOut, roomID))
+                roomsAvailable.add(room);
+        }
         return roomsAvailable;
     }
+
+    public HotelCalendar getCalendar() {
+        return calendar;
+    }
+
+    public void setCalendar(HotelCalendar calendar) {
+        this.calendar = calendar;
+    }
+
     //end Region
 
-    private void createCalendar(ArrayList<Room> rooms) {
-
-    }
     public Room findRoomByID(String id) {
         Room myRoom = null;
         for (Room room : rooms) {
@@ -169,6 +182,7 @@ public class Hotel {
 
         return capacity;
     }
+
     public boolean isHotelAvailable(LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms) {
         //Controllo nel calendario se ho delle camere disponibili per le richieste indicate
         // e ritorno vero se il numero di camere è diverso da zero
@@ -176,9 +190,8 @@ public class Hotel {
         //al momento non uso numOfRooms ma lo dovrei usare per dividere le persone fra le camere
         ArrayList<Room> availableRooms = new ArrayList<>();
 
-        for (Room room : rooms) {
-            String roomID = room.getId();
-            if(calendar.isRoomAvailable(checkIn, checkOut, roomID) && room.canRoomAccomodate(numOfGuests))
+        for (Room room : getRoomsAvailable(checkIn, checkOut)) {
+            if(room.canRoomAccomodate(numOfGuests))
                 availableRooms.add(room);
         }
 

@@ -1,6 +1,7 @@
 package domain_model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,5 +77,35 @@ public class HotelCalendar implements Observer {
         RoomInfo roomInfo = roomStatusMap.get(checkIn).get(id);
         return "Actual Price: " + roomInfo.getPrice();
     }
+
+    public void displayCalendar(int numDaysToShow) {
+        StringBuilder calendarDisplay = new StringBuilder();
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd");
+
+        for (int i = 0; i < numDaysToShow; i++) {
+            LocalDate displayDate = date.plusDays(i);
+            int length = 0;
+            if (roomStatusMap.containsKey(displayDate)) {
+
+                calendarDisplay.append("Date: ").append(displayDate.format(formatter)).append("\n");
+                for (Map.Entry<String, RoomInfo> entry : roomStatusMap.get(displayDate).entrySet()) {
+                    RoomInfo roomInfo = entry.getValue();
+                    String line = String.format(" - Room %-5s " +
+                                    "| Availability: %-5s | Price: %-7.2f | Minimum Stay: %-2d",
+                                    roomInfo.getRoomID(), roomInfo.isAvailable(), roomInfo.getPrice(), roomInfo.getMinimumStay());
+                    calendarDisplay.append(line).append("\n");
+                    length = line.length();
+                }
+                calendarDisplay.append("\n");
+            }
+
+            if (i != numDaysToShow - 1)
+                calendarDisplay.append("-".repeat(length));
+        }
+
+        System.out.println(calendarDisplay);
+    }
+
     //end Helpers Methods
 }

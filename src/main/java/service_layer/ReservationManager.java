@@ -1,8 +1,6 @@
 package service_layer;
-import domain_model.Guest;
-import domain_model.Hotel;
-import domain_model.HotelDirector;
-import domain_model.Reservation;
+import domain_model.*;
+import utilities.IdGenerator;
 import utilities.Subject;
 
 import java.time.LocalDate;
@@ -10,10 +8,12 @@ import java.util.*;
 
 public class ReservationManager extends Subject {
     private Map<String, Reservation> reservationMap;
+    private AccountManager accountManager; //occhio ai controllers
     private Scanner scanner;
-    public ReservationManager(Scanner scanner) {
+    public ReservationManager(Scanner scanner, AccountManager accountManager) {
         reservationMap = new HashMap<>();
         this.scanner = scanner;
+        this.accountManager = accountManager;
     }
 
     //Notare che TUTTE queste operazioni mi vanno a fare delle notifiche agli observer!
@@ -22,15 +22,37 @@ public class ReservationManager extends Subject {
         return reservationMap.get(id);
     }
 
-    public void addReservation(Reservation reservation) {
+    public void addReservation(User user, LocalDate checkIn, LocalDate checkOut,int numOfGuests, Hotel hotelReserved, Room roomReserverd) {
         //TODO Da implementare aggiungendo l'oggetto nel database
         //TODO chiarire se questo metodo serve come ultimo aspetto di inserimento prenotazione (si simula prima)
         // oppure se in questo metodo si chiede di inserire tutte le info richieste
+        String response;
 
-        String idReservation = reservation.getId();
-        reservationMap.put(idReservation, reservation);
+        //Nel caso l'user sia nullo chiedo di fare il login oppure di fare un nuovo account
+        if(user == null){
+            System.out.println("Please do the login to proceed or registrate if you don't have an account!");
+            System.out.print("Do you have already an account?\nPlease answer \"yes\" or \"no\":");
+            response = scanner.nextLine();
+            if (response.equalsIgnoreCase("yes")) {
+                user = accountManager.login();
+            }else if (response.equalsIgnoreCase("no")){
+                user = accountManager.doRegistration();
+            }else {
+                throw new RuntimeException("Option not in the list!");
+            }
+        }
+
+        //Altrimenti chiedi per la description e aggiungi la prenotazione
+        System.out.print("Is anything else you need in your reservation??:");
+        String description = scanner.nextLine();
+        Reservation newReservation = new Reservation(IdGenerator.generateReservationID(), checkIn, checkOut,
+                numOfGuests, description, hotelReserved, roomReserverd, user);
+        //TODO ci sarebbe da aggiungere il controllo per il pagamento da qualche parte
+
+        reservationMap.put(newReservation.getId(), newReservation);
+        System.out.println("Reservation added! Thank you! :)");
         setChanged();
-        notifyObservers(reservation,"Add reservation");
+        notifyObservers(newReservation,"Add reservation");
     }
 
     public void updateReservation(String id) {
@@ -90,26 +112,15 @@ public class ReservationManager extends Subject {
 
     public void getReservations(Guest guest) {
         //TODO a seconda del guest ricavo tutte le sue prenotazioni e le stampo
-        ArrayList<Reservation> reservations = guest.getReservations();
+        ArrayList<Reservation> reservations = guest.getReservations(); //TODO no bisogna usare le mappe!!
         System.out.println("These are " + guest.getName() + " reservations:");
         for (Reservation reservation:reservations) {
             System.out.print(reservation.getInfoReservation());
         }
     }
 
-    public void getAllReservations(HotelDirector director) {
+    public void getAllReservations(Hotel hotel) {
         //TODO qui invece a seconda dell'hotel tutte le prenotazioni stampo le prenotazioni
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter the hotel number to view its reservation:");
-        for(Hotel hotel : director.getHotels()) {
-            int index = 1;
-            hotel.printHotelInfo(index++);
-        }
-        System.out.print("Hotel number:");
-        int hotelNumber = scanner.nextInt();
-        scanner.nextLine();
-        Hotel hotel = director.getHotels().get(hotelNumber);
-
         ArrayList<Reservation> reservationsForHotel = new ArrayList<>();
 
         //lascio le prenotazioni che mi servono (probabilmente con il db ci sarà da fare una query)

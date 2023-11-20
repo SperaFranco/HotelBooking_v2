@@ -24,9 +24,9 @@ public class AccountManager {
         userType = scanner.nextLine();
 
         if (userType.equalsIgnoreCase("guest"))
-            newUser = addGuest(UserType.GUEST);
+            newUser = addGuest();
         else if (userType.contains("hotel") || userType.contains("manager")) {
-            newUser = addHotelDirector(UserType.HOTEL_DIRECTOR);
+            newUser = addHotelDirector();
         }
         else {
             System.out.println("Please try again your registration...");
@@ -68,37 +68,38 @@ public class AccountManager {
                 }
 
             }catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("Error occured: " + e.getMessage());
             }
         }
 
         System.out.println("Too many unsuccessful login attempts... exiting");
         return null; //se entro 5 tentativi non lo trovo restituisco null
     }
-    public void logout() {
-        //TODO vedere se utile
+    public void logout(User user) {
+        //TODO vedere se problematica
         //Potrei ad esempio risettare l'user a null
+        users.remove(user);
+        user = null;
     }
-    public Guest addGuest(UserType guest) {
+
+    //Region helper methods
+    private Guest addGuest() {
         //Dopo aver richiesto tutte le credenziali di cui si ha bisogno
         //si inseriscono nella stringa sql
         //e si esegue la query
-        String[] info = askUserInfo();
-        //va aggiunta la carta di credito
-        Guest newGuest = new Guest(IdGenerator.generateUserID(guest, info[0],info[1]),
-                info[0], info[1], info[2],"", info[3], null, "");
-        users.add(newGuest);
+        Guest newGuest = (Guest)createUser(UserType.GUEST);
+        if (newGuest != null)
+            users.add(newGuest);
         return newGuest;
     }
-    public HotelDirector addHotelDirector(UserType hotelDirector) {
+    private HotelDirector addHotelDirector() {
         //l'hotel director ha in più un l'arraylist di hotel
-        String[] info = askUserInfo();
-        HotelDirector newHotelDirector = new HotelDirector(IdGenerator.generateUserID(hotelDirector, info[0], info[1]),
-                info[0], info[1], info[2],"",info[3]);
-        users.add(newHotelDirector);
+        HotelDirector newHotelDirector = (HotelDirector)createUser(UserType.HOTEL_DIRECTOR);
+        if (newHotelDirector != null)
+            users.add(newHotelDirector);
         return newHotelDirector;
     }
-    private String[] askUserInfo() {
+    private User createUser(UserType type) {
         //TODO al momento non chiedo di inserire il numero di telefono
         String name, surname, email, telephone, password;
 
@@ -111,7 +112,17 @@ public class AccountManager {
         System.out.print("Please enter your password:");
         password = scanner.nextLine();
 
-        return new String[]{name, surname, email, password};
+
+        if (type == UserType.GUEST) {
+            //TODO gli va chiesta la carta
+            return new Guest(IdGenerator.generateUserID(type, name, surname),
+                    name, surname, email,"", password, null, "");
+        }
+        else if (type == UserType.HOTEL_DIRECTOR) {
+            return new HotelDirector(IdGenerator.generateUserID(type, name, surname),
+                    name, surname, email,"",password);
+        }
+        return null;
     }
     private User findUserByEmail(String email) {
         for (User user:users) {
@@ -120,5 +131,6 @@ public class AccountManager {
         }
         return null;
     }
+    //end Region
 
 }

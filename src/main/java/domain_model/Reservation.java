@@ -10,16 +10,16 @@ public class Reservation
     private LocalDate checkOut;
     private int numOfGuests; //TODO bisogna garantire che il numero di ospiti sia coerente con il tipo di camera prentotata
     private String notes;
-    private Hotel hotel;
-    private Room roomReserved;
-    private Guest client; //chi ha effettuato la prenotazione
+    private Hotel hotel; //potrei anche passargli l'id piuttosto che l'oggetto intero
+    private Room roomReserved; //uguale qui
+    private User client; //e anche qui
 
 
     //end Region
 
 
     public Reservation(String id, LocalDate checkIn, LocalDate checkOut, int numOfGuests, String description,
-                       Hotel hotel, Room roomReserved, Guest client) {
+                       Hotel hotel, Room roomReserved, User client) {
         this.id = id;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
@@ -58,11 +58,11 @@ public class Reservation
         this.checkOut = checkOut;
     }
 
-    public Guest getClient() {
+    public User getClient() {
         return client;
     }
 
-    public void setClient(Guest client) {
+    public void setClient(User client) {
         this.client = client;
     }
 

@@ -24,9 +24,9 @@ public class StartingMenu {
     public StartingMenu() {
         this.scanner = new Scanner(System.in);
         accountManager = new AccountManager(scanner);
-        reservationManager = new ReservationManager(scanner); //le prenotazioni sono condivise fra guest e hoteldirector
+        reservationManager = new ReservationManager(scanner, accountManager); //le prenotazioni sono condivise fra guest e hoteldirector
         calendarManager = new CalendarManager(scanner);
-        hotelManager = new HotelManager(accountManager, reservationManager, calendarManager, scanner);
+        hotelManager = new HotelManager(reservationManager, calendarManager, scanner);
     }
 
 
@@ -62,7 +62,7 @@ public class StartingMenu {
                     }
                     else if(user instanceof HotelDirector) {
                         //Fai partire l'hotelDirectorMenu --> il director fa le sue azioni tramite il suo menu
-                        hotelDirectorMenu = new HotelDirectorMenu(hotelManager, reservationManager, calendarManager,(HotelDirector) user);
+                        hotelDirectorMenu = new HotelDirectorMenu(accountManager, hotelManager, reservationManager, calendarManager,(HotelDirector) user);
                         hotelDirectorMenu.startMenuDirector();
                     }
                     break;
@@ -73,7 +73,8 @@ public class StartingMenu {
                         //Fai partire il guestMenu
                     }
                     else if(user instanceof HotelDirector) {
-                        //Fai partire l'hotelDirectorMenu
+                        hotelDirectorMenu = new HotelDirectorMenu(accountManager, hotelManager, reservationManager, calendarManager,(HotelDirector) user);
+                        hotelDirectorMenu.startMenuDirector();
                     }
                     break;
                 case 4:
@@ -81,10 +82,14 @@ public class StartingMenu {
                     break;
 
                 default:
-                    System.out.println("Please one of the options in the list!");
+                    System.out.println("Please select one of the options in the list!");
             }
         }
-        scanner.close();
+    }
+
+    public void closeScanner() {
+        if (scanner != null)
+            scanner.close();
     }
 
 

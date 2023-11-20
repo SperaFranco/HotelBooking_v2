@@ -3,25 +3,21 @@ package service_layer;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
-import domain_model.HotelCalendar;
-import domain_model.Room;
-import domain_model.RoomInfo;
+import domain_model.*;
 import utilities.Subject;
 
 public class CalendarManager extends Subject {
-    private HotelCalendar calendar;
+    private final Map<String, HotelCalendar> calendars; //mappa fra id degli hotel e calendari
     private final Scanner scanner;
 
     public CalendarManager(Scanner scanner){
         this.scanner = scanner;
+        this.calendars = new HashMap<>();
     }
-    public void createCalendar(ArrayList<Room> rooms){
-        calendar = new HotelCalendar();
+    public HotelCalendar createCalendar(ArrayList<Room> rooms, String hotelID){
+        HotelCalendar calendar = new HotelCalendar();
 
         LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), 1,1);
         LocalDate endDate = LocalDate.of(LocalDate.now().getYear(), 12,31);
@@ -33,64 +29,43 @@ public class CalendarManager extends Subject {
                 calendar.addRoomToCalendar(date, roomID, roomInfo);
             }
         }
-        setChanged();
-        notifyObservers("Calendar created");
+
+        this.calendars.put(hotelID, calendar);
+        return calendar;
     }
 
-    public void displayCalendar() {
-        int numDaysToShow; //se centra aumentiamo il numero dei giorni
-        System.out.print("Please insert the number of days you want to see:");
-        numDaysToShow = scanner.nextInt();
-        scanner.nextLine();
-
-        Map<LocalDate, Map<String, RoomInfo>> mapCalendar = calendar.getRoomStatusMap();
-        if(mapCalendar != null) {
-            StringBuilder calendarDisplay = new StringBuilder();
-            LocalDate date = LocalDate.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd");
-
-            for (int i = 0; i < numDaysToShow; i++) {
-                LocalDate displayDate = date.plusDays(i);
-                int length = 0;
-                if (mapCalendar.containsKey(displayDate)) {
-                    calendarDisplay.append("Date: ").append(displayDate.format(formatter)).append("\n");
-
-                    for (Map.Entry<String, RoomInfo> entry : mapCalendar.get(displayDate).entrySet()) {
-                        RoomInfo roomInfo = entry.getValue();
-                        String line = String.format(" - Room %-5s " +
-                                        "| Availability: %-5s | Price: %-7.2f | Minimum Stay: %-2d",
-                                roomInfo.getRoomID(), roomInfo.isAvailable(), roomInfo.getPrice(), roomInfo.getMinimumStay());
-                        calendarDisplay.append(line).append("\n");
-                        length = line.length();
-                    }
-                    calendarDisplay.append("\n");
-                }
-                if (i != numDaysToShow - 1)
-                    calendarDisplay.append("-".repeat(length));
-            }
-            System.out.println(calendarDisplay);
-        }
-        else
-            System.out.println("Calendar not present...");
+    public void displayCalendar(Hotel hotel) {
+        if (hotel != null) {
+            HotelCalendar calendar = calendars.get(hotel.getId());
+            int numDaysToShow; //se centra aumentiamo il numero dei giorni
+            System.out.print("Please insert the number of days you want to see:");
+            numDaysToShow = scanner.nextInt();
+            scanner.nextLine();
+            calendar.displayCalendar(numDaysToShow);
+        }else
+            System.out.println("Please first choose a hotel to view...");
     }
 
-    public void modifyPrice(){
-        double price;
-        RoomInfo roomInfo = modifyRoom();
+    public void modifyPrice(Hotel hotel){
+        if (hotel != null) {
+            double price;
+            RoomInfo roomInfo = modifyRoom(hotel.getId());
 
-        if(roomInfo != null) {
-            System.out.print("Please insert the new price:");
-            price = scanner.nextDouble();
-            roomInfo.setPrice(price);
-            setChanged();
-            notifyObservers("Price changed");
-        }
-        else
-            System.out.println("Sorry room not found!");
-    }
+            if (roomInfo != null) {
+                System.out.print("Please insert the new price:");
+                price = scanner.nextDouble();
+                roomInfo.setPrice(price);
+                setChanged();
+                notifyObservers("Price changed");
+            } else
+                System.out.println("Sorry room not found!");
+        }else
+            System.out.println("Please first choose a hotel to view...");
 
-    public void closeRoom(){
-        RoomInfo roomInfo = modifyRoom();
+    } //TODO lui manda notifiche
+
+    public void closeRoom(Hotel hotel){
+        RoomInfo roomInfo = modifyRoom(hotel.getId());
 
         if(roomInfo != null) {
             roomInfo.setAvailability(false);
@@ -99,11 +74,11 @@ public class CalendarManager extends Subject {
         }
         else
             System.out.println("Sorry room not found!");
-    }
+    } //TODO lui manda notifiche
 
-    public void insertMinimumStay(){
+    public void insertMinimumStay(Hotel hotel){
         int minStay;
-        RoomInfo roomInfo = modifyRoom();
+        RoomInfo roomInfo = modifyRoom(hotel.getId());
 
         if (roomInfo != null) {
             System.out.print("Please insert the new minimum days to stay:");
@@ -114,10 +89,11 @@ public class CalendarManager extends Subject {
         }
         else
             System.out.println("Sorry room not found!");
-    }
+    } //TODO lui manda notifiche
 
-    private RoomInfo modifyRoom() {
+    private RoomInfo modifyRoom(String hotelID) {
         String date, roomID;
+        HotelCalendar calendar = calendars.get(hotelID); //Forse calendar va messo come campo della classe
 
         System.out.println("Please insert the date and the room ID: ");
         System.out.print("Date (yyyy/mm/dd):");
