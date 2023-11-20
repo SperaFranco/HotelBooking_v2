@@ -1,9 +1,9 @@
 package views;
 
-import domain_model.Guest;
 import domain_model.Hotel;
 import domain_model.HotelDirector;
 import domain_model.Room;
+import domain_model.Guest;
 import service_layer.AccountManager;
 import service_layer.CalendarManager;
 import service_layer.HotelManager;
@@ -31,7 +31,7 @@ public class HotelDirectorMenu {
         this.director = director;
     }
 
-    public void startMenuDirector() {
+    public void startDirectorMenu() {
         int choice = -1;
 
         while (choice != 0) {
@@ -107,32 +107,19 @@ public class HotelDirectorMenu {
                 case 6:
                     //Chiedere prima per l'id della prenotazione
                     Research info = hotelManager.askResearchInfo(false);
-
-                    String roomID;
-                    System.out.println("Which room is to reserve?");
-                    ArrayList<Room> rooms = hotel.getRoomsAvailable(info.getCheckIn(), info.getCheckOut());
-
-                    if(!rooms.isEmpty()) {
-                        System.out.println("These are the rooms available:");
-                        for (Room room: rooms) {
-                            int index = 1;
-                            room.getRoomInfo(index++);
-                        }
-
-                        System.out.println("Please enter the id of the room to book");
-                        roomID = scanner.nextLine();
-                        System.out.println("Please enter all the client information's:");
-                        reservationManager.addReservation(accountManager.addGuestWithoutAccount()
-                        ,info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), hotel.getId(), roomID);
-                    }else
-                        System.out.println("No rooms are available for these days...");
-
+                    System.out.println("Please enter all the client information's:");
+                    Guest guest = accountManager.addGuestWithoutAccount();
+                    String roomID = reservationManager.chooseRoomToReserve(hotel, info.getCheckIn(), info.getCheckOut());
+                    if(roomID != null)
+                        reservationManager.addReservation(guest, info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), hotel.getId(), roomID);
                     break;
                 case 7:
-                    reservationManager.updateReservation(hotel);
+                    reservationManager.getAllReservations(hotel); //le ristampa
+                    reservationManager.updateReservation();
                     break;
                 case 8:
-                    reservationManager.deleteReservation(hotel);
+                    reservationManager.getAllReservations(hotel);
+                    reservationManager.deleteReservation();
                     break;
                 case 0:
                     System.out.println("Returning to the starting menu...");

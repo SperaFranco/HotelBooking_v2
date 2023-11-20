@@ -128,7 +128,7 @@ public class HotelManager extends Subject {
             if(roomNumber > 0 && roomNumber < roomsAvailable.size()) {
                 //Allora facciamo la prenotazione
                 Room roomToReserve = roomsAvailable.get(roomNumber - 1);
-                reservationManager.addReservation(user, info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), hotelToReserve.getId(), roomToReserve.getId());
+                reservationManager.addReservation((Guest)user, info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), hotelToReserve.getId(), roomToReserve.getId());
             }
             else if (roomNumber == 0){
                 //Ho fatto una semplice ricerca e non voglio prenotare
@@ -160,7 +160,7 @@ public class HotelManager extends Subject {
     }
 
     //Region Helpers
-    private ArrayList<Hotel> filterHotels(String city, LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms){
+    public ArrayList<Hotel> filterHotels(String city, LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms){
         //Di tutti gli hotel nella map mi tengo solo quelli che soddisfano i criteri
         ArrayList<Hotel> filteredHotels = new ArrayList<>();
         ArrayList<Hotel> allHotels = new ArrayList<>(hotelMap.values());

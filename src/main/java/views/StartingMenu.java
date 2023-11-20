@@ -19,6 +19,7 @@ public class StartingMenu {
     //endregion
     private HotelDirectorMenu hotelDirectorMenu;
     private GuestMenu guestMenu;
+
     private Scanner scanner;
 
     public StartingMenu() {
@@ -56,28 +57,11 @@ public class StartingMenu {
                 case 2:
                     //Dalla registrazione si torna indietro oppure si va direttamente ai menu?
                     user = accountManager.doRegistration();
-
-                    if(user instanceof Guest) {
-                        //Fai partire il guestMenu
-                    }
-                    else if(user instanceof HotelDirector) {
-                        //Fai partire l'hotelDirectorMenu --> il director fa le sue azioni tramite il suo menu
-                        hotelDirectorMenu = new HotelDirectorMenu(accountManager, hotelManager,
-                                reservationManager, calendarManager,(HotelDirector) user, scanner);
-                        hotelDirectorMenu.startMenuDirector();
-                    }
+                    IdentifyUser(user);
                     break;
                 case 3:
                     user = accountManager.login();
-
-                    if(user instanceof Guest) {
-                        //Fai partire il guestMenu
-                    }
-                    else if(user instanceof HotelDirector) {
-                        hotelDirectorMenu = new HotelDirectorMenu(accountManager, hotelManager,
-                                reservationManager, calendarManager,(HotelDirector) user, scanner);
-                        hotelDirectorMenu.startMenuDirector();
-                    }
+                    IdentifyUser(user);
                     break;
                 case 4:
                     //Qui esco semplicemente
@@ -92,6 +76,21 @@ public class StartingMenu {
     public void closeScanner() {
         if (scanner != null)
             scanner.close();
+    }
+
+    private void IdentifyUser(User user) {
+
+        if(user instanceof Guest) {
+            //Fai partire il guestMenu
+            guestMenu = new GuestMenu(accountManager, hotelManager,
+                    reservationManager, (Guest) user, scanner);
+            guestMenu.startGuestMenu();
+        }
+        else if(user instanceof HotelDirector) {
+            hotelDirectorMenu = new HotelDirectorMenu(accountManager, hotelManager,
+                    reservationManager, calendarManager,(HotelDirector) user, scanner);
+            hotelDirectorMenu.startDirectorMenu();
+        }
     }
 
 
