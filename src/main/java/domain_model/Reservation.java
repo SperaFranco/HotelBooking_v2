@@ -10,25 +10,25 @@ public class Reservation
     private LocalDate checkOut;
     private int numOfGuests; //TODO bisogna garantire che il numero di ospiti sia coerente con il tipo di camera prentotata
     private String notes;
-    private Hotel hotel; //potrei anche passargli l'id piuttosto che l'oggetto intero
-    private Room roomReserved; //uguale qui
-    private User client; //e anche qui
+    private String hotelID; //potrei anche passargli l'id piuttosto che l'oggetto intero
+    private String roomReservedID; //uguale qui
+    private String clientID; //e anche qui
 
 
     //end Region
 
 
     public Reservation(String id, LocalDate checkIn, LocalDate checkOut, int numOfGuests, String description,
-                       Hotel hotel, Room roomReserved, User client) {
+                       String hotel, String roomReserved, String client) {
         this.id = id;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
         this.numOfGuests = numOfGuests;
         this.notes = description;
-        this.hotel = hotel;
-        this.roomReserved = roomReserved; //nel uml settiamolo a 1 --> potremmo rendere possibile che uno stesso utente compia
+        this.hotelID = hotel;
+        this.roomReservedID = roomReserved; //nel uml settiamolo a 1 --> potremmo rendere possibile che uno stesso utente compia
         // più prenotazioni, ma può prenotare solo una camera alla volta
-        this.client = client;
+        this.clientID = client;
 
     }
 
@@ -57,13 +57,12 @@ public class Reservation
     public void setCheckOut(LocalDate checkOut) {
         this.checkOut = checkOut;
     }
-
-    public User getClient() {
-        return client;
+    public String getClient() {
+        return clientID;
     }
 
-    public void setClient(User client) {
-        this.client = client;
+    public void setClient(String client) {
+        this.clientID = client;
     }
 
     public int getNumOfGuests() {
@@ -74,12 +73,12 @@ public class Reservation
         this.numOfGuests = numOfGuests;
     }
 
-    public Room getRoomReserved() {
-        return roomReserved;
+    public String getRoomReserved() {
+        return roomReservedID;
     }
 
-    public void setRoomReserved(Room roomReserved) {
-        this.roomReserved = roomReserved;
+    public void setRoomReserved(String roomReserved) {
+        this.roomReservedID = roomReserved;
     }
 
     public String getNotes() {
@@ -90,12 +89,12 @@ public class Reservation
         this.notes = notes;
     }
 
-    public Hotel getHotel() {
-        return hotel;
+    public String getHotel() {
+        return hotelID;
     }
 
-    public void setHotel(Hotel hotel) {
-        this.hotel = hotel;
+    public void setHotel(String hotel) {
+        this.hotelID = hotel;
     }
 
     public String getInfoReservation() {

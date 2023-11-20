@@ -24,7 +24,7 @@ public class HotelManager extends Subject {
         this.scanner = scanner;
     }
 
-    public void addHotel(HotelDirector director) {
+    public Hotel addHotel(HotelDirector director) {
         Scanner scanner = new Scanner(System.in);
         String name, city, address, telephone, email, description;
         HotelRating rating;
@@ -45,20 +45,21 @@ public class HotelManager extends Subject {
         description = scanner.nextLine();
 
         Hotel newHotel = new Hotel(IdGenerator.generateHotelID(city),
-                name, city, address, telephone, email, rating, description, director);
+                name, city, address, telephone, email, rating, description, director.getId());
         System.out.println("Hotel created! Now add your rooms...");
 
         ArrayList<Room> rooms = createRooms(newHotel.getId());
         newHotel.setRooms(rooms);
         System.out.println("Rooms added!");
 
-        HotelCalendar calendar = calendarManager.createCalendar(rooms, newHotel.getId());
+        HotelCalendar calendar = calendarManager.createCalendar(rooms, newHotel.getId(), this);
         newHotel.setCalendar(calendar);
         System.out.println("Calendar configured!");
 
         hotelMap.put(newHotel.getId(), newHotel);
         setChanged();
         notifyObservers(newHotel, "New hotel added");
+        return newHotel;
     }
     public void modifyHotel() {
         //Cosa modificare? hotel stesso oppure camere? e cosa delle camere?
@@ -68,23 +69,26 @@ public class HotelManager extends Subject {
         //Attenzione cancellare un hotel significa anche eliminare l'arrayList di tutte le camere
         //Dalla lista di strutture il gestore decide quale hotel eliminare
         // (immagino che ogni gestore di hotel possa vedere solo le proprie strutture)
-        String id;
-        ArrayList<Hotel> hotels = director.getHotels();
+        int id;
+        ArrayList<Hotel> hotels = findHotelsByDirector(director);
         System.out.println("These are your hotels:");
         for (Hotel hotel: hotels) {
             int index = 1;
             System.out.println(hotel.printHotelInfo(index++));
         }
 
-        System.out.println("Please enter the id of which hotel you want to delete:");
-        id = scanner.nextLine();
-        Hotel hotelRemoved = director.findHotelByID(id);
+        System.out.println("Please enter the number of which hotel you want to delete:");
+        id = scanner.nextInt();
+        scanner.nextLine();
+        Hotel hotelRemoved = hotels.get(id);
+
         if(hotelRemoved != null) {
-            hotelMap.remove(id);
+            hotelMap.remove(hotelRemoved.getId());
             setChanged();
             notifyObservers(hotelRemoved, "Hotel removed");
         }
     }
+
     public void doHotelResearch(User user){
         //TODO capire se effettivamente ci serve chiedere il numero di camere
         //Chiedo tutte le info (check-in, check-out, luogo, numero di persone)
@@ -113,8 +117,9 @@ public class HotelManager extends Subject {
             //A questo punto ne stampo le camere e le info ma solo delle camere disponibili
             System.out.println("These are the rooms available:");
             for (Room room : roomsAvailable) {
+                HotelCalendar calendar = hotelToReserve.getCalendar();
                 int index = 1;
-                System.out.println(hotelToReserve.getAllRoomInfo(index,  info.getCheckIn(), room.getId()));
+                System.out.println(room.getRoomInfo(index) + "\nPrice:" + calendar.getPrice(info.getCheckIn(), room.getId()));
             }
             //Chiedo all'utente di scegliere la camera che preferisce
             System.out.print("Please enter the number of the camera you want to book(or zero if you want to exit):");
@@ -138,17 +143,24 @@ public class HotelManager extends Subject {
         else
             throw new RuntimeException("Hotel not on the list!");
     }
+
     public Hotel chooseHotel(HotelDirector director) {
         ArrayList<Hotel> hotels = findHotelsByDirector(director);
 
-        for(Hotel hotel : hotels) {
-            int index = 1;
-            hotel.printHotelInfo(index++);
+        if(!hotels.isEmpty()) {
+            for (Hotel hotel : hotels) {
+                int index = 1;
+                hotel.printHotelInfo(index++);
+            }
+            System.out.print("Hotel number:");
+            int hotelNumber = scanner.nextInt();
+            scanner.nextLine();
+            return hotels.get(hotelNumber);
         }
-        System.out.print("Hotel number:");
-        int hotelNumber = scanner.nextInt();
-        scanner.nextLine();
-        return hotels.get(hotelNumber);
+        else {
+            System.out.println("Sorry you have to put first at least an hotel!");
+        }
+        return null;
     }
     //Region Helpers
     private ArrayList<Hotel> filterHotels(String city, LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms){
@@ -172,7 +184,6 @@ public class HotelManager extends Subject {
     }
     private ArrayList<Room> createRooms(String id){
         //Al momento lo lasciamo qui magari il roomManager non ci serve
-        Scanner scanner = new Scanner(System.in);
         ArrayList<Room> rooms = new ArrayList<>();
         int[] numRooms = RoomType.getRoomPreference(); //qui chiederò il numero di camere singole - doppie - triple
         RoomType[] types = RoomType.values();
@@ -196,14 +207,13 @@ public class HotelManager extends Subject {
         ArrayList<Hotel> hotelsByDirector = new ArrayList<>();
 
         for (Hotel hotel: allHotels) {
-            if (hotel.getManager() == director){
+            if (hotel.getManager().equals(director.getId())){
                 hotelsByDirector.add(hotel);
             }
         }
 
         return hotelsByDirector;
     }
-
     public Research askResearchInfo() {
         //TODO creare oggetto ricerca magari anche static
         LocalDate checkIn, checkOut;
@@ -230,6 +240,7 @@ public class HotelManager extends Subject {
         return new Research(city, checkIn, checkOut, numOfGuests);
 
     }
+
     //End Region
 
 }

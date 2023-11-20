@@ -16,8 +16,8 @@ public class CalendarManager extends Subject {
         this.scanner = scanner;
         this.calendars = new HashMap<>();
     }
-    public HotelCalendar createCalendar(ArrayList<Room> rooms, String hotelID){
-        HotelCalendar calendar = new HotelCalendar();
+    public HotelCalendar createCalendar(ArrayList<Room> rooms, String hotelID, HotelManager director){
+        HotelCalendar calendar = new HotelCalendar(director);
 
         LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), 1,1);
         LocalDate endDate = LocalDate.of(LocalDate.now().getYear(), 12,31);
@@ -43,7 +43,7 @@ public class CalendarManager extends Subject {
             scanner.nextLine();
             calendar.displayCalendar(numDaysToShow);
         }else
-            System.out.println("Please first choose a hotel to view...");
+            System.out.println("Please first choose a hotel of reference...");
     }
 
     public void modifyPrice(Hotel hotel){
@@ -60,35 +60,41 @@ public class CalendarManager extends Subject {
             } else
                 System.out.println("Sorry room not found!");
         }else
-            System.out.println("Please first choose a hotel to view...");
+            System.out.println("Please first choose a hotel of reference...");
 
     } //TODO lui manda notifiche
 
     public void closeRoom(Hotel hotel){
-        RoomInfo roomInfo = modifyRoom(hotel.getId());
+        if(hotel != null) {
+            RoomInfo roomInfo = modifyRoom(hotel.getId());
 
-        if(roomInfo != null) {
-            roomInfo.setAvailability(false);
-            setChanged();
-            notifyObservers("Availability changed");
-        }
-        else
-            System.out.println("Sorry room not found!");
+            if (roomInfo != null) {
+                roomInfo.setAvailability(false);
+                setChanged();
+                notifyObservers("Availability changed");
+            } else
+                System.out.println("Sorry room not found!");
+        }else
+            System.out.println("Please first choose a hotel of reference...");
+
     } //TODO lui manda notifiche
 
     public void insertMinimumStay(Hotel hotel){
-        int minStay;
-        RoomInfo roomInfo = modifyRoom(hotel.getId());
+        if(hotel != null) {
+            int minStay;
+            RoomInfo roomInfo = modifyRoom(hotel.getId());
 
-        if (roomInfo != null) {
-            System.out.print("Please insert the new minimum days to stay:");
-            minStay = scanner.nextInt();
-            roomInfo.setMinimumStay(minStay);
-            setChanged();
-            notifyObservers("Minimum days changed");
-        }
-        else
-            System.out.println("Sorry room not found!");
+            if (roomInfo != null) {
+                System.out.print("Please insert the new minimum days to stay:");
+                minStay = scanner.nextInt();
+                roomInfo.setMinimumStay(minStay);
+                setChanged();
+                notifyObservers("Minimum days changed");
+            } else
+                System.out.println("Sorry room not found!");
+        }else
+            System.out.println("Please first choose a hotel of reference...");
+
     } //TODO lui manda notifiche
 
     private RoomInfo modifyRoom(String hotelID) {

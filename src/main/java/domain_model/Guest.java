@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class Guest extends User implements Observer {
     //Region fields
-    private ArrayList<Reservation> reservations;
+    private final ArrayList<String> reservations;
     private CreditCard card;
     private String idCard;
     //end Region
@@ -38,7 +38,7 @@ public class Guest extends User implements Observer {
         this.idCard = idCard;
     }
 
-    public ArrayList<Reservation> getReservations() {
+    public ArrayList<String> getReservations() {
         return reservations;
     }
 
@@ -54,24 +54,11 @@ public class Guest extends User implements Observer {
 
     private void updateReservations(Reservation reservation, String message) {
         //Controllare se tenere
-        if(reservation.getClient() == this) {
+        if(reservation.getClient().equals(getId())) {
             if(message.equals("Add reservation"))
-                reservations.add(reservation);
+                reservations.add(reservation.getId());
             else if (message.equals("Delete reservation"))
-                reservations.remove(reservation);
-            else if (message.contains("Update reservation")) {
-                for (Reservation res : reservations) {
-                    if (Objects.equals(res.getId(), reservation.getId()))
-                    {
-                        if(message.contains("Check in Date")) {
-                            res.setCheckIn(reservation.getCheckIn());
-                        } else if (message.contains("Check out Date")) {
-                            res.setCheckOut(reservation.getCheckOut());
-                        } else if (message.contains("Description")) {
-                            res.setNotes(reservation.getNotes());
-                        }
-                    }
-                }
+                reservations.remove(reservation.getId());
             }
         }
     }

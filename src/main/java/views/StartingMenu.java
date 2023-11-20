@@ -62,7 +62,8 @@ public class StartingMenu {
                     }
                     else if(user instanceof HotelDirector) {
                         //Fai partire l'hotelDirectorMenu --> il director fa le sue azioni tramite il suo menu
-                        hotelDirectorMenu = new HotelDirectorMenu(accountManager, hotelManager, reservationManager, calendarManager,(HotelDirector) user);
+                        hotelDirectorMenu = new HotelDirectorMenu(accountManager, hotelManager,
+                                reservationManager, calendarManager,(HotelDirector) user, scanner);
                         hotelDirectorMenu.startMenuDirector();
                     }
                     break;
@@ -73,7 +74,8 @@ public class StartingMenu {
                         //Fai partire il guestMenu
                     }
                     else if(user instanceof HotelDirector) {
-                        hotelDirectorMenu = new HotelDirectorMenu(accountManager, hotelManager, reservationManager, calendarManager,(HotelDirector) user);
+                        hotelDirectorMenu = new HotelDirectorMenu(accountManager, hotelManager,
+                                reservationManager, calendarManager,(HotelDirector) user, scanner);
                         hotelDirectorMenu.startMenuDirector();
                     }
                     break;

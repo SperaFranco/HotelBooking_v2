@@ -17,10 +17,11 @@ public class HotelCalendar implements Observer {
     //Region fields
     private Map<LocalDate, Map<String, RoomInfo>> roomStatusMap;
     private ReservationManager reservation;
-    private HotelManager manager;
+    private HotelManager manager; //serve per l'observer --> occhio non è il director
     //end Region
 
-    public HotelCalendar() {
+    public HotelCalendar(HotelManager manager) {
+        this.manager = manager;
         roomStatusMap = new HashMap<>();
         manager.addObserver(this);
         reservation.addObserver(this);
@@ -48,7 +49,7 @@ public class HotelCalendar implements Observer {
     //Region Helper Methods
     private void updateAvailability(Reservation reservation) {
         //Aggiorna il calendario quando viene effettuata una prenotazione
-        String roomReservedID = reservation.getRoomReserved().getId();
+        String roomReservedID = reservation.getRoomReserved();
         LocalDate checkInDate = reservation.getCheckIn();
         LocalDate checkOutDate = reservation.getCheckOut();
 

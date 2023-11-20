@@ -1,5 +1,6 @@
 package domain_model;
 
+import service_layer.HotelManager;
 import utilities.HotelRating;
 import utilities.IdGenerator;
 import utilities.RoomType;
@@ -20,12 +21,12 @@ public class Hotel {
     private String description;
     private ArrayList<Room> rooms;
     private HotelCalendar calendar;
-    private HotelDirector manager;
+    private String managerID;
     //end Region
 
 
     public Hotel(String id, String name, String city, String address, String telephone,
-                 String email, HotelRating rating, String description, HotelDirector manager) {
+                 String email, HotelRating rating, String description, String managerID) {
         this.id = id;
         this.name = name;
         this.city = city;
@@ -34,7 +35,7 @@ public class Hotel {
         this.email = email;
         this.rating = rating;
         this.description = description;
-        this.manager = manager;
+        this.managerID = managerID;
         this.rooms = new ArrayList<>();
     }
 
@@ -104,12 +105,12 @@ public class Hotel {
     }
 
 
-    public HotelDirector getManager() {
-        return manager;
+    public String getManager() {
+        return managerID;
     }
 
-    public void setManager(HotelDirector manager) {
-        this.manager = manager;
+    public void setManager(String manager) {
+        this.managerID = manager;
     }
 
     public ArrayList<Room> getRooms() {
@@ -125,8 +126,7 @@ public class Hotel {
         ArrayList<Room> roomsAvailable = new ArrayList<>();
 
         for (Room room : rooms) {
-            String roomID = room.getId();
-            if(calendar.isRoomAvailable(checkIn, checkOut, roomID))
+            if(calendar.isRoomAvailable(checkIn, checkOut, room.getId()))
                 roomsAvailable.add(room);
         }
         return roomsAvailable;
@@ -139,19 +139,8 @@ public class Hotel {
     public void setCalendar(HotelCalendar calendar) {
         this.calendar = calendar;
     }
-
     //end Region
 
-    public Room findRoomByID(String id) {
-        Room myRoom = null;
-        for (Room room : rooms) {
-            if(room.getId().equals(id)){
-                myRoom = room;
-                break;
-            }
-        }
-        return myRoom;
-    }
     public String printHotelInfo(int i) {
         return "Hotel number " + i + " informations:\n" +
                 "Name: " + name + "\n" +
@@ -159,16 +148,7 @@ public class Hotel {
                 "Address: " + address + "\n" +
                 "Number of Rooms: " + rooms.size() + "\n";
     }
-    public String getAllRoomInfo(int index, LocalDate checkIn, String id) {
-        StringBuilder info = new StringBuilder();
-        info.append("Room number " + index + " informations:\n");
-        Room room = findRoomByID(id);
-        info.append("Room type: " + room.getType());
-        info.append(calendar.getPrice(checkIn, id));
-        info.append("Description: " + room.getDescription());
 
-        return info.toString();
-    }
 
     public int getHotelTotalCapacity() {
         //In questo metodo scorro fra tutte le camere dell'hotel e
@@ -197,5 +177,6 @@ public class Hotel {
 
         return !availableRooms.isEmpty();
     }
+
 
 }

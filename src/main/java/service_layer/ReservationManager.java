@@ -7,19 +7,13 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class ReservationManager extends Subject {
-    private Map<String, Reservation> reservationMap;
-    private AccountManager accountManager; //occhio ai controllers
-    private Scanner scanner;
+    private final Map<String, Reservation> reservationMap;
+    private final AccountManager accountManager; //occhio ai controllers
+    private final Scanner scanner;
     public ReservationManager(Scanner scanner, AccountManager accountManager) {
         reservationMap = new HashMap<>();
         this.scanner = scanner;
         this.accountManager = accountManager;
-    }
-
-    //Notare che TUTTE queste operazioni mi vanno a fare delle notifiche agli observer!
-    public Reservation findReservationById(String id) {
-        //TODO Da Implementare facendo il recupero della prenotazione dal database
-        return reservationMap.get(id);
     }
 
     public void addReservation(User user, LocalDate checkIn, LocalDate checkOut,int numOfGuests, Hotel hotelReserved, Room roomReserverd) {
@@ -46,7 +40,7 @@ public class ReservationManager extends Subject {
         System.out.print("Is anything else you need in your reservation??:");
         String description = scanner.nextLine();
         Reservation newReservation = new Reservation(IdGenerator.generateReservationID(), checkIn, checkOut,
-                numOfGuests, description, hotelReserved, roomReserverd, user);
+                numOfGuests, description, hotelReserved.getId(), roomReserverd.getId(), user.getId());
         //TODO ci sarebbe da aggiungere il controllo per il pagamento da qualche parte
 
         reservationMap.put(newReservation.getId(), newReservation);
@@ -112,9 +106,8 @@ public class ReservationManager extends Subject {
 
     public void getReservations(Guest guest) {
         //TODO a seconda del guest ricavo tutte le sue prenotazioni e le stampo
-        ArrayList<Reservation> reservations = guest.getReservations(); //TODO no bisogna usare le mappe!!
         System.out.println("These are " + guest.getName() + " reservations:");
-        for (Reservation reservation:reservations) {
+        for (Reservation reservation: findReservationByGuest(guest.getId())) {
             System.out.print(reservation.getInfoReservation());
         }
     }
@@ -126,7 +119,7 @@ public class ReservationManager extends Subject {
         //lascio le prenotazioni che mi servono (probabilmente con il db ci sarà da fare una query)
         for (Map.Entry<String, Reservation> entry:reservationMap.entrySet()) {
             Reservation reservation = entry.getValue();
-            if(reservation.getHotel().getId().equals(hotel.getId()))
+            if(reservation.getHotel().equals(hotel.getId()))
                 reservationsForHotel.add(reservation);
         }
         System.out.println("These are " + hotel.getName() + " reservations:" );
@@ -134,5 +127,20 @@ public class ReservationManager extends Subject {
             reservation.getInfoReservation();
         }
     }
+    private Reservation findReservationById(String id) {
+        //TODO Da Implementare facendo il recupero della prenotazione dal database
+        return reservationMap.get(id);
+    }
 
+    private ArrayList<Reservation> findReservationByGuest(String guestID) {
+        ArrayList<Reservation> reservations = new ArrayList<>(reservationMap.values());
+        ArrayList<Reservation> myReservations = new ArrayList<>();
+
+        for (Reservation reservation : reservations) {
+            if (reservation.getClient().equals(guestID)) {
+                myReservations.add(reservation);
+            }
+        }
+        return myReservations;
+    }
 }

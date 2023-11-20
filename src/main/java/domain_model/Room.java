@@ -2,6 +2,8 @@ package domain_model;
 
 import utilities.RoomType;
 
+import java.time.LocalDate;
+
 public class Room {
     //Region fields
     private String id;
@@ -46,6 +48,12 @@ public class Room {
     //end Region
     public boolean canRoomAccomodate(int numOfGuests) {
         return numOfGuests <= RoomType.getRoomCapacity(type);
+    }
+
+    public String getRoomInfo(int index) {
+        return "Room number " + index + " informations:\n" +
+                "Room type: " + type +
+                "Description: " + description;
     }
 
 }

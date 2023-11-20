@@ -8,7 +8,7 @@ public enum HotelRating {
     THREE_STAR_HOTEL("Three stars"),
     FOUR_STAR_HOTEL("Four stars"),
     FIVE_STAR_HOTEL("Five stars");
-    private String displayName;
+    private final String displayName;
 
     HotelRating(String displayName) {
         this.displayName = displayName;
