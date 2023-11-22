@@ -92,55 +92,34 @@ public class HotelManager extends Subject {
         //TODO capire se effettivamente ci serve chiedere il numero di camere
         //Chiedo tutte le info (check-in, check-out, luogo, numero di persone)
         Research info =  askResearchInfo(true);
+        String response = null;
 
-        //filtro i risultati secondo le richieste fatte dall'utente
-        ArrayList<Hotel> hotels = filterHotels(info.getCity(), info.getCheckIn(),
-                info.getCheckOut(), info.getNumOfGuest(), 0);
+        //filtro i risultati secondo le richieste fatte dall'utente e chiedo di scegliere l'hotel
+        Hotel hotelToReserve = chooseHotel(info);
 
-        System.out.println("These are the hotels found:");
-        for (Hotel hotel : hotels) {
-            int index = 1;
-            System.out.println(hotel.printHotelInfo(index++));
-        }
-
-        //Chiedo all'utente di inserire il numero della camera scelta oppure zero se non gli interessa nessuna
-        //nel caso invoco la prenotazione
-        System.out.print("Please enter the number of the hotel you want to explore:");
-        int hotelNumber = scanner.nextInt();
-        scanner.nextLine();
-
-        if(hotelNumber > 0 && hotelNumber < hotels.size()) {
-            Hotel hotelToReserve = hotels.get(hotelNumber - 1);
-            ArrayList<Room> roomsAvailable = hotelToReserve.getRoomsAvailable(info.getCheckIn(), info.getCheckOut()); //qui ci saranno le camere disponibili
-
+        if (hotelToReserve != null) {
+            ArrayList<Room> roomsAvailable = hotelToReserve.getRoomsAvailable(info.getCheckIn(), info.getCheckOut());
             //A questo punto ne stampo le camere e le info ma solo delle camere disponibili
-            System.out.println("These are the rooms available:");
-            for (Room room : roomsAvailable) {
-                HotelCalendar calendar = hotelToReserve.getCalendar();
-                int index = 1;
-                System.out.println(room.getRoomInfo(index) + "\nPrice:" + calendar.getPrice(info.getCheckIn(), room.getId()));
-            }
-            //Chiedo all'utente di scegliere la camera che preferisce
-            System.out.print("Please enter the number of the camera you want to book(or zero if you want to exit):");
-            int roomNumber = scanner.nextInt();
-            scanner.nextLine();
+            if (!roomsAvailable.isEmpty()) {
+                printRooms(roomsAvailable, hotelToReserve, info.getCheckIn());
 
-            if(roomNumber > 0 && roomNumber < roomsAvailable.size()) {
-                //Allora facciamo la prenotazione
-                Room roomToReserve = roomsAvailable.get(roomNumber - 1);
-                reservationManager.addReservation((Guest)user, info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), hotelToReserve.getId(), roomToReserve.getId());
-            }
-            else if (roomNumber == 0){
-                //Ho fatto una semplice ricerca e non voglio prenotare
-                System.out.println("Returning back to the start menù!");
-            }
-            else
-                throw new RuntimeException("Room not on the list!");
-        }
-        else
-            throw new RuntimeException("Hotel not on the list!");
+                //Chiedo quindi all'utente se vuole prenotare una camera
+                System.out.print("Want to book a room? (Enter yes if you want to):");
+                response = scanner.nextLine();
+
+                if (response.equalsIgnoreCase("yes")) {
+                    String roomID = chooseRoom(roomsAvailable);
+                    if (roomID != null)
+                        reservationManager.doReservation((Guest) user, info, hotelToReserve.getId(), roomID);
+                } else
+                    System.out.println("Back to the starting menu!");
+            } else
+                System.out.println("No room available for hotel " + hotelToReserve.getName());
+        } else
+             System.out.println("Room not on the list!");
+
     }
-    public Hotel chooseHotel(HotelDirector director) {
+    public Hotel chooseHotelByDirector(HotelDirector director) {
         ArrayList<Hotel> hotels = findHotelsByDirector(director);
 
         if(!hotels.isEmpty()) {
@@ -158,9 +137,12 @@ public class HotelManager extends Subject {
         }
         return null;
     }
+    public Research askResearchInfo(boolean forGuests) {
+        return askResearchInfoHelper(forGuests);
+    }
 
     //Region Helpers
-    public ArrayList<Hotel> filterHotels(String city, LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms){
+    private ArrayList<Hotel> filterHotels(String city, LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms){
         //Di tutti gli hotel nella map mi tengo solo quelli che soddisfano i criteri
         ArrayList<Hotel> filteredHotels = new ArrayList<>();
         ArrayList<Hotel> allHotels = new ArrayList<>(hotelMap.values());
@@ -204,16 +186,14 @@ public class HotelManager extends Subject {
         ArrayList<Hotel> hotelsByDirector = new ArrayList<>();
 
         for (Hotel hotel: allHotels) {
-            if (hotel.getManager().equals(director.getId())){
+            if (hotel.getManagerID().equals(director.getId())){
                 hotelsByDirector.add(hotel);
             }
         }
 
         return hotelsByDirector;
     }
-
-    public Research askResearchInfo(boolean forGuests) {
-        //TODO creare oggetto ricerca magari anche static
+    private Research askResearchInfoHelper(boolean forGuests) {
         LocalDate checkIn, checkOut;
         String city = null;
         int numOfGuests;
@@ -240,6 +220,49 @@ public class HotelManager extends Subject {
         return new Research(city, checkIn, checkOut, numOfGuests);
 
     }
+    public void printRooms(ArrayList<Room> roomsAvailable, Hotel hotelToReserve, LocalDate checkIn) {
+        System.out.println("These are the rooms available:");
+        int index = 1;
+        for (Room room : roomsAvailable) {
+            HotelCalendar calendar = hotelToReserve.getCalendar();
+            System.out.println(room.getRoomInfo(index++) + "\nPrice:" + calendar.getPrice(checkIn, room.getId()));
+        }
+    }
+    public Hotel chooseHotel(Research info) {
+        Hotel hotelToReserve = null;
+
+        ArrayList<Hotel> hotels = filterHotels(info.getCity(), info.getCheckIn(),
+                info.getCheckOut(), info.getNumOfGuest(), 0);
+
+        System.out.println("These are the hotels found:");
+        int index = 1;
+        for (Hotel hotel : hotels) {
+            System.out.println(hotel.printHotelInfo(index++));
+        }
+        //Chiedo all'utente di inserire il numero della camera scelta oppure zero se non gli interessa nessuna
+        //nel caso invoco la prenotazione
+        System.out.print("Please enter the number of the hotel you want to explore:");
+        int hotelNumber = scanner.nextInt();
+        scanner.nextLine();
+        if (hotelNumber > 0 && hotelNumber < hotels.size())
+            hotelToReserve = hotels.get(hotelNumber - 1);
+        else
+            System.out.println("Hotel not on the list!");
+
+        return hotelToReserve;
+    }
+    public String chooseRoom(ArrayList<Room> roomsAvailable) {
+        String roomToReserve = null;
+
+        System.out.print("Please enter the number of the room you want to book:");
+        int roomNumber = scanner.nextInt();
+        scanner.nextLine();
+        if(roomNumber > 0 && roomNumber < roomsAvailable.size())
+            roomToReserve = roomsAvailable.get(roomNumber - 1).getId();
+
+        return roomToReserve;
+    }
+
     //End Region
 
 }

@@ -1,13 +1,10 @@
 package domain_model;
 
-import service_layer.HotelManager;
 import utilities.HotelRating;
-import utilities.IdGenerator;
 import utilities.RoomType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Hotel {
     //Region fields
@@ -105,7 +102,7 @@ public class Hotel {
     }
 
 
-    public String getManager() {
+    public String getManagerID() {
         return managerID;
     }
 

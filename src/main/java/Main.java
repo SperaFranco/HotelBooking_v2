@@ -1,8 +1,8 @@
-import views.StartingMenu;
+import views.StartMenu;
 
 public class Main {
     public static void main(String[] args) {
-        StartingMenu menu = new StartingMenu();
+        StartMenu menu = new StartMenu();
         menu.startMenu();
         menu.closeScanner();
     }

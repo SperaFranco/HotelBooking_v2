@@ -3,6 +3,7 @@ package views;
 import domain_model.Guest;
 import domain_model.Hotel;
 import domain_model.Reservation;
+import domain_model.Room;
 import service_layer.AccountManager;
 import service_layer.HotelManager;
 import service_layer.ReservationManager;
@@ -42,20 +43,31 @@ public class GuestMenu {
 
             switch (choice) {
                 case 1:
-                    hotelManager.doHotelResearch(guest); //TODO dividere fra fare una ricerca e aggiungere prenotazione
+                    hotelManager.doHotelResearch(guest);
                 case 2:
+                    //Effettuo la ricerca
                     Research research = hotelManager.askResearchInfo(true);
-                    System.out.println("Choose the hotel to book");
-                    ArrayList<Hotel> hotels = hotelManager.filterHotels(research.getCity(), research.getCheckIn(), research.getCheckOut(), research.getNumOfGuest(), 0);
-                    for (Hotel hotel : hotels) {
-                        int i = 1;
-                        hotel.printHotelInfo(i++);
-                    }
-                    int hotelChoice = scanner.nextInt();
 
-                    String roomID = reservationManager.chooseRoomToReserve(hotels.get(hotelChoice), research.getCheckIn(), research.getCheckOut());
-                    if (roomID != null)
-                        reservationManager.addReservation(guest, research.getCheckIn(), research.getCheckOut(), research.getNumOfGuest(), hotels.get(hotelChoice).getId(), roomID);
+                    //Scelgo l'hotel
+                    System.out.println("Choose the hotel to book");
+                    Hotel hotelChoosed = hotelManager.chooseHotel(research);
+
+                    //Scelgo la camera
+                    if(hotelChoosed != null) {
+                        ArrayList<Room> roomsAvailable = hotelChoosed.getRoomsAvailable(research.getCheckIn(), research.getCheckOut());
+                        if (roomsAvailable.isEmpty()) {
+                            hotelManager.printRooms(roomsAvailable, hotelChoosed, research.getCheckIn());
+                            String roomToReserve = hotelManager.chooseRoom(roomsAvailable);
+                            if (roomToReserve != null)
+                                reservationManager.doReservation(guest, research, hotelChoosed.getId(), roomToReserve);
+                            else
+                                System.out.println("Room not on the list!");
+                        } else
+                            System.out.println("No rooms available for hotel " + hotelChoosed.getName());
+                    }
+                    else
+                        System.out.println("Hotel not on the list!");
+
                     break;
                 case 3:
                     reservationManager.getReservations(guest); //le stampo direttamente

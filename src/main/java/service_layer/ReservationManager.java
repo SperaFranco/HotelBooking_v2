@@ -1,6 +1,7 @@
 package service_layer;
 import domain_model.*;
 import utilities.IdGenerator;
+import utilities.Research;
 import utilities.Subject;
 
 import java.time.LocalDate;
@@ -15,38 +16,17 @@ public class ReservationManager extends Subject {
         this.scanner = scanner;
         this.accountManager = accountManager;
     }
-
-    public void addReservation(User client, LocalDate checkIn, LocalDate checkOut, int numOfGuests, String hotelReserved, String roomReserverd) {
+    public void doReservation(Guest user, Research info, String hotelID,String roomID) {
+        doReservationHelper(user, info, hotelID, roomID);
+    }
+    public void addReservation(Reservation newReservation) {
         //TODO Da implementare aggiungendo l'oggetto nel database
-        String response;
-
-        //Nel caso l'user sia nullo chiedo di fare il login oppure di fare un nuovo account
-        if(client == null){
-            System.out.println("Please do the login to proceed or registrate if you don't have an account!");
-            System.out.print("Do you have already an account?\nPlease answer \"yes\" or \"no\":");
-            response = scanner.nextLine();
-            if (response.equalsIgnoreCase("yes")) {
-                client = accountManager.login();
-            }else if (response.equalsIgnoreCase("no")){
-                client = accountManager.doRegistration();
-            }else {
-                throw new RuntimeException("Option not in the list!");
-            }
-        }
-
-        //Altrimenti chiedi per la description e aggiungi la prenotazione
-        System.out.print("Is anything else you need in your reservation??:");
-        String description = scanner.nextLine();
-        Reservation newReservation = new Reservation(IdGenerator.generateReservationID(), checkIn, checkOut,
-                numOfGuests, description, hotelReserved, roomReserverd, client.getId());
-        //TODO ci sarebbe da aggiungere il controllo per il pagamento da qualche parte
-
+        //TODO guardare come fare per mandare email di notifica prenotazione (qui o nel doReservation)
         reservationMap.put(newReservation.getId(), newReservation);
         System.out.println("Reservation added! Thank you! :)");
         setChanged();
         notifyObservers(newReservation,"Add reservation");
     }
-
     public void updateReservation() {
         //TODO Da implementare cambiando l'oggetto nel database
         //TODO capire come modificare l'oggetto nel db --> tolgo e inserisco oppure cambio sul posto?
@@ -98,7 +78,6 @@ public class ReservationManager extends Subject {
             System.out.println("Reservation modified correctly!");
     }
         // e a seconda di cosa voglio modificare nella prenotazione la modifico nel db
-
     public void deleteReservation() {
         //TODO da implementare facendo rimozione dal db
             //Allo stesso modo recupero la prenotazione e la elimino
@@ -111,6 +90,7 @@ public class ReservationManager extends Subject {
             setChanged();
             notifyObservers(reservationRemoved, "Delete reservation");
     }
+
     public void getReservations(Guest guest) {
         //TODO a seconda del guest ricavo tutte le sue prenotazioni e le stampo (per guestMenu)
         System.out.println("These are " + guest.getName() + " reservations:");
@@ -140,6 +120,8 @@ public class ReservationManager extends Subject {
         }else
             System.out.println("Please choose an hotel first!");
     }
+
+    //Region helpers
     private Reservation findReservationById(String id) {
         //TODO Da Implementare facendo il recupero della prenotazione dal database
         return reservationMap.get(id);
@@ -155,23 +137,33 @@ public class ReservationManager extends Subject {
         }
         return myReservations;
     }
+    private void doReservationHelper(Guest user, Research info, String hotelID, String roomID) {
+        //Prima di proseguire con la prenotazione vedo se l'utente si è loggato
+        String response = null;
 
-    public String chooseRoomToReserve(Hotel hotel, LocalDate checkIn, LocalDate checkOut) {
-        String roomID = null;
-        System.out.println("Which room is to reserve?");
-        ArrayList<Room> rooms = hotel.getRoomsAvailable(checkIn, checkOut);
-
-        if(!rooms.isEmpty()) {
-            System.out.println("These are the rooms available:");
-            for (Room room: rooms) {
-                int index = 1;
-                room.getRoomInfo(index++);
+        //Nel caso l'user sia nullo chiedo di fare il login oppure di fare un nuovo account
+        if(user == null){
+            System.out.println("Please do the login to proceed or registrate if you don't have an account!");
+            System.out.print("Do you have already an account?\nPlease answer \"yes\" or \"no\":");
+            response = scanner.nextLine();
+            if (response.equalsIgnoreCase("yes")) {
+                user = (Guest)accountManager.login();
+            }else if (response.equalsIgnoreCase("no")){
+                user = (Guest)accountManager.doRegistration();
+            }else {
+                throw new RuntimeException("Option not in the list!");
             }
+        }
 
-            System.out.println("Please enter the id of the room to book");
-            roomID = scanner.nextLine();
-        }else
-            System.out.println("No rooms are available for these days...");
-        return roomID;
+        //Chiedo all'utente di aggiungere un ulteriore descrizione se serve
+        System.out.print("Is anything else you need in your reservation??:");
+        String description = scanner.nextLine();
+
+        //TODO prima di aggiungere una nuova prenotazione... devo effettuare il pagamento!
+        Reservation newReservation = new Reservation(IdGenerator.generateReservationID(), info.getCheckIn(), info.getCheckOut(),
+                info.getNumOfGuest(), description, hotelID, roomID, user.getId());
+        addReservation(newReservation);
+
     }
+    //End Region helpers
 }

@@ -10,7 +10,7 @@ import service_layer.ReservationManager;
 
 import java.util.Scanner;
 
-public class StartingMenu {
+public class StartMenu {
     //Region Controllers
     private AccountManager accountManager;
     private HotelManager hotelManager;
@@ -22,7 +22,7 @@ public class StartingMenu {
 
     private Scanner scanner;
 
-    public StartingMenu() {
+    public StartMenu() {
         this.scanner = new Scanner(System.in);
         accountManager = new AccountManager(scanner);
         reservationManager = new ReservationManager(scanner, accountManager); //le prenotazioni sono condivise fra guest e hoteldirector

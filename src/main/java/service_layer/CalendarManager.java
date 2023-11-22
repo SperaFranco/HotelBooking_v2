@@ -97,6 +97,7 @@ public class CalendarManager extends Subject {
 
     } //TODO lui manda notifiche
 
+    //Region helpers
     private RoomInfo modifyRoom(String hotelID) {
         String date, roomID;
         HotelCalendar calendar = calendars.get(hotelID); //Forse calendar va messo come campo della classe
@@ -129,5 +130,6 @@ public class CalendarManager extends Subject {
 
         return null;
     }
+    //EndRegion
 
 }

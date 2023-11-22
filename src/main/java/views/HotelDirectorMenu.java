@@ -29,6 +29,7 @@ public class HotelDirectorMenu {
         this.reservationManager = reservationManager;
         this.calendarManager = calendarManager;
         this.director = director;
+        this.scanner = scanner;
     }
 
     public void startDirectorMenu() {
@@ -55,7 +56,7 @@ public class HotelDirectorMenu {
                     System.out.println("Hotel Removed!");
                     break;
                 case 3:
-                    hotel = hotelManager.chooseHotel(director);
+                    hotel = hotelManager.chooseHotelByDirector(director);
                     secondMenuDirector(hotel);
                     break;
                 case 0:
@@ -105,13 +106,24 @@ public class HotelDirectorMenu {
                     reservationManager.getAllReservations(hotel);
                     break;
                 case 6:
-                    //Chiedere prima per l'id della prenotazione
+                    //Chiedo info
                     Research info = hotelManager.askResearchInfo(false);
+
+                    //Inserisco i dati dell'utente
                     System.out.println("Please enter all the client information's:");
                     Guest guest = accountManager.addGuestWithoutAccount();
-                    String roomID = reservationManager.chooseRoomToReserve(hotel, info.getCheckIn(), info.getCheckOut());
-                    if(roomID != null)
-                        reservationManager.addReservation(guest, info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), hotel.getId(), roomID);
+
+                    //Scelgo la camera da prenotare
+                    ArrayList<Room> roomsAvailable = hotel.getRoomsAvailable(info.getCheckIn(), info.getCheckOut());
+                    if (!roomsAvailable.isEmpty()) {
+                        hotelManager.printRooms(roomsAvailable, hotel, info.getCheckIn());
+                        String roomID = hotelManager.chooseRoom(roomsAvailable);
+                        if (roomID != null)
+                            reservationManager.doReservation(guest, info, hotel.getId(), roomID);
+                        else
+                            System.out.println("Room not on the list!");
+                    }else
+                        System.out.println("No room available for this hotel!");
                     break;
                 case 7:
                     reservationManager.getAllReservations(hotel); //le ristampa
