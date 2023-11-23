@@ -8,13 +8,13 @@ public class Reservation
     private String id;
     private LocalDate checkIn;
     private LocalDate checkOut;
-    private int numOfGuests; //TODO bisogna garantire che il numero di ospiti sia coerente con il tipo di camera prentotata
+
+    //TODO bisogna garantire che il numero di ospiti sia coerente con il tipo di camera prenotata
+    private int numOfGuests;
     private String notes;
     private String hotelID;
     private String roomReservedID;
     private String userID;
-
-
     //end Region
 
 
@@ -33,7 +33,6 @@ public class Reservation
     }
 
     //Region getters and setters
-
     public String getId() {
         return id;
     }
@@ -98,21 +97,15 @@ public class Reservation
     }
 
     public String getInfoReservation() {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("Reservation ID: ").append(id).append("\n");
-        builder.append("Check-in date: ").append(checkIn).append("\n");
-        builder.append("Check-out date: ").append(checkOut).append("\n");
-        builder.append("Number of guests: ").append(numOfGuests).append("\n");
-        builder.append("Description: ").append(notes).append("\n");
-        //Mi stampo gli id e non il nome... non proprio il massimo
-        builder.append("Hotel reserved: ").append(hotelID).append("\n");
-        builder.append("Room Reserved: ").append(roomReservedID).append("\n");
-        builder.append("Client: ").append(userID).append("\n");
-
-        return builder.toString();
+        return "Reservation ID: " + id + "\n" +
+                "Check-in date: " + checkIn + "\n" +
+                "Check-out date: " + checkOut + "\n" +
+                "Number of guests: " + numOfGuests + "\n" +
+                "Description: " + notes + "\n" +
+                //Mi stampo gli id e non il nome... non proprio il massimo
+                "Hotel reserved: " + hotelID + "\n" +
+                "Room Reserved: " + roomReservedID + "\n" +
+                "Client: " + userID + "\n";
     }
     //end Region
-
-
 }

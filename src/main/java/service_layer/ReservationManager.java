@@ -11,13 +11,14 @@ public class ReservationManager extends Subject {
     private final Map<String, Reservation> reservationMap;
     private final AccountManager accountManager; //occhio ai controllers
     private final Scanner scanner;
+
     public ReservationManager(Scanner scanner, AccountManager accountManager) {
         reservationMap = new HashMap<>();
         this.scanner = scanner;
         this.accountManager = accountManager;
     }
-    public void doReservation(Guest user, Research info, String hotelID,String roomID) {
-        doReservationHelper(user, info, hotelID, roomID);
+    public void doReservation(Guest user, Research info, Hotel hotel,String roomID) {
+        doReservationHelper(user, info, hotel, roomID);
     }
     public void addReservation(Reservation newReservation) {
         //TODO Da implementare aggiungendo l'oggetto nel database
@@ -77,7 +78,6 @@ public class ReservationManager extends Subject {
         if (modified)
             System.out.println("Reservation modified correctly!");
     }
-        // e a seconda di cosa voglio modificare nella prenotazione la modifico nel db
     public void deleteReservation() {
         //TODO da implementare facendo rimozione dal db
             //Allo stesso modo recupero la prenotazione e la elimino
@@ -90,7 +90,6 @@ public class ReservationManager extends Subject {
             setChanged();
             notifyObservers(reservationRemoved, "Delete reservation");
     }
-
     public void getReservations(Guest guest) {
         //TODO a seconda del guest ricavo tutte le sue prenotazioni e le stampo (per guestMenu)
         System.out.println("These are " + guest.getName() + " reservations:");
@@ -137,7 +136,7 @@ public class ReservationManager extends Subject {
         }
         return myReservations;
     }
-    private void doReservationHelper(Guest user, Research info, String hotelID, String roomID) {
+    private void doReservationHelper(Guest user, Research info, Hotel hotel, String roomID) {
         //Prima di proseguire con la prenotazione vedo se l'utente si è loggato
         String response = null;
 
@@ -155,15 +154,38 @@ public class ReservationManager extends Subject {
             }
         }
 
-        //Chiedo all'utente di aggiungere un ulteriore descrizione se serve
-        System.out.print("Is anything else you need in your reservation??:");
-        String description = scanner.nextLine();
+        System.out.println("Checking If there is enough money on the card...");
+        CreditCard card = user.getCard();
+        double roomPrice = hotel.getCalendar().getTotalPrice(info.getCheckIn(), info.getCheckOut(), roomID);
+        boolean paymentsuccessful = false;
+        while (!paymentsuccessful) {
+            try {
+                card.doPayment(roomPrice);
+                paymentsuccessful = true;
+            } catch (RuntimeException e) {
+                System.out.println("Payment failed: " + e.getMessage());
+                System.out.println("Do you want to add more funds to your card? (yes/no): ");
+                String otherResponse = scanner.nextLine();
 
-        //TODO prima di aggiungere una nuova prenotazione... devo effettuare il pagamento!
-        Reservation newReservation = new Reservation(IdGenerator.generateReservationID(), info.getCheckIn(), info.getCheckOut(),
-                info.getNumOfGuest(), description, hotelID, roomID, user.getId());
-        addReservation(newReservation);
+                if(otherResponse.equalsIgnoreCase("yes")) {
+                    System.out.println("Enter the amount to add to your card: ");
+                    double amount = Double.parseDouble(scanner.nextLine());
+                    card.setBalance(card.getBalance() + amount);
+                }else
+                    break; //l'utente ci ha ripensato e non vuole continuare con la prenotazione
+            }
+        }
 
+        if (paymentsuccessful) {
+            //Chiedo all'utente di aggiungere un ulteriore descrizione se serve
+            System.out.print("Is anything else you need in your reservation??:");
+            String description = scanner.nextLine();
+
+            Reservation newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), info.getCheckIn()),
+                    info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), description, hotel.getId(), roomID, user.getId());
+            addReservation(newReservation);
+        }else
+            System.out.println("Returning back to start menu");
     }
     //End Region helpers
 }

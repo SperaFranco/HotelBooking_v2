@@ -56,10 +56,10 @@ public class GuestMenu {
                     if(hotelChoosed != null) {
                         ArrayList<Room> roomsAvailable = hotelChoosed.getRoomsAvailable(research.getCheckIn(), research.getCheckOut());
                         if (roomsAvailable.isEmpty()) {
-                            hotelManager.printRooms(roomsAvailable, hotelChoosed, research.getCheckIn());
+                            hotelManager.printRooms(roomsAvailable, hotelChoosed, research.getCheckIn(), research.getCheckOut());
                             String roomToReserve = hotelManager.chooseRoom(roomsAvailable);
                             if (roomToReserve != null)
-                                reservationManager.doReservation(guest, research, hotelChoosed.getId(), roomToReserve);
+                                reservationManager.doReservation(guest, research, hotelChoosed, roomToReserve);
                             else
                                 System.out.println("Room not on the list!");
                         } else

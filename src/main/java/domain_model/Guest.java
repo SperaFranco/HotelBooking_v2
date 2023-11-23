@@ -10,19 +10,18 @@ public class Guest extends User implements Observer {
     //Region fields
     private final ArrayList<String> reservations;
     private CreditCard card;
-    private String idCard;
     //end Region
 
-    public Guest(String id, String name, String surname, String email, String telephone, String password, CreditCard card, String idCard) {
+    public Guest(String id, String name, String surname, String email, String telephone, String password, CreditCard card) {
         super(id, name, surname, email, telephone, password);
-        this.card = null;
-        this.idCard = null;
+        this.card = card;
         this.reservations = new ArrayList<>();
     }
 
-    public Guest(String id, String name, String surname, String telephone) {
+    public Guest(String id, String name, String surname, String telephone, CreditCard card) {
         //Cliente senza account
         super(id, name, surname, null, telephone, null);
+        this.card = card;
         this.reservations = new ArrayList<>();
     }
 
@@ -34,14 +33,6 @@ public class Guest extends User implements Observer {
     public void setCard(String cardHolderName, String cardNumber, String expiryDate, int CVV) {
         this.card = new CreditCard(cardHolderName, cardNumber, expiryDate, CVV); //TODO rivedere il setCard
         // --> magari durante le registrazioni nel caso di clienti gli viene chiesto di inserire le info della carta di credito
-    }
-
-    public String getIdCard() {
-        return idCard;
-    }
-
-    public void setIdCard(String idCard) {
-        this.idCard = idCard;
     }
 
     public ArrayList<String> getReservations() {

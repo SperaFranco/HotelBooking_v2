@@ -116,10 +116,10 @@ public class HotelDirectorMenu {
                     //Scelgo la camera da prenotare
                     ArrayList<Room> roomsAvailable = hotel.getRoomsAvailable(info.getCheckIn(), info.getCheckOut());
                     if (!roomsAvailable.isEmpty()) {
-                        hotelManager.printRooms(roomsAvailable, hotel, info.getCheckIn());
+                        hotelManager.printRooms(roomsAvailable, hotel, info.getCheckIn(), info.getCheckOut());
                         String roomID = hotelManager.chooseRoom(roomsAvailable);
                         if (roomID != null)
-                            reservationManager.doReservation(guest, info, hotel.getId(), roomID);
+                            reservationManager.doReservation(guest, info, hotel, roomID);
                         else
                             System.out.println("Room not on the list!");
                     }else

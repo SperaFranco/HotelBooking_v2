@@ -1,5 +1,6 @@
 package service_layer;
 
+import domain_model.CreditCard;
 import domain_model.User;
 import domain_model.Guest;
 import domain_model.HotelDirector;
@@ -12,6 +13,7 @@ import java.util.Scanner;
 public class AccountManager {
     ArrayList<User> users = new ArrayList<>();
     Scanner scanner;
+
     public AccountManager(Scanner scanner){
         this.scanner = scanner;
     }
@@ -81,18 +83,6 @@ public class AccountManager {
         users.remove(user);
         user = null;
     }
-
-    //Region helper methods
-    public Guest addGuest() {
-        //Dopo aver richiesto tutte le credenziali di cui si ha bisogno
-        //si inseriscono nella stringa sql
-        //e si esegue la query
-        Guest newGuest = (Guest)createUser(UserType.GUEST);
-        if (newGuest != null)
-            users.add(newGuest);
-        return newGuest;
-    }
-
     public Guest addGuestWithoutAccount() {
         String name, surname, telephone;
         System.out.print("Name:");
@@ -101,9 +91,20 @@ public class AccountManager {
         surname = scanner.nextLine();
         System.out.print("Telephone:");
         telephone = scanner.nextLine();
-
-        Guest newGuest = new Guest(IdGenerator.generateUserID(UserType.GUEST, name, surname), name, surname, telephone);
+        CreditCard card = addCard(name, surname);
+        Guest newGuest = new Guest(IdGenerator.generateUserID(UserType.GUEST, name, surname), name, surname, telephone, card);
         users.add(newGuest);
+        return newGuest;
+    }
+
+    //Region helper methods
+    private Guest addGuest() {
+        //Dopo aver richiesto tutte le credenziali di cui si ha bisogno
+        //si inseriscono nella stringa sql
+        //e si esegue la query
+        Guest newGuest = (Guest)createUser(UserType.GUEST);
+        if (newGuest != null)
+            users.add(newGuest);
         return newGuest;
     }
     private HotelDirector addHotelDirector() {
@@ -129,8 +130,10 @@ public class AccountManager {
 
         if (type == UserType.GUEST) {
             //TODO gli va chiesta la carta
+            CreditCard card = addCard(name, surname);
+
             return new Guest(IdGenerator.generateUserID(type, name, surname),
-                    name, surname, email,"", password, null, "");
+                    name, surname, email,"", password, null);
         }
         else if (type == UserType.HOTEL_DIRECTOR) {
             return new HotelDirector(IdGenerator.generateUserID(type, name, surname),
@@ -144,6 +147,19 @@ public class AccountManager {
                 return user;
         }
         return null;
+    }
+
+    private CreditCard addCard(String name, String surname) {
+        String cardNumber,expiryDate, CVV;
+
+        System.out.print("Please enter the 16 digits of the card number: ");
+        cardNumber = scanner.nextLine();
+        System.out.println("Please enter the expiry date (MM/yy): ");
+        expiryDate = scanner.nextLine();
+        System.out.println("Please enter the CVV code: ");
+        CVV = scanner.nextLine();
+
+        return new CreditCard(name + " " +surname, cardNumber, expiryDate, Integer.parseInt(CVV));
     }
     //end Region
 

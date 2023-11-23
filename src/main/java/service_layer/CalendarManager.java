@@ -33,7 +33,6 @@ public class CalendarManager extends Subject {
         this.calendars.put(hotelID, calendar);
         return calendar;
     }
-
     public void displayCalendar(Hotel hotel) {
         if (hotel != null) {
             HotelCalendar calendar = calendars.get(hotel.getId());
@@ -45,7 +44,6 @@ public class CalendarManager extends Subject {
         }else
             System.out.println("Please first choose a hotel of reference...");
     }
-
     public void modifyPrice(Hotel hotel){
         if (hotel != null) {
             double price;
@@ -63,7 +61,6 @@ public class CalendarManager extends Subject {
             System.out.println("Please first choose a hotel of reference...");
 
     } //TODO lui manda notifiche
-
     public void closeRoom(Hotel hotel){
         if(hotel != null) {
             RoomInfo roomInfo = modifyRoom(hotel.getId());
@@ -78,7 +75,6 @@ public class CalendarManager extends Subject {
             System.out.println("Please first choose a hotel of reference...");
 
     } //TODO lui manda notifiche
-
     public void insertMinimumStay(Hotel hotel){
         if(hotel != null) {
             int minStay;

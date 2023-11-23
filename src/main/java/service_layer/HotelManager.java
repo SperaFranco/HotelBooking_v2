@@ -11,10 +11,9 @@ import java.util.Scanner;
 
 public class HotelManager extends Subject {
     //Classe per la gestione e la modifica delle strutture degli hotel
-    //TODO nell'hotel manager aggiungiamo pure i metodi per modificare le camere dell'hotel?
-    private Map<String, Hotel> hotelMap;
-    private ReservationManager reservationManager;
-    private CalendarManager calendarManager;
+    private final Map<String, Hotel> hotelMap;
+    private final ReservationManager reservationManager;
+    private final CalendarManager calendarManager;
     private final Scanner scanner;
 
     public HotelManager(ReservationManager reservationManager, CalendarManager calendarManager, Scanner scanner){
@@ -23,7 +22,6 @@ public class HotelManager extends Subject {
         this.calendarManager = calendarManager;
         this.scanner = scanner;
     }
-
     public Hotel addHotel(HotelDirector director) {
         Scanner scanner = new Scanner(System.in);
         String name, city, address, telephone, email, description;
@@ -62,6 +60,7 @@ public class HotelManager extends Subject {
         return newHotel;
     }
     public void modifyHotel() {
+        //TODO nell'hotel manager aggiungiamo pure i metodi per modificare le camere dell'hotel?
         //Cosa modificare? hotel stesso oppure camere? e cosa delle camere?
         // per ora facciamo che l'hotel non è modificabile.
     }
@@ -101,7 +100,7 @@ public class HotelManager extends Subject {
             ArrayList<Room> roomsAvailable = hotelToReserve.getRoomsAvailable(info.getCheckIn(), info.getCheckOut());
             //A questo punto ne stampo le camere e le info ma solo delle camere disponibili
             if (!roomsAvailable.isEmpty()) {
-                printRooms(roomsAvailable, hotelToReserve, info.getCheckIn());
+                printRooms(roomsAvailable, hotelToReserve, info.getCheckIn(), info.getCheckOut());
 
                 //Chiedo quindi all'utente se vuole prenotare una camera
                 System.out.print("Want to book a room? (Enter yes if you want to):");
@@ -110,7 +109,7 @@ public class HotelManager extends Subject {
                 if (response.equalsIgnoreCase("yes")) {
                     String roomID = chooseRoom(roomsAvailable);
                     if (roomID != null)
-                        reservationManager.doReservation((Guest) user, info, hotelToReserve.getId(), roomID);
+                        reservationManager.doReservation((Guest) user, info, hotelToReserve, roomID);
                 } else
                     System.out.println("Back to the starting menu!");
             } else
@@ -139,6 +138,15 @@ public class HotelManager extends Subject {
     }
     public Research askResearchInfo(boolean forGuests) {
         return askResearchInfoHelper(forGuests);
+    }
+    public void printRooms(ArrayList<Room> roomsAvailable, Hotel hotelToReserve, LocalDate checkIn, LocalDate checkOut){
+        printRoomsHelper(roomsAvailable, hotelToReserve, checkIn, checkOut);
+    }
+    public Hotel chooseHotel(Research info) {
+        return chooseHotelHelper(info);
+    }
+    public String chooseRoom(ArrayList<Room> roomsAvailable) {
+        return chooseRoomHelper(roomsAvailable);
     }
 
     //Region Helpers
@@ -220,15 +228,15 @@ public class HotelManager extends Subject {
         return new Research(city, checkIn, checkOut, numOfGuests);
 
     }
-    public void printRooms(ArrayList<Room> roomsAvailable, Hotel hotelToReserve, LocalDate checkIn) {
+    private void printRoomsHelper(ArrayList<Room> roomsAvailable, Hotel hotelToReserve, LocalDate checkIn, LocalDate checkOut) {
         System.out.println("These are the rooms available:");
         int index = 1;
         for (Room room : roomsAvailable) {
             HotelCalendar calendar = hotelToReserve.getCalendar();
-            System.out.println(room.getRoomInfo(index++) + "\nPrice:" + calendar.getPrice(checkIn, room.getId()));
+            System.out.println(room.getRoomInfo(index++) + "\nPrice:" + calendar.getTotalPrice(checkIn, checkOut, room.getId()));
         }
     }
-    public Hotel chooseHotel(Research info) {
+    private Hotel chooseHotelHelper(Research info) {
         Hotel hotelToReserve = null;
 
         ArrayList<Hotel> hotels = filterHotels(info.getCity(), info.getCheckIn(),
@@ -251,7 +259,7 @@ public class HotelManager extends Subject {
 
         return hotelToReserve;
     }
-    public String chooseRoom(ArrayList<Room> roomsAvailable) {
+    public String chooseRoomHelper(ArrayList<Room> roomsAvailable) {
         String roomToReserve = null;
 
         System.out.print("Please enter the number of the room you want to book:");

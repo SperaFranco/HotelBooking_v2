@@ -73,10 +73,15 @@ public class HotelCalendar implements Observer {
         return true;
     }
 
-    public String getPrice(LocalDate checkIn, String id) {
-        //Mi stampo le Info della camera per il primo giorno --> può essere un errore
-        RoomInfo roomInfo = roomStatusMap.get(checkIn).get(id);
-        return "Actual Price: " + roomInfo.getPrice();
+    public double getTotalPrice(LocalDate checkIn, LocalDate checkOut, String id) {
+        double sum = 0;
+
+        for(LocalDate date = checkIn; date.isAfter(checkOut); date = date.plusDays(1)) {
+            RoomInfo roomInfo = roomStatusMap.get(checkIn).get(id);
+            sum += roomInfo.getPrice();
+        }
+
+        return sum;
     }
 
     public void displayCalendar(int numDaysToShow) {
