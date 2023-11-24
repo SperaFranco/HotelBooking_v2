@@ -19,7 +19,6 @@ public class CreditCard {
         this.expiryDate = expiryDate;
         this.CVV = CVV;
 
-        //TODO potrei controllore se la carta è valida tramite isValid altrimenti lanciare eccezione
         if(!isValid(cardNumber, expiryDate, CVV))
             throw new RuntimeException("Not valid card!");
     }

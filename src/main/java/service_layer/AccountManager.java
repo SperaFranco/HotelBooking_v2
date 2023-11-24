@@ -11,18 +11,24 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AccountManager {
-    ArrayList<User> users = new ArrayList<>();
-    Scanner scanner;
+    private final ArrayList<User> users = new ArrayList<>();
+    private final Scanner scanner;
+    private final ReservationManager reservationManager;
+    private final HotelManager hotelManager;
+    private final CalendarManager calendarManager;
 
     public AccountManager(Scanner scanner){
         this.scanner = scanner;
+        this.calendarManager = new CalendarManager(scanner);
+        this.reservationManager =  new ReservationManager(scanner, this, calendarManager);
+        this.hotelManager = new HotelManager(reservationManager, calendarManager, scanner);
     }
     public User doRegistration() {
         String userType = null;
         User newUser = null;
 
         System.out.println("Are you a \"guest\" or a \"hotel manager\"?");
-        System.out.print("I am a:");
+        System.out.print("I am a: ");
         userType = scanner.nextLine();
 
         if (userType.equalsIgnoreCase("guest"))
@@ -85,67 +91,87 @@ public class AccountManager {
     }
     public Guest addGuestWithoutAccount() {
         String name, surname, telephone;
+
         System.out.print("Name:");
         name = scanner.nextLine();
+
         System.out.print("Surname:");
         surname = scanner.nextLine();
+
         System.out.print("Telephone:");
         telephone = scanner.nextLine();
+
         CreditCard card = addCard(name, surname);
         Guest newGuest = new Guest(IdGenerator.generateUserID(UserType.GUEST, name, surname), name, surname, telephone, card);
+
         users.add(newGuest);
         return newGuest;
     }
 
+    public ReservationManager getReservationManager() {
+        return reservationManager;
+    }
+
+    public HotelManager getHotelManager() {
+        return hotelManager;
+    }
+
+    public CalendarManager getCalendarManager() {
+        return calendarManager;
+    }
+
     //Region helper methods
     private Guest addGuest() {
-        //Dopo aver richiesto tutte le credenziali di cui si ha bisogno
-        //si inseriscono nella stringa sql
-        //e si esegue la query
         Guest newGuest = (Guest)createUser(UserType.GUEST);
+
         if (newGuest != null)
             users.add(newGuest);
+
         return newGuest;
     }
     private HotelDirector addHotelDirector() {
         //l'hotel director ha in più un l'arraylist di hotel
         HotelDirector newHotelDirector = (HotelDirector)createUser(UserType.HOTEL_DIRECTOR);
+
         if (newHotelDirector != null)
             users.add(newHotelDirector);
+
         return newHotelDirector;
     }
     private User createUser(UserType type) {
         //TODO al momento non chiedo di inserire il numero di telefono
         String name, surname, email, telephone, password;
 
-        System.out.print("Please enter your name:");
+        System.out.print("Please enter your name: ");
         name = scanner.nextLine();
-        System.out.print("Please enter your surname:");
+
+        System.out.print("Please enter your surname: ");
         surname = scanner.nextLine();
-        System.out.print("Please enter your email:");
+        System.out.print("Please enter your email: ");
         email = scanner.nextLine();
-        System.out.print("Please enter your password:");
+        System.out.print("Please enter your password: ");
         password = scanner.nextLine();
 
 
         if (type == UserType.GUEST) {
-            //TODO gli va chiesta la carta
             CreditCard card = addCard(name, surname);
-
             return new Guest(IdGenerator.generateUserID(type, name, surname),
-                    name, surname, email,"", password, null);
+                    name, surname, email,"", password, card, reservationManager);
         }
         else if (type == UserType.HOTEL_DIRECTOR) {
             return new HotelDirector(IdGenerator.generateUserID(type, name, surname),
-                    name, surname, email,"",password);
+                    name, surname, email,"",password, hotelManager);
         }
+
         return null;
     }
     private User findUserByEmail(String email) {
+
         for (User user:users) {
             if (user.getEmail().equalsIgnoreCase(email))
                 return user;
         }
+
         return null;
     }
 
@@ -154,8 +180,10 @@ public class AccountManager {
 
         System.out.print("Please enter the 16 digits of the card number: ");
         cardNumber = scanner.nextLine();
+
         System.out.println("Please enter the expiry date (MM/yy): ");
         expiryDate = scanner.nextLine();
+
         System.out.println("Please enter the CVV code: ");
         CVV = scanner.nextLine();
 

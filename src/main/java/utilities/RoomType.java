@@ -7,14 +7,13 @@ public enum RoomType {
     DOUBLE_ROOM("Double room"),
     TRIPLE_ROOM("Triple room");
 
-    private String displayName;
+    private final String displayName;
 
     RoomType(String displayName) {
         this.displayName = displayName;
     }
 
     public static int[] getRoomPreference() {
-        //TODO vedere dove va messo questo metodo
         Scanner scanner = new Scanner(System.in);
         int[] rooms = new int[3]; //0 single_room, 1 double_room, 2 triple_room
 
@@ -33,7 +32,7 @@ public enum RoomType {
                     break;
 
             }
-            System.out.println("Please enter the number of " + roomType + " rooms: ");
+            System.out.print("Please enter the number of " + roomType + " rooms: ");
             rooms[i] = scanner.nextInt();
         }
         return rooms;

@@ -37,7 +37,7 @@ public class GuestMenu {
                     3) To get all reservations
                     4) To modify a reservation
                     0)  To logout
-                    Choice:""");
+                    Choice: """);
             choice = scanner.nextInt();
             scanner.nextLine();
 

@@ -75,7 +75,7 @@ public class HotelDirectorMenu {
 
         while (choice != 0) {
             System.out.print("""
-                    Please enter an option between 1-8:
+                    \nPlease enter an option between 1-8:
                     1)  To display the hotel calendar
                     2)  To modify a price of a room
                     3)  To make a room unavailable

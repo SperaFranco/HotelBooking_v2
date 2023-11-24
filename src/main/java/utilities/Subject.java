@@ -1,5 +1,6 @@
 package utilities;
 
+import service_layer.CalendarManager;
 import service_layer.HotelManager;
 import service_layer.ReservationManager;
 
@@ -24,8 +25,8 @@ public abstract class Subject {
         observers.remove(o);
     }
 
-    public void notifyObservers(String messagge) {
-        notifyObservers(null, messagge);
+    public void notifyObservers(String message) {
+        notifyObservers(null, message);
     }
 
     public void notifyObservers(Object arg, String message) {
@@ -44,7 +45,9 @@ public abstract class Subject {
             }
             else if(this instanceof HotelManager) {
                 ((Observer) arrLocal[i]).update(this, arg, message);
-
+            }
+            else if (this instanceof CalendarManager) {
+                ((Observer)arrLocal[i]).update(this, arg, message);
             }
         }
     }

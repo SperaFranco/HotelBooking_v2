@@ -22,35 +22,36 @@ public class HotelManager extends Subject {
         this.calendarManager = calendarManager;
         this.scanner = scanner;
     }
+
     public Hotel addHotel(HotelDirector director) {
         Scanner scanner = new Scanner(System.in);
         String name, city, address, telephone, email, description;
         HotelRating rating;
 
-        System.out.print("Please insert the name of the hotel:");
+        System.out.print("Please insert the name of the hotel: ");
         name = scanner.nextLine();
-        System.out.print("Please insert the city of the hotel:");
+        System.out.print("Please insert the city of the hotel: ");
         city = scanner.nextLine();
-        System.out.print("Please insert the address of the hotel:");
+        System.out.print("Please insert the address of the hotel: ");
         address = scanner.nextLine();
-        System.out.print("Please insert the telephone number of the hotel:");
+        System.out.print("Please insert the telephone number of the hotel: ");
         telephone = scanner.nextLine();
-        System.out.print("Please insert the email of the hotel:");
+        System.out.print("Please insert the email of the hotel: ");
         email = scanner.nextLine();
-        System.out.print("Please insert the rating of the hotel (for example \"One star\" or \"Two stars\" etc...):");
+        System.out.print("Please insert the rating of the hotel (for example \"One star\" or \"Two stars\" etc...): ");
         rating = HotelRating.getRatingFromString(scanner.nextLine());
-        System.out.print("Please insert a brief description of the hotel:");
+        System.out.print("Please insert a brief description of the hotel: ");
         description = scanner.nextLine();
 
         Hotel newHotel = new Hotel(IdGenerator.generateHotelID(city),
-                name, city, address, telephone, email, rating, description, director.getId());
+                name, city, address, telephone, email, rating, description, director.getId(), calendarManager);
         System.out.println("Hotel created! Now add your rooms...");
 
         ArrayList<Room> rooms = createRooms(newHotel.getId());
         newHotel.setRooms(rooms);
         System.out.println("Rooms added!");
 
-        HotelCalendar calendar = calendarManager.createCalendar(rooms, newHotel.getId(), this);
+        HotelCalendar calendar = calendarManager.createCalendar(rooms, newHotel.getId(), this, reservationManager);
         newHotel.setCalendar(calendar);
         System.out.println("Calendar configured!");
 
@@ -71,8 +72,8 @@ public class HotelManager extends Subject {
         int id;
         ArrayList<Hotel> hotels = findHotelsByDirector(director);
         System.out.println("These are your hotels:");
+        int index = 1;
         for (Hotel hotel: hotels) {
-            int index = 1;
             System.out.println(hotel.printHotelInfo(index++));
         }
 
@@ -87,6 +88,7 @@ public class HotelManager extends Subject {
             notifyObservers(hotelRemoved, "Hotel removed");
         }
     }
+
     public void doHotelResearch(User user){
         //TODO capire se effettivamente ci serve chiedere il numero di camere
         //Chiedo tutte le info (check-in, check-out, luogo, numero di persone)
@@ -180,8 +182,8 @@ public class HotelManager extends Subject {
             for (int j = 0; j < numRooms[i]; j++) {
                 String description, roomID;
                 roomID = IdGenerator.generateRoomID(id, types[i]);
-                System.out.println("Please insert more info for room " + roomID +
-                        " (like the dimensions of the room and/or if it has some amenities like tv or wifi):");
+                System.out.print("Please insert more info for room " + roomID +
+                        " (like the dimensions of the room and/or if it has some amenities like tv or wifi): ");
                 description = scanner.nextLine();
                 Room room = new Room(roomID, types[i], description);
                 rooms.add(room);
@@ -194,7 +196,7 @@ public class HotelManager extends Subject {
         ArrayList<Hotel> hotelsByDirector = new ArrayList<>();
 
         for (Hotel hotel: allHotels) {
-            if (hotel.getManagerID().equals(director.getId())){
+            if (hotel.getDirectorID().equals(director.getId())){
                 hotelsByDirector.add(hotel);
             }
         }

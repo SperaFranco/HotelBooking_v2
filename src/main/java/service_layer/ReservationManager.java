@@ -10,18 +10,19 @@ import java.util.*;
 public class ReservationManager extends Subject {
     private final Map<String, Reservation> reservationMap;
     private final AccountManager accountManager; //occhio ai controllers
+    private final CalendarManager calendarManager;
     private final Scanner scanner;
 
-    public ReservationManager(Scanner scanner, AccountManager accountManager) {
+    public ReservationManager(Scanner scanner, AccountManager accountManager, CalendarManager calendarManager) {
         reservationMap = new HashMap<>();
         this.scanner = scanner;
         this.accountManager = accountManager;
+        this.calendarManager = calendarManager;
     }
     public void doReservation(Guest user, Research info, Hotel hotel,String roomID) {
         doReservationHelper(user, info, hotel, roomID);
     }
     public void addReservation(Reservation newReservation) {
-        //TODO Da implementare aggiungendo l'oggetto nel database
         //TODO guardare come fare per mandare email di notifica prenotazione (qui o nel doReservation)
         reservationMap.put(newReservation.getId(), newReservation);
         System.out.println("Reservation added! Thank you! :)");
@@ -29,40 +30,114 @@ public class ReservationManager extends Subject {
         notifyObservers(newReservation,"Add reservation");
     }
     public void updateReservation() {
-        //TODO Da implementare cambiando l'oggetto nel database
-        //TODO capire come modificare l'oggetto nel db --> tolgo e inserisco oppure cambio sul posto?
         int choice;
         boolean modified = false;
         String id;
 
         System.out.print("Choose the reservation to modify(enter the ID):");
         id = scanner.nextLine();
-        //Recupero inzialmente la prenotazione richiesta
+        //Recupero inizialmente la prenotazione richiesta
         Reservation reservation = findReservationById(id);
         if (reservation != null) {
-            System.out.print("What do you want to modify?:" +
-                    "\n1) Check in Date" +
-                    "\n2) Check out Date " +
-                    "\n3) Description " +
+            LocalDate checkIn = reservation.getCheckIn();
+            LocalDate checkOut = reservation.getCheckOut();
+            String roomReserved = reservation.getRoomReserved();
+
+            System.out.print("What do you want to modify? (Enter an option between 1 or 2):" +
+                    "\n1) Check-in and Check-out dates" +
+                    "\n2) Description " +
+                    "\nOther options are not editable... Please consider to delete your reservation if you need to." +
                     "\nChoice:");
-            choice = scanner.nextInt();
-            scanner.nextLine();
+           try {
+               choice = Integer.parseInt(scanner.nextLine());
+           }
+           catch (NumberFormatException e) {
+               System.out.println("Invalid input. Please Enter a number");
+               return;
+           }
+
             switch (choice) {
                 case 1:
-                    LocalDate newCheckInDate;
-                    System.out.print("Then please insert the new check in date(for example 2007-12-01): ");
+                    LocalDate newCheckInDate, newCheckOutDate;
+                    System.out.print("Then please insert the new dates\n" + "Check-in date: ");
                     newCheckInDate = LocalDate.parse(scanner.nextLine());
-                    reservation.setCheckIn(newCheckInDate);
-                    modified = true;
+                    System.out.print("Check-out date:");
+                    newCheckOutDate = LocalDate.parse(scanner.nextLine());
+                    HotelCalendar calendar = calendarManager.getCalendarByHotelID(reservation.getHotel());
+
+                    //Controllo che date non si intersechino fra di loro
+                    if (newCheckOutDate.isBefore(checkIn) || newCheckInDate.isAfter(checkOut)) {
+
+                        //controllo che per le nuove date la camera sia disponibile
+                        if(calendar.isRoomAvailable(newCheckInDate, newCheckOutDate, roomReserved)) {
+                            //allora vanno settati i giorni vecchi a disponibili
+                            calendar.setRoomAvailability(roomReserved, checkIn, checkOut, true);
+
+                            //mentre quelli nuovi a non disponibili
+                            calendar.setRoomAvailability(roomReserved, newCheckInDate, newCheckOutDate, false);
+                            reservation.setCheckIn(newCheckInDate);
+                            reservation.setCheckOut(newCheckOutDate);
+                            modified = true;
+                        }
+                    }
+                    else if (newCheckOutDate.isEqual(checkOut)) {
+                        if(newCheckInDate.isBefore(checkIn)) {
+                            if(calendar.isRoomAvailable(newCheckInDate, checkIn, roomReserved)) {
+                                //mi basta arrivare al checkIn
+                                calendar.setRoomAvailability(roomReserved, newCheckInDate, checkIn, false);
+                                reservation.setCheckIn(newCheckInDate);
+                                modified = true;
+                            }
+                        }
+                        else if(newCheckInDate.isAfter(checkIn)) {
+                            //In questo caso non devo controllare ma devo solo modificare la disponibilità
+                            calendar.setRoomAvailability(roomReserved, checkIn, newCheckInDate.minusDays(1), true);
+                            reservation.setCheckIn(newCheckInDate);
+                            modified = true;
+                        }
+                    }
+                    else if (newCheckInDate.isEqual(checkIn)) {
+                        //qui il viceversa
+                        if(newCheckOutDate.isBefore(checkOut)){
+                            calendar.setRoomAvailability(roomReserved, newCheckOutDate.plusDays(1), checkOut, true);
+                            reservation.setCheckOut(newCheckOutDate);
+                            modified = true;
+                        }
+                        else if(newCheckOutDate.isAfter(checkOut)){
+                            if(calendar.isRoomAvailable(checkOut, newCheckOutDate, roomReserved)){
+                                calendar.setRoomAvailability(roomReserved, checkOut, newCheckOutDate, false);
+                                reservation.setCheckOut(newCheckOutDate);
+                                modified = true;
+                            }
+                        }
+                    }
+                    else if (newCheckInDate.isAfter(checkIn) && newCheckInDate.isBefore(checkOut) && newCheckOutDate.isAfter(checkOut)){
+                        if (calendar.isRoomAvailable(checkOut.plusDays(1), newCheckOutDate, roomReserved)) {
+                            calendar.setRoomAvailability(roomReserved, checkIn, newCheckInDate, true);
+                            calendar.setRoomAvailability(roomReserved, newCheckInDate, newCheckOutDate, false);
+                            reservation.setCheckIn(newCheckInDate);
+                            reservation.setCheckOut(newCheckOutDate);
+                            modified = true;
+                        }
+                    }
+                    else if (newCheckOutDate.isBefore(checkOut) && newCheckOutDate.isAfter(checkIn) && newCheckInDate.isBefore(checkIn)) {
+                        if (calendar.isRoomAvailable(newCheckInDate, checkIn.minusDays(1), roomReserved)) {
+                            calendar.setRoomAvailability(roomReserved, newCheckOutDate, checkOut, true);
+                            calendar.setRoomAvailability(roomReserved, newCheckInDate, newCheckOutDate, false);
+                            reservation.setCheckIn(newCheckInDate);
+                            reservation.setCheckOut(newCheckOutDate);
+                            modified = true;
+                        }
+                    }
+                    else if (newCheckInDate.isAfter(checkIn) && newCheckOutDate.isBefore(checkOut)) {
+                        calendar.setRoomAvailability(roomReserved, checkIn, newCheckInDate.minusDays(1), true);
+                        calendar.setRoomAvailability(roomReserved, newCheckOutDate.plusDays(1), checkOut, true);
+                        reservation.setCheckIn(newCheckInDate);
+                        reservation.setCheckOut(newCheckOutDate);
+                        modified = true;
+                    }
                     break;
                 case 2:
-                    LocalDate newCheckOutDate;
-                    System.out.print("Then please insert the new check out date(for example 2007-10-1): ");
-                    newCheckOutDate = LocalDate.parse(scanner.nextLine());
-                    reservation.setCheckIn(newCheckOutDate);
-                    modified = true;
-                    break;
-                case 3:
                     String description;
                     System.out.print("Then please insert the new description:");
                     description = scanner.nextLine();
@@ -70,16 +145,17 @@ public class ReservationManager extends Subject {
                     modified = true;
                     break;
                 default:
-                    System.out.println("Other options are not editable... ");
+                    System.out.println("Not an option in the list...");
             }
-        } else
+        }else {
             System.out.println("Reservation not found!");
-
+        }
         if (modified)
             System.out.println("Reservation modified correctly!");
+        else
+            System.out.println("Reservation not modified correctly");
     }
     public void deleteReservation() {
-        //TODO da implementare facendo rimozione dal db
             //Allo stesso modo recupero la prenotazione e la elimino
             String id;
 
@@ -91,7 +167,7 @@ public class ReservationManager extends Subject {
             notifyObservers(reservationRemoved, "Delete reservation");
     }
     public void getReservations(Guest guest) {
-        //TODO a seconda del guest ricavo tutte le sue prenotazioni e le stampo (per guestMenu)
+        //A seconda del guest ricavo tutte le sue prenotazioni e le stampo (per guestMenu)
         System.out.println("These are " + guest.getName() + " reservations:");
         for (Reservation reservation: findReservationByGuest(guest.getId())) {
             System.out.print(reservation.getInfoReservation());
@@ -122,7 +198,6 @@ public class ReservationManager extends Subject {
 
     //Region helpers
     private Reservation findReservationById(String id) {
-        //TODO Da Implementare facendo il recupero della prenotazione dal database
         return reservationMap.get(id);
     }
     private ArrayList<Reservation> findReservationByGuest(String guestID) {

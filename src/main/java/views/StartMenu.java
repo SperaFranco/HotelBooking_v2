@@ -12,22 +12,13 @@ import java.util.Scanner;
 
 public class StartMenu {
     //Region Controllers
-    private AccountManager accountManager;
-    private HotelManager hotelManager;
-    private ReservationManager reservationManager;
-    private CalendarManager calendarManager;
-    //endregion
-    private HotelDirectorMenu hotelDirectorMenu;
-    private GuestMenu guestMenu;
+    private final AccountManager accountManager;
 
     private Scanner scanner;
 
     public StartMenu() {
         this.scanner = new Scanner(System.in);
         accountManager = new AccountManager(scanner);
-        reservationManager = new ReservationManager(scanner, accountManager); //le prenotazioni sono condivise fra guest e hoteldirector
-        calendarManager = new CalendarManager(scanner);
-        hotelManager = new HotelManager(reservationManager, calendarManager, scanner);
     }
 
 
@@ -35,24 +26,24 @@ public class StartMenu {
         //Alla richiesta del crea nuovo account
         // chiedi inizialmente se è un cliente oppure se è un gestore
         // nel caso di gestore faremo in modo che si passi subito all'inserimento di una struttura(?)
-        int choice = 0;
+        int choice = -1;
         User user = null;
 
-        while(choice != 4) {
+        while(choice != 0) {
             System.out.print("""
                     Welcome to the new Hotel Booking System!
                     Please enter an option below:
                     1) To search for a hotel\s
                     2) To create a new account\s
                     3) To login
-                    4) To exit
+                    0) To exit
                     Choice:""");
             choice = scanner.nextInt();
             scanner.nextLine();
 
             switch (choice) {
                 case 1:
-                    hotelManager.doHotelResearch(user);
+                    accountManager.getHotelManager().doHotelResearch(user);
                     break;
                 case 2:
                     //Dalla registrazione si torna indietro oppure si va direttamente ai menu?
@@ -82,13 +73,14 @@ public class StartMenu {
 
         if(user instanceof Guest) {
             //Fai partire il guestMenu
-            guestMenu = new GuestMenu(accountManager, hotelManager,
-                    reservationManager, (Guest) user, scanner);
+            GuestMenu guestMenu = new GuestMenu(accountManager, accountManager.getHotelManager(),
+                    accountManager.getReservationManager(), (Guest) user, scanner);
             guestMenu.startGuestMenu();
         }
         else if(user instanceof HotelDirector) {
-            hotelDirectorMenu = new HotelDirectorMenu(accountManager, hotelManager,
-                    reservationManager, calendarManager,(HotelDirector) user, scanner);
+            //endregion
+            HotelDirectorMenu hotelDirectorMenu = new HotelDirectorMenu(accountManager, accountManager.getHotelManager(),
+                    accountManager.getReservationManager(), accountManager.getCalendarManager(), (HotelDirector) user, scanner);
             hotelDirectorMenu.startDirectorMenu();
         }
     }
