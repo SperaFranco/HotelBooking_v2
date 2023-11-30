@@ -18,7 +18,7 @@ public class StartMenu {
 
     public StartMenu() {
         this.scanner = new Scanner(System.in);
-        accountManager = new AccountManager(scanner);
+        accountManager = new AccountManager();
     }
 
 
@@ -47,11 +47,11 @@ public class StartMenu {
                     break;
                 case 2:
                     //Dalla registrazione si torna indietro oppure si va direttamente ai menu?
-                    user = accountManager.doRegistration();
+                    //user = accountManager.doRegistration();
                     IdentifyUser(user);
                     break;
                 case 3:
-                    user = accountManager.login();
+                    user = accountManager.login("email@email.it", "password");
                     IdentifyUser(user);
                     break;
                 case 4:

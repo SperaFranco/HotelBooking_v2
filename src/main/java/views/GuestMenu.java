@@ -58,8 +58,11 @@ public class GuestMenu {
                         if (roomsAvailable.isEmpty()) {
                             hotelManager.printRooms(roomsAvailable, hotelChoosed, research.getCheckIn(), research.getCheckOut());
                             String roomToReserve = hotelManager.chooseRoom(roomsAvailable);
-                            if (roomToReserve != null)
-                                reservationManager.doReservation(guest, research, hotelChoosed, roomToReserve);
+                            if (roomToReserve != null) {
+                                String description = "due letti singoli";
+                                reservationManager.doReservation(guest, research, hotelChoosed, roomToReserve,description);
+                                reservationManager.doReservation(guest, research, hotelChoosed, roomToReserve,description);
+                            }
                             else
                                 System.out.println("Room not on the list!");
                         } else
@@ -74,10 +77,10 @@ public class GuestMenu {
                     break;
                 case 4:
                     reservationManager.getReservations(guest); //le stampo direttamente
-                    reservationManager.updateReservation();
+                    reservationManager.updateReservation(null, null, null, null);
                 case 5:
                     reservationManager.getReservations(guest);
-                    reservationManager.deleteReservation();
+                    reservationManager.deleteReservation(null);
                 case 0:
                     //Chiamo la funzione di logout?
                     accountManager.logout(guest);

@@ -1,5 +1,7 @@
 package domain_model;
 
+import utilities.UserType;
+
 public abstract class User {
     //Region Fields
     private String id;
@@ -8,15 +10,17 @@ public abstract class User {
     private String email;
     private String telephone;
     private String password;
+    private UserType type;
     //end Region
 
-    public User(String id, String name, String surname, String email, String telephone, String password) {
+    public User(String id, String name, String surname, String email, String telephone, String password, UserType type) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.telephone = telephone;
         this.password = password;
+        this.type = type;
     }
 
     //Region Getters and Setters
@@ -65,6 +69,14 @@ public abstract class User {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public UserType getType() {
+        return type;
+    }
+
+    public void setType(UserType type) {
+        this.type = type;
     }
     //end Region
 

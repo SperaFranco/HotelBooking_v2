@@ -5,6 +5,7 @@ import service_layer.HotelManager;
 import service_layer.ReservationManager;
 import utilities.Observer;
 import utilities.Subject;
+import utilities.UserType;
 
 import java.util.ArrayList;
 
@@ -15,8 +16,8 @@ public class HotelDirector extends User implements Observer {
     private final ArrayList<String> hotels; //lui deve stare attento quando aggiungo/rimuovo un hotel
     //endRegion
 
-    public HotelDirector(String id, String name, String surname, String email, String telephone, String password, HotelManager hotelManager) {
-        super(id, name, surname, email, telephone, password);
+    public HotelDirector(String id, String name, String surname, String email, String telephone, String password, HotelManager hotelManager, UserType type) {
+        super(id, name, surname, email, telephone, password, type);
         hotels = new ArrayList<>();
         hotelManager.addObserver(this);
     }

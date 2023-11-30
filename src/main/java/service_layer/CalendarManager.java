@@ -9,10 +9,8 @@ import utilities.Subject;
 
 public class CalendarManager extends Subject {
     private final Map<String, HotelCalendar> calendars; //mappa fra id degli hotel e calendari
-    private final Scanner scanner;
 
-    public CalendarManager(Scanner scanner){
-        this.scanner = scanner;
+    public CalendarManager(){
         this.calendars = new HashMap<>();
     }
     public HotelCalendar createCalendar(ArrayList<Room> rooms, String hotelID, HotelManager hotelManager, ReservationManager reservationManager){
@@ -38,9 +36,9 @@ public class CalendarManager extends Subject {
 
             int numDaysToShow; //se centra aumentiamo il numero dei giorni
             System.out.print("Please insert the number of days you want to see: ");
-            numDaysToShow = Integer.parseInt(scanner.nextLine());
+       //     numDaysToShow = Integer.parseInt(scanner.nextLine());
 
-            calendar.displayCalendar(numDaysToShow);
+       //     calendar.displayCalendar(numDaysToShow);
         }else
             System.out.println("Please first choose a hotel of reference...");
     }
@@ -51,8 +49,8 @@ public class CalendarManager extends Subject {
 
             if (roomInfo != null) {
                 System.out.print("Please insert the new price:");
-                price = scanner.nextDouble();
-                roomInfo.setPrice(price);
+         //       price = scanner.nextDouble();
+         //       roomInfo.setPrice(price);
                 setChanged();
                 notifyObservers("Room price changed");
             } else
@@ -83,8 +81,8 @@ public class CalendarManager extends Subject {
 
             if (roomInfo != null) {
                 System.out.print("Please insert the new minimum days to stay:");
-                minStay = scanner.nextInt();
-                roomInfo.setMinimumStay(minStay);
+    //            minStay = scanner.nextInt();
+    //            roomInfo.setMinimumStay(minStay);
                 setChanged();
 
             } else
@@ -99,7 +97,7 @@ public class CalendarManager extends Subject {
         String date, roomID;
         HotelCalendar calendar = calendars.get(hotelID);
 
-        System.out.println("Please insert the date and the room ID: ");
+    /*    System.out.println("Please insert the date and the room ID: ");
         System.out.print("Date (yyyy/mm/dd):");
         date = scanner.nextLine();
 
@@ -125,7 +123,7 @@ public class CalendarManager extends Subject {
         } catch (NullPointerException e) {
             System.out.println("Error: " + e.getMessage());
         }
-
+    */
         return null;
     }
 

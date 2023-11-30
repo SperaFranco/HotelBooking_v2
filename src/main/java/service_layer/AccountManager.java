@@ -12,85 +12,41 @@ import java.util.Scanner;
 
 public class AccountManager {
     private final ArrayList<User> users = new ArrayList<>();
-    private final Scanner scanner;
     private final ReservationManager reservationManager;
     private final HotelManager hotelManager;
     private final CalendarManager calendarManager;
 
-    public AccountManager(Scanner scanner){
-        this.scanner = scanner;
-        this.calendarManager = new CalendarManager(scanner);
-        this.reservationManager =  new ReservationManager(scanner, this, calendarManager);
-        this.hotelManager = new HotelManager(reservationManager, calendarManager, scanner);
+    public AccountManager(){
+
+        this.calendarManager = new CalendarManager();
+        this.reservationManager =  new ReservationManager( this, calendarManager);
+        this.hotelManager = new HotelManager(reservationManager, calendarManager);
+
     }
-    public User doRegistration() {
-        String userType = null;
-        User newUser = null;
+    public void doRegistration(User user) {
+        if (user == null)  throw new RuntimeException("user is a null reference");
+        users.add(user);
+    }
+    public User login(String email, String password) {
 
-        System.out.println("Are you a \"guest\" or a \"hotel manager\"?");
-        System.out.print("I am a: ");
-        userType = scanner.nextLine();
-
-        if (userType.equalsIgnoreCase("guest"))
-            newUser = addGuest();
-        else if (userType.contains("hotel") || userType.contains("manager")) {
-            newUser = addHotelDirector();
-        }
+        User loginUser = findUserByEmail(email);
+        if(loginUser == null)
+            throw new RuntimeException("User not found");
+        if(loginUser.getPassword().equals(password))
+            return loginUser;
         else {
-            System.out.println("Please try again your registration...");
-        }
-        return newUser;
-    }
-    public User login() {
-        //TODO ricordarsi di fare il close del resultset
-        int maxAttemps = 5;
-        User loginUser = null;
-        String email = null;
-        for(int attempt = 1; attempt <= maxAttemps; attempt++) {
-            try {
-
-                if(email == null) {
-                    System.out.print("Please enter your email: ");
-                    email = scanner.nextLine();
-                }
-                //Se è il primo tentativo (o l'utente non è stato ancora trovato) allora cercalo
-                if(attempt == 1 || loginUser == null) {
-                    loginUser = findUserByEmail(email);
-
-                    if (loginUser == null) {
-                        System.out.println("User not found! Please try again.");
-                        email = null;
-                    }
-                }
-
-                //se Trova l'utente, stampane il nome e salva da qualche parte la password
-                if (loginUser != null) {
-                    System.out.print("Hello " + loginUser.getName() + "!\nPlease enter your password:");
-                    String password = scanner.nextLine();
-                    if (password.equals(loginUser.getPassword())) {
-                        //se password coincidono ritorna l'utente
-                        return loginUser;
-                    } else {
-                        System.out.println("Incorrect password... please try again!");
-                    }
-                }
-
-            }catch (Exception e) {
-                System.out.println("Error occured: " + e.getMessage());
-            }
+            throw new RuntimeException("Password is not correct");
         }
 
-        System.out.println("Too many unsuccessful login attempts... exiting");
-        return null; //se entro 5 tentativi non lo trovo restituisco null
     }
     public void logout(User user) {
-        //TODO vedere se problematica
-        //Potrei ad esempio risettare l'user a null
         users.remove(user);
         user = null;
     }
+
+    //TODO rimettere questo quando capisco dove viene usato
     public Guest addGuestWithoutAccount() {
-        String name, surname, telephone;
+    /*    String name, surname, telephone;
 
         System.out.print("Name:");
         name = scanner.nextLine();
@@ -101,69 +57,23 @@ public class AccountManager {
         System.out.print("Telephone:");
         telephone = scanner.nextLine();
 
-        CreditCard card = addCard(name, surname);
-        Guest newGuest = new Guest(IdGenerator.generateUserID(UserType.GUEST, name, surname), name, surname, telephone, card);
+    //     CreditCard card = addCard(name, surname);
+    //     Guest newGuest = new Guest(IdGenerator.generateUserID(UserType.GUEST, name, surname), name, surname, telephone);
 
-        users.add(newGuest);
-        return newGuest;
+    //    users.add(newGuest);
+    //    return newGuest;
+    */
+
+        return null;
     }
-
     public ReservationManager getReservationManager() {
         return reservationManager;
     }
-
     public HotelManager getHotelManager() {
         return hotelManager;
     }
-
     public CalendarManager getCalendarManager() {
         return calendarManager;
-    }
-
-    //Region helper methods
-    private Guest addGuest() {
-        Guest newGuest = (Guest)createUser(UserType.GUEST);
-
-        if (newGuest != null)
-            users.add(newGuest);
-
-        return newGuest;
-    }
-    private HotelDirector addHotelDirector() {
-        //l'hotel director ha in più un l'arraylist di hotel
-        HotelDirector newHotelDirector = (HotelDirector)createUser(UserType.HOTEL_DIRECTOR);
-
-        if (newHotelDirector != null)
-            users.add(newHotelDirector);
-
-        return newHotelDirector;
-    }
-    private User createUser(UserType type) {
-        //TODO al momento non chiedo di inserire il numero di telefono
-        String name, surname, email, telephone, password;
-
-        System.out.print("Please enter your name: ");
-        name = scanner.nextLine();
-
-        System.out.print("Please enter your surname: ");
-        surname = scanner.nextLine();
-        System.out.print("Please enter your email: ");
-        email = scanner.nextLine();
-        System.out.print("Please enter your password: ");
-        password = scanner.nextLine();
-
-
-        if (type == UserType.GUEST) {
-            CreditCard card = addCard(name, surname);
-            return new Guest(IdGenerator.generateUserID(type, name, surname),
-                    name, surname, email,"", password, card, reservationManager);
-        }
-        else if (type == UserType.HOTEL_DIRECTOR) {
-            return new HotelDirector(IdGenerator.generateUserID(type, name, surname),
-                    name, surname, email,"",password, hotelManager);
-        }
-
-        return null;
     }
     private User findUserByEmail(String email) {
 
@@ -175,20 +85,6 @@ public class AccountManager {
         return null;
     }
 
-    private CreditCard addCard(String name, String surname) {
-        String cardNumber,expiryDate, CVV;
-
-        System.out.print("Please enter the 16 digits of the card number: ");
-        cardNumber = scanner.nextLine();
-
-        System.out.println("Please enter the expiry date (MM/yy): ");
-        expiryDate = scanner.nextLine();
-
-        System.out.println("Please enter the CVV code: ");
-        CVV = scanner.nextLine();
-
-        return new CreditCard(name + " " +surname, cardNumber, expiryDate, Integer.parseInt(CVV));
-    }
     //end Region
 
 }

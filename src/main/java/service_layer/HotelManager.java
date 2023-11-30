@@ -14,13 +14,11 @@ public class HotelManager extends Subject {
     private final Map<String, Hotel> hotelMap;
     private final ReservationManager reservationManager;
     private final CalendarManager calendarManager;
-    private final Scanner scanner;
 
-    public HotelManager(ReservationManager reservationManager, CalendarManager calendarManager, Scanner scanner){
+    public HotelManager(ReservationManager reservationManager, CalendarManager calendarManager){
         hotelMap = new HashMap<>();
         this.reservationManager = reservationManager;
         this.calendarManager = calendarManager;
-        this.scanner = scanner;
     }
 
     public Hotel addHotel(HotelDirector director) {
@@ -66,7 +64,7 @@ public class HotelManager extends Subject {
         // per ora facciamo che l'hotel non è modificabile.
     }
     public void removeHotel(HotelDirector director) {
-        //Attenzione cancellare un hotel significa anche eliminare l'arrayList di tutte le camere
+    /*    //Attenzione cancellare un hotel significa anche eliminare l'arrayList di tutte le camere
         //Dalla lista di strutture il gestore decide quale hotel eliminare
         // (immagino che ogni gestore di hotel possa vedere solo le proprie strutture)
         int id;
@@ -87,10 +85,12 @@ public class HotelManager extends Subject {
             setChanged();
             notifyObservers(hotelRemoved, "Hotel removed");
         }
+
+     */
     }
 
     public void doHotelResearch(User user){
-        //TODO capire se effettivamente ci serve chiedere il numero di camere
+    /*    //TODO capire se effettivamente ci serve chiedere il numero di camere
         //Chiedo tutte le info (check-in, check-out, luogo, numero di persone)
         Research info =  askResearchInfo(true);
         String response = null;
@@ -119,9 +119,10 @@ public class HotelManager extends Subject {
         } else
              System.out.println("Room not on the list!");
 
+     */
     }
     public Hotel chooseHotelByDirector(HotelDirector director) {
-        ArrayList<Hotel> hotels = findHotelsByDirector(director);
+    /*    ArrayList<Hotel> hotels = findHotelsByDirector(director);
 
         if(!hotels.isEmpty()) {
             for (Hotel hotel : hotels) {
@@ -136,6 +137,7 @@ public class HotelManager extends Subject {
         else {
             System.out.println("Sorry you have to put first at least an hotel!");
         }
+     */
         return null;
     }
     public Research askResearchInfo(boolean forGuests) {
@@ -172,7 +174,7 @@ public class HotelManager extends Subject {
         return filteredHotels;
     }
     private ArrayList<Room> createRooms(String id){
-        //Al momento lo lasciamo qui magari il roomManager non ci serve
+    /*    //Al momento lo lasciamo qui magari il roomManager non ci serve
         ArrayList<Room> rooms = new ArrayList<>();
         int[] numRooms = RoomType.getRoomPreference(); //qui chiederò il numero di camere singole - doppie - triple
         RoomType[] types = RoomType.values();
@@ -190,6 +192,9 @@ public class HotelManager extends Subject {
             }
         }
         return rooms;
+
+     */
+        return null;
     }
     private ArrayList<Hotel> findHotelsByDirector(HotelDirector director) {
         ArrayList<Hotel> allHotels = new ArrayList<>(hotelMap.values());
@@ -204,7 +209,7 @@ public class HotelManager extends Subject {
         return hotelsByDirector;
     }
     private Research askResearchInfoHelper(boolean forGuests) {
-        LocalDate checkIn, checkOut;
+    /*    LocalDate checkIn, checkOut;
         String city = null;
         int numOfGuests;
         int numOfRooms = 0; //mi serve per capire in quante camere l'utente vorrebbe stare
@@ -221,14 +226,14 @@ public class HotelManager extends Subject {
         numOfGuests = scanner.nextInt();
         scanner.nextLine();
 
-        /*
-        System.out.print("And the number of rooms needed:");
-        numOfRooms = scanner.nextInt();
-        scanner.nextLine();
-         */
+
+        //System.out.print("And the number of rooms needed:");
+        //numOfRooms = scanner.nextInt();
+        //scanner.nextLine();
+
 
         return new Research(city, checkIn, checkOut, numOfGuests);
-
+    */   return null;
     }
     private void printRoomsHelper(ArrayList<Room> roomsAvailable, Hotel hotelToReserve, LocalDate checkIn, LocalDate checkOut) {
         System.out.println("These are the rooms available:");
@@ -239,7 +244,7 @@ public class HotelManager extends Subject {
         }
     }
     private Hotel chooseHotelHelper(Research info) {
-        Hotel hotelToReserve = null;
+    /*    Hotel hotelToReserve = null;
 
         ArrayList<Hotel> hotels = filterHotels(info.getCity(), info.getCheckIn(),
                 info.getCheckOut(), info.getNumOfGuest(), 0);
@@ -260,9 +265,11 @@ public class HotelManager extends Subject {
             System.out.println("Hotel not on the list!");
 
         return hotelToReserve;
+
+     */ return null;
     }
     public String chooseRoomHelper(ArrayList<Room> roomsAvailable) {
-        String roomToReserve = null;
+    /*    String roomToReserve = null;
 
         System.out.print("Please enter the number of the room you want to book:");
         int roomNumber = scanner.nextInt();
@@ -271,6 +278,8 @@ public class HotelManager extends Subject {
             roomToReserve = roomsAvailable.get(roomNumber - 1).getId();
 
         return roomToReserve;
+
+     */ return null;
     }
 
     //End Region

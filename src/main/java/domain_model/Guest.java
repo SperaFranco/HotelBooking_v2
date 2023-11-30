@@ -3,6 +3,7 @@ package domain_model;
 import service_layer.ReservationManager;
 import utilities.Observer;
 import utilities.Subject;
+import utilities.UserType;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -13,16 +14,16 @@ public class Guest extends User implements Observer {
     private final CreditCard card;
     //end Region
 
-    public Guest(String id, String name, String surname, String email, String telephone, String password, CreditCard card, ReservationManager reservationManager) {
-        super(id, name, surname, email, telephone, password);
+    public Guest(String id, String name, String surname, String email, String telephone, String password, CreditCard card, ReservationManager reservationManager, UserType type) {
+        super(id, name, surname, email, telephone, password, type);
         this.card = card;
         this.reservations = new ArrayList<>();
         reservationManager.addObserver(this);
     }
 
-    public Guest(String id, String name, String surname, String telephone, CreditCard card) {
+    public Guest(String id, String name, String surname, String telephone, CreditCard card, UserType type) {
         //Cliente senza account
-        super(id, name, surname, null, telephone, null);
+        super(id, name, surname, null, telephone, null, type);
         this.card = card;
         this.reservations = new ArrayList<>();
     }

@@ -118,8 +118,10 @@ public class HotelDirectorMenu {
                     if (!roomsAvailable.isEmpty()) {
                         hotelManager.printRooms(roomsAvailable, hotel, info.getCheckIn(), info.getCheckOut());
                         String roomID = hotelManager.chooseRoom(roomsAvailable);
-                        if (roomID != null)
-                            reservationManager.doReservation(guest, info, hotel, roomID);
+                        if (roomID != null){
+                            String description= "due letti singoli";
+                            reservationManager.doReservation(guest, info, hotel, roomID, description);
+                        }
                         else
                             System.out.println("Room not on the list!");
                     }else
@@ -127,11 +129,11 @@ public class HotelDirectorMenu {
                     break;
                 case 7:
                     reservationManager.getAllReservations(hotel); //le ristampa
-                    reservationManager.updateReservation();
+                    reservationManager.updateReservation(null, null, null,null);
                     break;
                 case 8:
                     reservationManager.getAllReservations(hotel);
-                    reservationManager.deleteReservation();
+                    reservationManager.deleteReservation(null);
                     break;
                 case 0:
                     System.out.println("Returning to the starting menu...");
