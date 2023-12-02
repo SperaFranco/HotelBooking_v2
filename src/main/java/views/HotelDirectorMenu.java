@@ -48,15 +48,16 @@ public class HotelDirectorMenu {
 
             switch (choice) {
                 case 1:
-                    hotel = hotelManager.addHotel(director);
+                    hotel = null;
+                    hotelManager.addHotel(hotel);
                     secondMenuDirector(hotel);
                     break;
                 case 2:
-                    hotelManager.removeHotel(director);
+                    hotelManager.removeHotel(null);
                     System.out.println("Hotel Removed!");
                     break;
                 case 3:
-                    hotel = hotelManager.chooseHotelByDirector(director);
+                    //hotel = hotelManager.chooseHotelByDirector(director);
                     secondMenuDirector(hotel);
                     break;
                 case 0:
@@ -91,36 +92,36 @@ public class HotelDirectorMenu {
 
             switch (choice) {
                 case 1:
-                    calendarManager.displayCalendar(hotel);
+                    //calendarManager.displayCalendar(hotel);
                     break;
                 case 2:
-                    calendarManager.modifyPrice(hotel);
+                    calendarManager.modifyPrice(hotel, null, null, 100.00);
                     break;
                 case 3:
-                    calendarManager.closeRoom(hotel);
+                    calendarManager.closeRoom(hotel, null, null);
                     break;
                 case 4:
-                    calendarManager.insertMinimumStay(hotel);
+                    calendarManager.insertMinimumStay(hotel, null, null, 1);
                     break;
                 case 5:
                     reservationManager.getAllReservations(hotel);
                     break;
                 case 6:
                     //Chiedo info
-                    Research info = hotelManager.askResearchInfo(false);
+                    Research info = null;
 
                     //Inserisco i dati dell'utente
                     System.out.println("Please enter all the client information's:");
                     Guest guest = accountManager.addGuestWithoutAccount();
 
                     //Scelgo la camera da prenotare
-                    ArrayList<Room> roomsAvailable = hotel.getRoomsAvailable(info.getCheckIn(), info.getCheckOut());
+                    ArrayList<Room> roomsAvailable = hotel.getRoomsAvailable(info);
                     if (!roomsAvailable.isEmpty()) {
-                        hotelManager.printRooms(roomsAvailable, hotel, info.getCheckIn(), info.getCheckOut());
-                        String roomID = hotelManager.chooseRoom(roomsAvailable);
+                        //hotelManager.printRooms(roomsAvailable, hotel, info.getCheckIn(), info.getCheckOut());
+                        String roomID = "";//hotelManager.chooseRoom(roomsAvailable);
                         if (roomID != null){
                             String description= "due letti singoli";
-                            reservationManager.doReservation(guest, info, hotel, roomID, description);
+                            reservationManager.createReservation(guest, info, hotel, roomID, description);
                         }
                         else
                             System.out.println("Room not on the list!");

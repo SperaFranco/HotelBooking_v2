@@ -1,10 +1,7 @@
 package domain_model;
 
 import service_layer.CalendarManager;
-import utilities.HotelRating;
-import utilities.Observer;
-import utilities.RoomType;
-import utilities.Subject;
+import utilities.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -122,13 +119,14 @@ public class Hotel implements Observer {
         this.rooms = rooms;
     }
 
-    public ArrayList<Room> getRoomsAvailable(LocalDate checkIn, LocalDate checkOut) {
+    public ArrayList<Room> getRoomsAvailable(Research researchInfo) {
 
         ArrayList<Room> roomsAvailable = new ArrayList<>();
 
         for (Room room : rooms) {
-            if(calendar.isRoomAvailable(checkIn, checkOut, room.getId()))
-                roomsAvailable.add(room);
+            if(RoomType.getRoomCapacity(room.getType()) >= researchInfo.getNumOfGuest())
+                if(calendar.isRoomAvailable(researchInfo, room.getId()))
+                    roomsAvailable.add(room);
         }
         return roomsAvailable;
     }
@@ -141,14 +139,6 @@ public class Hotel implements Observer {
         this.calendar = calendar;
     }
     //end Region
-
-    public String printHotelInfo(int i) {
-        return "Hotel number " + i + " informations:\n" +
-                "Name: " + name + "\n" +
-                "City: " + city + "\n" +
-                "Address: " + address + "\n" +
-                "Number of Rooms: " + rooms.size() + "\n";
-    }
 
 
     public int getHotelTotalCapacity() {
@@ -164,20 +154,20 @@ public class Hotel implements Observer {
         return capacity;
     }
 
-    public boolean isHotelAvailable(LocalDate checkIn, LocalDate checkOut, int numOfGuests, int numOfRooms) {
+    public boolean isHotelAvailable(Research researchInfo) {
         //Controllo nel calendario se ho delle camere disponibili per le richieste indicate
         // e ritorno vero se il numero di camere è diverso da zero
 
-        //al momento non uso numOfRooms ma lo dovrei usare per dividere le persone fra le camere
-        // --> no perché per il momento il codice fà prenotare una sola camera
         ArrayList<Room> availableRooms = new ArrayList<>();
-
-        for (Room room : getRoomsAvailable(checkIn, checkOut)) {
-            if(room.canRoomAccomodate(numOfGuests))
-                availableRooms.add(room);
+        boolean roomAvailable = false;
+        for (Room room : getRoomsAvailable(researchInfo)) {
+            //FIXME forse c'è un doppio controllo sulla capienza della camera, vedi getRoomsAvailable
+            if(room.canRoomAccomodate(researchInfo.getNumOfGuest())){
+                roomAvailable = true;
+                break;
+            }
         }
-
-        return !availableRooms.isEmpty();
+        return roomAvailable;
     }
 
 

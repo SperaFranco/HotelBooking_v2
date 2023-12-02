@@ -43,7 +43,7 @@ public class StartMenu {
 
             switch (choice) {
                 case 1:
-                    accountManager.getHotelManager().doHotelResearch(user);
+                    accountManager.getHotelManager().doHotelResearch(null);
                     break;
                 case 2:
                     //Dalla registrazione si torna indietro oppure si va direttamente ai menu?

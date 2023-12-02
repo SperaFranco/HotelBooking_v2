@@ -30,103 +30,47 @@ public class CalendarManager extends Subject {
         this.calendars.put(hotelID, calendar);
         return calendar;
     }
-    public void displayCalendar(Hotel hotel) {
-        if (hotel != null) {
-            HotelCalendar calendar = calendars.get(hotel.getId());
+    public void modifyPrice(Hotel hotel, LocalDate date, String roomID, double price){
 
-            int numDaysToShow; //se centra aumentiamo il numero dei giorni
-            System.out.print("Please insert the number of days you want to see: ");
-       //     numDaysToShow = Integer.parseInt(scanner.nextLine());
-
-       //     calendar.displayCalendar(numDaysToShow);
-        }else
-            System.out.println("Please first choose a hotel of reference...");
-    }
-    public void modifyPrice(Hotel hotel){
-        if (hotel != null) {
-            double price;
-            RoomInfo roomInfo = getRoomInfo(hotel.getId());
-
-            if (roomInfo != null) {
-                System.out.print("Please insert the new price:");
-         //       price = scanner.nextDouble();
-         //       roomInfo.setPrice(price);
-                setChanged();
-                notifyObservers("Room price changed");
-            } else
-                System.out.println("Sorry room not found!");
-        }else
-            System.out.println("Please first choose a hotel of reference...");
+        if (hotel == null) throw new RuntimeException("hotel is null");
+        RoomInfo roomInfo = getRoomInfo(hotel.getId(), date, roomID);
+        if (roomInfo == null) throw new RuntimeException("roomInfo is null");
+        roomInfo.setPrice(price);
+        setChanged();
+        notifyObservers("Room price changed");
 
     }
-    public void closeRoom(Hotel hotel){
-        if(hotel != null) {
-            RoomInfo roomInfo = getRoomInfo(hotel.getId());
+    public void closeRoom(Hotel hotel, LocalDate date, String roomID){
 
-            if (roomInfo != null) {
-                roomInfo.setAvailability(false);
-                setChanged();
-                notifyObservers("Room availability changed");
-            } else
-                System.out.println("Sorry room not found!");
-        }else
-            System.out.println("Please first choose a hotel of reference...");
+        if(hotel == null) throw new RuntimeException("hotel il null");
+        RoomInfo roomInfo = getRoomInfo(hotel.getId(), date, roomID);
+        if (roomInfo == null) throw new RuntimeException("roomInfo is null");
+        roomInfo.setAvailability(false);
+        setChanged();
+        notifyObservers("Room availability changed");
 
     }
+    //TODO aggiornare il codice affinché le camere con minimum stay maggiore a uno compaiano solo nelle ricerche che rispettano il vincolo
+    public void insertMinimumStay(Hotel hotel, LocalDate date, String roomID, int minStay){
 
-    public void insertMinimumStay(Hotel hotel){
-        if(hotel != null) {
-            int minStay;
-            RoomInfo roomInfo = getRoomInfo(hotel.getId());
+        if(hotel == null) throw new RuntimeException("hotel il null");
+        RoomInfo roomInfo = getRoomInfo(hotel.getId(), date, roomID);
+        if (roomInfo == null) throw new RuntimeException("roomInfo is null");
+        roomInfo.setMinimumStay(minStay);
+        setChanged();
 
-            if (roomInfo != null) {
-                System.out.print("Please insert the new minimum days to stay:");
-    //            minStay = scanner.nextInt();
-    //            roomInfo.setMinimumStay(minStay);
-                setChanged();
-
-            } else
-                System.out.println("Sorry room not found!");
-        }else
-            System.out.println("Please first choose a hotel of reference...");
     }
-
     //Region helpers
-    private RoomInfo getRoomInfo(String hotelID) {
+    private RoomInfo getRoomInfo(String hotelID, LocalDate date, String roomID) {
 
-        String date, roomID;
         HotelCalendar calendar = calendars.get(hotelID);
+        Map<String, RoomInfo> roomInfoMap = calendar.getRoomStatusMap().get(date);
+        if (roomInfoMap == null) throw new RuntimeException("roomInfoMap is null");
+        RoomInfo roomInfo = roomInfoMap.get(roomID);
+        if (roomInfo == null) throw new RuntimeException("roomInfo is null");
+        return roomInfo;
 
-    /*    System.out.println("Please insert the date and the room ID: ");
-        System.out.print("Date (yyyy/mm/dd):");
-        date = scanner.nextLine();
-
-        System.out.print("RoomID:");
-        roomID = scanner.nextLine();
-
-        try {
-            LocalDate parsedDate = LocalDate.parse(date);
-            Map<String, RoomInfo> roomInfoMap = calendar.getRoomStatusMap().get(parsedDate);
-
-            if (roomInfoMap != null) {
-                RoomInfo roomInfo = roomInfoMap.get(roomID);
-
-                if (roomInfo != null)
-                    return roomInfo;
-                else
-                    System.out.println("Room with ID: " + roomID + " not found for the specified date");
-            }else
-                System.out.println("No rooms found for the specified date");
-
-        } catch (DateTimeException e) {
-            System.out.println("Invalid date format. Please use yyyy/mm/dd.");
-        } catch (NullPointerException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    */
-        return null;
     }
-
     public HotelCalendar getCalendarByHotelID(String id) {
         return calendars.get(id);
     }

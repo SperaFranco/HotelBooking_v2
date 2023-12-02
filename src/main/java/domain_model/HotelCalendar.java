@@ -8,6 +8,7 @@ import java.util.Map;
 import service_layer.HotelManager;
 import service_layer.ReservationManager;
 import utilities.Observer;
+import utilities.Research;
 import utilities.Subject;
 
 public class HotelCalendar implements Observer {
@@ -22,6 +23,10 @@ public class HotelCalendar implements Observer {
     public HotelCalendar(String hotelID, HotelManager manager, ReservationManager reservationManager) {
         this.hotelID = hotelID;
         roomStatusMap = new HashMap<>();
+        for(LocalDate date = LocalDate.of(2023,1,1); !date.equals(LocalDate.of(2024, 1, 1)); date=date.plusDays(1) ){
+            Map<String, RoomInfo> roomStatus = new HashMap<>();
+            roomStatusMap.put(date, roomStatus);
+        }
         manager.addObserver(this);
         reservationManager.addObserver(this);
     }
@@ -30,10 +35,13 @@ public class HotelCalendar implements Observer {
         return roomStatusMap;
     }
 
+
     public void addRoomToCalendar(LocalDate date, String roomNumber, RoomInfo roomInfo) {
-        Map<String, RoomInfo> roomStatus = new HashMap<>();
-        roomStatus.put(roomNumber, roomInfo);
-        roomStatusMap.put(date, roomStatus);
+        //Map<String, RoomInfo> roomStatus = new HashMap<>();
+        //FIXME qui c'è un errore, dentro roomStatusMap, per ogni data, compare una sola camera
+        //roomStatus.put(roomNumber, roomInfo);
+        //roomStatusMap.put(date, roomStatus);
+        roomStatusMap.get(date).put(roomNumber, roomInfo);
     }
 
     public String getHotelID() {
@@ -121,12 +129,13 @@ public class HotelCalendar implements Observer {
         if (message.contains("Hotel removed")) //controllare
             getRoomStatusMap().clear(); //cancello anche il calendario
     }
-    public boolean isRoomAvailable(LocalDate checkIn, LocalDate checkOut, String roomID) {
+    public boolean isRoomAvailable(Research researchInfo, String roomID) {
         //Controllo se la camera risulta disponibile per tutti i giorni indicati dal checkin al checkout
         //TODO Ci sarebbe anche da fare il controllo per il numero minimo di pernottamenti
 
-        for (LocalDate date = checkIn; !date.isAfter(checkOut); date = date.plusDays(1)) {
+        for (LocalDate date = researchInfo.getCheckIn(); !date.isAfter(researchInfo.getCheckOut()); date = date.plusDays(1)) {
             Map<String, RoomInfo> roomInfoMap = roomStatusMap.get(date);
+            //FIXME il problema è qui
             RoomInfo info = roomInfoMap.get(roomID);
             if(!info.getAvailability())
                 //Basta che un giorno sia falso e la camera non è più disponibile

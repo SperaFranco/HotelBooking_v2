@@ -17,10 +17,11 @@ public class ReservationManager extends Subject {
         this.accountManager = accountManager;
         this.calendarManager = calendarManager;
     }
-    public void doReservation(Guest user, Research info, Hotel hotel, String roomID, String description) {
+    public void createReservation(Guest user, Research researchInfo, Hotel hotel, String roomID, String description) {
         if(user == null) throw new RuntimeException("user is null");
-        Reservation newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), info.getCheckIn()),
-                info.getCheckIn(), info.getCheckOut(), info.getNumOfGuest(), description, hotel.getId(), roomID, user.getId());
+        //FIXME manca un controllo sulla disponibilità della camera per quelle date
+        Reservation newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), researchInfo.getCheckIn()),
+                researchInfo.getCheckIn(), researchInfo.getCheckOut(), researchInfo.getNumOfGuest(), description, hotel.getId(), roomID, user.getId());
         addReservation(newReservation);
     }
     public void addReservation(Reservation newReservation) {
@@ -38,7 +39,9 @@ public class ReservationManager extends Subject {
         if(newCheckInDate!=null && newCheckOutDate!=null){
             HotelCalendar calendar = calendarManager.getCalendarByHotelID(reservation.getHotel());
             calendar.setRoomAvailability(reservation.getRoomReserved(), reservation.getCheckIn(), reservation.getCheckOut(), true);
-            if(!calendar.isRoomAvailable(newCheckInDate, newCheckOutDate, reservation.getRoomReserved())) {
+            //FIXME messo questo research temporaneamente perché isRoomAvailable accetta un research
+            Research research = new Research(null, newCheckInDate, newCheckOutDate, 0);
+            if(!calendar.isRoomAvailable(research, reservation.getRoomReserved())) {
                 calendar.setRoomAvailability(reservation.getRoomReserved(), reservation.getCheckIn(), reservation.getCheckOut(), false);
                 throw new RuntimeException("the dates requested are not available");
             }

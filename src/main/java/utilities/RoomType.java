@@ -1,7 +1,5 @@
 package utilities;
 
-import java.util.Scanner;
-
 public enum RoomType {
     SINGLE_ROOM("Single room"),
     DOUBLE_ROOM("Double room"),
@@ -13,28 +11,11 @@ public enum RoomType {
         this.displayName = displayName;
     }
 
-    public static int[] getRoomPreference() {
-        Scanner scanner = new Scanner(System.in);
-        int[] rooms = new int[3]; //0 single_room, 1 double_room, 2 triple_room
-
-        for (int i = 0; i < rooms.length; i++) {
-            String roomType = "";
-
-            switch (i) {
-                case 0:
-                    roomType = "single";
-                    break;
-                case 1:
-                    roomType = "double";
-                    break;
-                case 2:
-                    roomType = "triple";
-                    break;
-
-            }
-            System.out.print("Please enter the number of " + roomType + " rooms: ");
-            rooms[i] = scanner.nextInt();
-        }
+    public static int[] setNumberOfRoomsPerType(int nrOfSingleRooms, int nrOfDoubleRooms, int nrOfTripleRooms) {
+        int[] rooms = new int[3];
+        rooms[0] = nrOfSingleRooms;
+        rooms[1] = nrOfDoubleRooms;
+        rooms[2] = nrOfTripleRooms;
         return rooms;
     }
 
