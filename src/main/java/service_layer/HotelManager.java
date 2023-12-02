@@ -51,7 +51,6 @@ public class HotelManager extends Subject {
     public ArrayList<Hotel> doHotelResearch(Research researchInfo) {
 
         ArrayList<Hotel> filteredHotels = filterHotelByResearchInfo(researchInfo);
-        //if (filteredHotels.isEmpty()) throw new RuntimeException("There are no hotels available for those dates.");
         return filteredHotels;
 
     }

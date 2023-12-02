@@ -161,11 +161,8 @@ public class Hotel implements Observer {
         ArrayList<Room> availableRooms = new ArrayList<>();
         boolean roomAvailable = false;
         for (Room room : getRoomsAvailable(researchInfo)) {
-            //FIXME forse c'è un doppio controllo sulla capienza della camera, vedi getRoomsAvailable
-            if(room.canRoomAccomodate(researchInfo.getNumOfGuest())){
-                roomAvailable = true;
-                break;
-            }
+            roomAvailable = true;
+            break;
         }
         return roomAvailable;
     }

@@ -8,14 +8,14 @@ public class RoomInfo {
     //Region fields
     private String hotelID;
     private String roomID; //uso l'id della camera per riferimermi a questa
-    private LocalDate date;
-
     private double price;
     private int minimumStay; //è il numero soggiorni minimo
     private boolean availability;
+    private LocalDate date;
     //end Region
 
     public RoomInfo(String hotelID, String roomID, LocalDate date) {
+        this.hotelID = hotelID;
         this.roomID = roomID;
         this.price = 100.0;
         this.minimumStay = 1;
@@ -57,12 +57,13 @@ public class RoomInfo {
         this.availability = availability;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
     public String getHotelID() {
         return hotelID;
     }
     //end Region
+
+    //FIXME risolvere il problema di questa data, che non ha senso che sia qua ma è legata all'implementazione dell'Observer
+    public LocalDate getDate(){
+        return date;
+    }
 }

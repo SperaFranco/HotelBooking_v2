@@ -36,12 +36,12 @@ public class HotelCalendar implements Observer {
     }
 
 
-    public void addRoomToCalendar(LocalDate date, String roomNumber, RoomInfo roomInfo) {
+    public void addRoomToCalendar(LocalDate date, String roomID, RoomInfo roomInfo) {
         //Map<String, RoomInfo> roomStatus = new HashMap<>();
         //FIXME qui c'è un errore, dentro roomStatusMap, per ogni data, compare una sola camera
         //roomStatus.put(roomNumber, roomInfo);
         //roomStatusMap.put(date, roomStatus);
-        roomStatusMap.get(date).put(roomNumber, roomInfo);
+        roomStatusMap.get(date).put(roomID, roomInfo);
     }
 
     public String getHotelID() {
@@ -135,7 +135,6 @@ public class HotelCalendar implements Observer {
 
         for (LocalDate date = researchInfo.getCheckIn(); !date.isAfter(researchInfo.getCheckOut()); date = date.plusDays(1)) {
             Map<String, RoomInfo> roomInfoMap = roomStatusMap.get(date);
-            //FIXME il problema è qui
             RoomInfo info = roomInfoMap.get(roomID);
             if(!info.getAvailability())
                 //Basta che un giorno sia falso e la camera non è più disponibile

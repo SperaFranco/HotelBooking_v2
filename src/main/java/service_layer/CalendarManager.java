@@ -44,7 +44,7 @@ public class CalendarManager extends Subject {
 
         if(hotel == null) throw new RuntimeException("hotel il null");
         RoomInfo roomInfo = getRoomInfo(hotel.getId(), date, roomID);
-        if (roomInfo == null) throw new RuntimeException("roomInfo is null");
+        if(roomInfo == null) throw new RuntimeException("roomInfo is null");
         roomInfo.setAvailability(false);
         setChanged();
         notifyObservers("Room availability changed");

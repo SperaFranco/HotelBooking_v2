@@ -17,14 +17,17 @@ public class ReservationManager extends Subject {
         this.accountManager = accountManager;
         this.calendarManager = calendarManager;
     }
-    public void createReservation(Guest user, Research researchInfo, Hotel hotel, String roomID, String description) {
+    public Reservation createReservation(Guest user, Research researchInfo, Hotel hotel, String roomID, String description) {
+
         if(user == null) throw new RuntimeException("user is null");
-        //FIXME manca un controllo sulla disponibilità della camera per quelle date
-        Reservation newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), researchInfo.getCheckIn()),
-                researchInfo.getCheckIn(), researchInfo.getCheckOut(), researchInfo.getNumOfGuest(), description, hotel.getId(), roomID, user.getId());
-        addReservation(newReservation);
+        Reservation newReservation = null;
+        if(hotel.isHotelAvailable(researchInfo)) {
+            newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), researchInfo.getCheckIn()), researchInfo, description, hotel.getId(), roomID, user.getId());
+            addReservation(newReservation);
+        }
+        return newReservation;
     }
-    public void addReservation(Reservation newReservation) {
+    private  void addReservation(Reservation newReservation) {
         //TODO guardare come fare per mandare email di notifica prenotazione (qui o nel doReservation)
         reservationMap.put(newReservation.getId(), newReservation);
         setChanged();
@@ -35,7 +38,7 @@ public class ReservationManager extends Subject {
         Reservation reservation = findReservationById(id);
         if (reservation == null) throw new RuntimeException("reservation not found");
         if(newDescription!=null)
-            reservation.setNotes(newDescription);
+            reservation.setDescription(newDescription);
         if(newCheckInDate!=null && newCheckOutDate!=null){
             HotelCalendar calendar = calendarManager.getCalendarByHotelID(reservation.getHotel());
             calendar.setRoomAvailability(reservation.getRoomReserved(), reservation.getCheckIn(), reservation.getCheckOut(), true);

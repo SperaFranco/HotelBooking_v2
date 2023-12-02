@@ -31,13 +31,15 @@ class CalendarManagerTest {
         ArrayList<Hotel> hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.size()==1);
         assert(hotelsAvailable.contains(hotel));
-        calendarManager.closeRoom(hotel, LocalDate.of(2023,12,25),"H1FI-D3");
+        LocalDate dateClosingRoom = LocalDate.of(2023,12,25);
+        calendarManager.closeRoom(hotel, dateClosingRoom, hotel.getRooms().get(1).getId());
         hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.size()==1);
         assert(hotelsAvailable.contains(hotel));
-        calendarManager.closeRoom(hotel, LocalDate.of(2023,12,25),"H1FI-D2");
-        calendarManager.closeRoom(hotel, LocalDate.of(2023,12,25),"H1FI-T4");
+        calendarManager.closeRoom(hotel, dateClosingRoom, hotel.getRooms().get(2).getId());
+        calendarManager.closeRoom(hotel, dateClosingRoom, hotel.getRooms().get(3).getId());
         hotelsAvailable = hotelManager.doHotelResearch(research);
+
         assert(hotelsAvailable.isEmpty());
 
     }
