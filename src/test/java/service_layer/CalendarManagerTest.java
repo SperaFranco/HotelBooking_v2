@@ -53,7 +53,7 @@ class CalendarManagerTest {
         HotelManager hotelManager = new HotelManager(reservationManager, calendarManager);
         Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
         hotelManager.addHotel(hotel);
-        calendarManager.modifyPrice(hotel, LocalDate.of(2023,12,25),"H1FI-D2",140);
-        assert(calendarManager.getCalendarByHotelID(hotel.getId()).getRoomStatusMap().get(LocalDate.of(2023,12,25)).get("H1FI-D2").getPrice()==140);
+        calendarManager.modifyPrice(hotel, LocalDate.of(2023,12,25),hotel.getRooms().get(1).getId(),140);
+        assert(calendarManager.getCalendarByHotelID(hotel.getId()).getRoomStatusMap().get(LocalDate.of(2023,12,25)).get(hotel.getRooms().get(1).getId()).getPrice()==140);
     }
 }
