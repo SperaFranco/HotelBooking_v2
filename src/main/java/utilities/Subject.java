@@ -38,17 +38,18 @@ public abstract class Subject {
             arrLocal = observers.toArray();
             clearChanged();
         }
-
         for (int i = arrLocal.length-1; i>=0; i--) {
-            if (this instanceof ReservationManager) {
+            //FIXME ogni if chiama lo stesso update con gli stessi argomenti, può essere tolto
+            /*if (this instanceof ReservationManager) {
                 ((Observer) arrLocal[i]).update(this, arg, message);
             }
             else if(this instanceof HotelManager) {
                 ((Observer) arrLocal[i]).update(this, arg, message);
             }
             else if (this instanceof CalendarManager) {
-                ((Observer)arrLocal[i]).update(this, arg, message);
-            }
+                ((Observer) arrLocal[i]).update(this, arg, message);
+            }*/
+            ((Observer) arrLocal[i]).update(this, arg, message);
         }
     }
 

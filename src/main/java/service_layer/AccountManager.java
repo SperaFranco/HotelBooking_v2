@@ -43,29 +43,6 @@ public class AccountManager {
         users.remove(user);
         user = null;
     }
-
-    //TODO rimettere questo quando capisco dove viene usato
-    public Guest addGuestWithoutAccount() {
-    /*    String name, surname, telephone;
-
-        System.out.print("Name:");
-        name = scanner.nextLine();
-
-        System.out.print("Surname:");
-        surname = scanner.nextLine();
-
-        System.out.print("Telephone:");
-        telephone = scanner.nextLine();
-
-    //     CreditCard card = addCard(name, surname);
-    //     Guest newGuest = new Guest(IdGenerator.generateUserID(UserType.GUEST, name, surname), name, surname, telephone);
-
-    //    users.add(newGuest);
-    //    return newGuest;
-    */
-
-        return null;
-    }
     public ReservationManager getReservationManager() {
         return reservationManager;
     }

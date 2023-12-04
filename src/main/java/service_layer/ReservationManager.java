@@ -9,19 +9,17 @@ import java.util.*;
 
 public class ReservationManager extends Subject {
     private final Map<String, Reservation> reservationMap;
-    private final AccountManager accountManager; //occhio ai controllers
     private final CalendarManager calendarManager;
 
     public ReservationManager(AccountManager accountManager, CalendarManager calendarManager) {
         reservationMap = new HashMap<>();
-        this.accountManager = accountManager;
         this.calendarManager = calendarManager;
     }
     public Reservation createReservation(Guest user, Research researchInfo, Hotel hotel, String roomID, String description) {
 
         if(user == null) throw new RuntimeException("user is null");
         Reservation newReservation = null;
-        if(hotel.isHotelAvailable(researchInfo)) {
+        if(hotel.isHotelAvailable(researchInfo) && hotel.getCalendar().isRoomAvailable(researchInfo,roomID)) {
             newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), researchInfo.getCheckIn()), researchInfo, description, hotel.getId(), roomID, user.getId());
             addReservation(newReservation);
         }
@@ -32,6 +30,13 @@ public class ReservationManager extends Subject {
         reservationMap.put(newReservation.getId(), newReservation);
         setChanged();
         notifyObservers(newReservation,"Add reservation");
+    }
+    public void deleteReservation(String id) {
+        Reservation reservationRemoved = findReservationById(id);
+        if(reservationRemoved==null) throw new RuntimeException("reservation not found");
+        reservationMap.remove(id);
+        setChanged();
+        notifyObservers(reservationRemoved, "Delete reservation");
     }
     public void updateReservation(String id, String newDescription, LocalDate newCheckInDate, LocalDate newCheckOutDate) {
 
@@ -52,13 +57,6 @@ public class ReservationManager extends Subject {
             reservation.setCheckIn(newCheckInDate);
             reservation.setCheckOut(newCheckOutDate);
         }
-    }
-    public void deleteReservation(String id) {
-        Reservation reservationRemoved = findReservationById(id);
-        if(reservationRemoved==null) throw new RuntimeException("reservation not found");
-        reservationMap.remove(id);
-        setChanged();
-        notifyObservers(reservationRemoved, "Delete reservation");
     }
     public List<Reservation> getReservations(Guest guest) {
         List<Reservation> reservations = new ArrayList<>();

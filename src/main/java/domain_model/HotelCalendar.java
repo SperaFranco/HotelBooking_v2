@@ -51,7 +51,7 @@ public class HotelCalendar implements Observer {
     public double getTotalPrice(LocalDate checkIn, LocalDate checkOut, String id) {
         double sum = 0;
 
-        for(LocalDate date = checkIn; !date.isAfter(checkOut); date = date.plusDays(1)) {
+        for(LocalDate date = checkIn; !date.isEqual(checkOut); date = date.plusDays(1)) {
             RoomInfo roomInfo = roomStatusMap.get(checkIn).get(id);
             sum += roomInfo.getPrice();
         }
@@ -90,9 +90,9 @@ public class HotelCalendar implements Observer {
     }
     @Override
     public void update(Subject subject, Object argument, String message) {
-        if (argument instanceof Reservation reservation) {
-            if(reservation.getHotel().equals(this.hotelID))
-                updateAvailability(reservation, message);
+        if (argument instanceof Reservation) {
+            if( ((Reservation)argument).getHotel().equals(this.hotelID) )
+                updateAvailability( ((Reservation)argument), message );
         }
         else if(argument instanceof Hotel hotel)
             if (hotel.getId().equals(this.hotelID))
@@ -109,7 +109,6 @@ public class HotelCalendar implements Observer {
         //Aggiorna il calendario quando viene effettuata una prenotazione
         if (message.contains("Add reservation")) {
             //nei giorni prenotati la camera va settata con disponibilità a falso
-
             //aggiorna lo stato della camera per le date di check-in e check-out
             setRoomAvailability(roomReservedID, newCheckInDate, newCheckOutDate, false);
         }else if(message.contains("Delete reservation")) {
@@ -120,7 +119,7 @@ public class HotelCalendar implements Observer {
     }
 
     public void setRoomAvailability(String roomID, LocalDate checkIn, LocalDate checkOut, boolean availability) {
-        for (LocalDate date = checkIn; !date.isAfter(checkOut); date = date.plusDays(1)) {
+        for (LocalDate date = checkIn; !date.isEqual(checkOut); date = date.plusDays(1)) {
             roomStatusMap.get(date).get(roomID).setAvailability(availability);
         }
     }
@@ -133,7 +132,7 @@ public class HotelCalendar implements Observer {
         //Controllo se la camera risulta disponibile per tutti i giorni indicati dal checkin al checkout
         //TODO Ci sarebbe anche da fare il controllo per il numero minimo di pernottamenti
 
-        for (LocalDate date = researchInfo.getCheckIn(); !date.isAfter(researchInfo.getCheckOut()); date = date.plusDays(1)) {
+        for (LocalDate date = researchInfo.getCheckIn(); !date.isEqual(researchInfo.getCheckOut()); date = date.plusDays(1)) {
             Map<String, RoomInfo> roomInfoMap = roomStatusMap.get(date);
             RoomInfo info = roomInfoMap.get(roomID);
             if(!info.getAvailability())

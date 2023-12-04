@@ -112,7 +112,7 @@ public class HotelDirectorMenu {
 
                     //Inserisco i dati dell'utente
                     System.out.println("Please enter all the client information's:");
-                    Guest guest = accountManager.addGuestWithoutAccount();
+                    Guest guest = null;//accountManager.addGuestWithoutAccount();
 
                     //Scelgo la camera da prenotare
                     ArrayList<Room> roomsAvailable = hotel.getRoomsAvailable(info);

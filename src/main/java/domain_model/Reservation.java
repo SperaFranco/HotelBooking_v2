@@ -10,8 +10,6 @@ public class Reservation
     private String id;
     private LocalDate checkIn;
     private LocalDate checkOut;
-
-    //TODO bisogna garantire che il numero di ospiti sia coerente con il tipo di camera prenotata
     private int numOfGuests;
     private String description;
     private String hotelID;
@@ -22,9 +20,9 @@ public class Reservation
 
     public Reservation(String id, Research researchInfo, String description, String hotel, String roomReserved, String client) {
         this.id = id;
-        this.checkIn = checkIn;
-        this.checkOut = checkOut;
-        this.numOfGuests = numOfGuests;
+        this.checkIn = researchInfo.getCheckIn();
+        this.checkOut = researchInfo.getCheckOut();
+        this.numOfGuests = researchInfo.getNumOfGuest();
         this.description = description;
         this.hotelID = hotel;
         this.roomReservedID = roomReserved; //nel uml settiamolo a 1 --> potremmo rendere possibile che uno stesso utente compia
