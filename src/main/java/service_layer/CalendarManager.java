@@ -1,6 +1,5 @@
 package service_layer;
 
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -51,13 +50,21 @@ public class CalendarManager extends Subject {
 
     }
     //TODO aggiornare il codice affinché le camere con minimum stay maggiore a uno compaiano solo nelle ricerche che rispettano il vincolo
-    public void insertMinimumStay(Hotel hotel, LocalDate date, String roomID, int minStay){
+    public void setMinimumStay(Hotel hotel, LocalDate date, String roomID, int minStay){
 
         if(hotel == null) throw new RuntimeException("hotel il null");
         RoomInfo roomInfo = getRoomInfo(hotel.getId(), date, roomID);
         if (roomInfo == null) throw new RuntimeException("roomInfo is null");
         roomInfo.setMinimumStay(minStay);
         setChanged();
+
+    }
+    public int getMinimumStay(Hotel hotel, LocalDate date, String roomID){
+
+        if(hotel == null) throw new RuntimeException("hotel il null");
+        RoomInfo roomInfo = getRoomInfo(hotel.getId(), date, roomID);
+        if (roomInfo == null) throw new RuntimeException("roomInfo is null");
+        return roomInfo.getMinimumStay();
 
     }
     //Region helpers

@@ -58,10 +58,13 @@ class HotelManagerTest {
         LocalDate checkInDate = LocalDate.of(2023, 12, 25);
         LocalDate checkOutDate = LocalDate.of(2023, 12, 27);
         //FIXME numOfGuests deve essere maggiore di zero
-        Research research = new Research("Firenze", checkInDate, checkOutDate, 2);
+        Research research = new Research("Firenze", checkInDate, checkOutDate, 3);
         ArrayList<Hotel> hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.size()==1);
         assert(hotelsAvailable.contains(hotel));
+        calendarManager.setMinimumStay(hotel, checkInDate, hotel.getRooms().get(3).getId(), 3);
+        hotelsAvailable = hotelManager.doHotelResearch(research);
+        assert(hotelsAvailable.isEmpty());
     }
 
 

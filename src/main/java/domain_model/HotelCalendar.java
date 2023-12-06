@@ -2,6 +2,7 @@ package domain_model;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,35 +60,6 @@ public class HotelCalendar implements Observer {
         return sum;
     }
 
-    public void displayCalendar(int numDaysToShow) {
-        StringBuilder calendarDisplay = new StringBuilder();
-        LocalDate date = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd");
-
-        for (int i = 0; i < numDaysToShow; i++) {
-            LocalDate displayDate = date.plusDays(i);
-            int length = 0;
-            if (roomStatusMap.containsKey(displayDate)) {
-
-                calendarDisplay.append("Date: ").append(displayDate.format(formatter)).append("\n");
-                for (Map.Entry<String, RoomInfo> entry : roomStatusMap.get(displayDate).entrySet()) {
-                    RoomInfo roomInfo = entry.getValue();
-                    String line = String.format(" - Room %-5s " +
-                                    "| Availability: %-5s | Price: %-7.2f | Minimum Stay: %-2d",
-                            roomInfo.getRoomID(), roomInfo.getAvailability(), roomInfo.getPrice(), roomInfo.getMinimumStay());
-                    calendarDisplay.append(line).append("\n");
-                    length = line.length();
-                }
-                calendarDisplay.append("\n");
-            }
-
-            if (i != numDaysToShow - 1)
-                calendarDisplay.append("-".repeat(length)).append("\n");
-
-        }
-
-        System.out.println(calendarDisplay);
-    }
     @Override
     public void update(Subject subject, Object argument, String message) {
         if (argument instanceof Reservation) {
@@ -124,6 +96,7 @@ public class HotelCalendar implements Observer {
         }
     }
 
+
     private void updateCalendar(String message) {
         if (message.contains("Hotel removed")) //controllare
             getRoomStatusMap().clear(); //cancello anche il calendario
@@ -135,8 +108,7 @@ public class HotelCalendar implements Observer {
         for (LocalDate date = researchInfo.getCheckIn(); !date.isEqual(researchInfo.getCheckOut()); date = date.plusDays(1)) {
             Map<String, RoomInfo> roomInfoMap = roomStatusMap.get(date);
             RoomInfo info = roomInfoMap.get(roomID);
-            if(!info.getAvailability())
-                //Basta che un giorno sia falso e la camera non è più disponibile
+            if(!info.getAvailability() || researchInfo.getCheckIn().until(researchInfo.getCheckOut(), ChronoUnit.DAYS) < info.getMinimumStay())
                 return false;
         }
         return true;
