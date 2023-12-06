@@ -6,11 +6,8 @@ import utilities.HotelRating;
 import utilities.IdGenerator;
 import utilities.Research;
 import utilities.UserType;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class HotelManagerTest {
 
@@ -23,7 +20,7 @@ class HotelManagerTest {
         ReservationManager reservationManager = new ReservationManager(accountManager, calendarManager);
         HotelManager hotelManager = new HotelManager(reservationManager, calendarManager);
         Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
-        assert(hotel.getName()=="Relais Tiffany");
+        assert(hotel.getName().equals("Relais Tiffany"));
         assert(hotel.getRooms().size()==4);
     }
 

@@ -6,11 +6,8 @@ import utilities.HotelRating;
 import utilities.IdGenerator;
 import utilities.Research;
 import utilities.UserType;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CalendarManagerTest {
 

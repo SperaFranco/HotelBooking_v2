@@ -49,7 +49,6 @@ public class CalendarManager extends Subject {
         notifyObservers("Room availability changed");
 
     }
-    //TODO aggiornare il codice affinché le camere con minimum stay maggiore a uno compaiano solo nelle ricerche che rispettano il vincolo
     public void setMinimumStay(Hotel hotel, LocalDate date, String roomID, int minStay){
 
         if(hotel == null) throw new RuntimeException("hotel il null");

@@ -1,13 +1,10 @@
 package service_layer;
 
-import domain_model.Guest;
+
 import domain_model.HotelDirector;
 import domain_model.User;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import utilities.UserType;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class AccountManagerTest {
 

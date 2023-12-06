@@ -1,11 +1,7 @@
 package utilities;
 
-import service_layer.CalendarManager;
-import service_layer.HotelManager;
-import service_layer.ReservationManager;
-
 import java.util.Vector;
-import java.util.Observable;
+
 public abstract class Subject {
     private boolean changed = false;
     private Vector<Observer> observers;

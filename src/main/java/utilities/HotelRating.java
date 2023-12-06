@@ -1,6 +1,5 @@
 package utilities;
 
-import domain_model.Hotel;
 
 public enum HotelRating {
     ONE_STAR_HOTEL("One star"),
@@ -12,17 +11,6 @@ public enum HotelRating {
 
     HotelRating(String displayName) {
         this.displayName = displayName;
-    }
-
-    public static HotelRating getRatingFromString(String input) {
-        HotelRating[] ratings = HotelRating.values();
-
-        for(HotelRating rating : ratings) {
-            if (rating.displayName.equals(input)) {
-                return rating;
-            }
-        }
-        return null; //se non trova corrispondenza rimane null
     }
 
 }

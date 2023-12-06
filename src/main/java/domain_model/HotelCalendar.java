@@ -1,7 +1,6 @@
 package domain_model;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,10 +37,6 @@ public class HotelCalendar implements Observer {
 
 
     public void addRoomToCalendar(LocalDate date, String roomID, RoomInfo roomInfo) {
-        //Map<String, RoomInfo> roomStatus = new HashMap<>();
-        //FIXME qui c'è un errore, dentro roomStatusMap, per ogni data, compare una sola camera
-        //roomStatus.put(roomNumber, roomInfo);
-        //roomStatusMap.put(date, roomStatus);
         roomStatusMap.get(date).put(roomID, roomInfo);
     }
 

@@ -1,14 +1,7 @@
 package service_layer;
 
-import domain_model.CreditCard;
 import domain_model.User;
-import domain_model.Guest;
-import domain_model.HotelDirector;
-import utilities.IdGenerator;
-import utilities.UserType;
-
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class AccountManager {
     private final ArrayList<User> users = new ArrayList<>();

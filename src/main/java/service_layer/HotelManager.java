@@ -2,8 +2,6 @@ package service_layer;
 
 import domain_model.*;
 import utilities.*;
-
-import java.time.LocalDate;
 import java.util.*;
 
 public class HotelManager extends Subject {
@@ -32,11 +30,7 @@ public class HotelManager extends Subject {
         setChanged();
         notifyObservers(hotel, "New hotel added");
     }
-    public void modifyHotel() {
-        //TODO nell'hotel manager aggiungiamo pure i metodi per modificare le camere dell'hotel?
-        //Cosa modificare? hotel stesso oppure camere? e cosa delle camere?
-        // per ora facciamo che l'hotel non è modificabile.
-    }
+
     public void removeHotel(Hotel hotel) {
         //cancellare un hotel richiede di eliminare tutte le prenotazioni attive per quella struttura
 
@@ -50,8 +44,7 @@ public class HotelManager extends Subject {
     }
     public ArrayList<Hotel> doHotelResearch(Research researchInfo) {
 
-        ArrayList<Hotel> filteredHotels = filterHotelByResearchInfo(researchInfo);
-        return filteredHotels;
+        return filterHotelByResearchInfo(researchInfo);
 
     }
 

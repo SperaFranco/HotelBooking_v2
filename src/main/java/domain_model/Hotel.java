@@ -2,8 +2,6 @@ package domain_model;
 
 import service_layer.CalendarManager;
 import utilities.*;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Hotel implements Observer {
