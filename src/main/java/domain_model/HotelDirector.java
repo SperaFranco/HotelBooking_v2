@@ -44,13 +44,7 @@ public class HotelDirector extends User implements Observer {
         else if(message.equals("Hotel removed")){
             hotels.remove(hotel.getId());
         }
-
     }
-
-    private void updateAvailability(Subject subject, Object argument) {
-        //va presa la camera dell'hotel e messa la disponibilità a falso (se proprio si vuole implementare)
-    }
-
 
     //end Region
 }

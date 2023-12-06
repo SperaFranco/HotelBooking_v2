@@ -12,11 +12,13 @@ public class CalendarManager extends Subject {
     public CalendarManager(){
         this.calendars = new HashMap<>();
     }
+
     public HotelCalendar createCalendar(ArrayList<Room> rooms, String hotelID, HotelManager hotelManager, ReservationManager reservationManager){
         HotelCalendar calendar = new HotelCalendar(hotelID, hotelManager, reservationManager);
 
-        LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), 1,1);
-        LocalDate endDate = LocalDate.of(LocalDate.now().getYear(), 12,31);
+        LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth());
+        LocalDate endDate = LocalDate.of(LocalDate.now().plusYears(1).getYear(), LocalDate.now().plusYears(1).getMonth(),
+                LocalDate.now().plusYears(1).getDayOfMonth());
 
         for(LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)){
             for (Room room : rooms) {
@@ -66,16 +68,15 @@ public class CalendarManager extends Subject {
         return roomInfo.getMinimumStay();
 
     }
+
     //Region helpers
     private RoomInfo getRoomInfo(String hotelID, LocalDate date, String roomID) {
-
         HotelCalendar calendar = calendars.get(hotelID);
         Map<String, RoomInfo> roomInfoMap = calendar.getRoomStatusMap().get(date);
         if (roomInfoMap == null) throw new RuntimeException("roomInfoMap is null");
         RoomInfo roomInfo = roomInfoMap.get(roomID);
         if (roomInfo == null) throw new RuntimeException("roomInfo is null");
         return roomInfo;
-
     }
     public HotelCalendar getCalendarByHotelID(String id) {
         return calendars.get(id);

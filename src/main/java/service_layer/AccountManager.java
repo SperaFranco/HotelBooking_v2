@@ -25,6 +25,7 @@ public class AccountManager {
         User loginUser = findUserByEmail(email);
         if(loginUser == null)
             throw new RuntimeException("User not found");
+
         if(loginUser.getPassword().equals(password))
             return loginUser;
         else {

@@ -30,7 +30,6 @@ public class HotelManager extends Subject {
         setChanged();
         notifyObservers(hotel, "New hotel added");
     }
-
     public void removeHotel(Hotel hotel) {
         //cancellare un hotel richiede di eliminare tutte le prenotazioni attive per quella struttura
 
@@ -43,9 +42,7 @@ public class HotelManager extends Subject {
         notifyObservers(hotel, "Hotel removed");
     }
     public ArrayList<Hotel> doHotelResearch(Research researchInfo) {
-
         return filterHotelByResearchInfo(researchInfo);
-
     }
 
     //Region Helpers

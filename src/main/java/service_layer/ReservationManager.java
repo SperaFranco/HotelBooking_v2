@@ -4,6 +4,7 @@ import utilities.IdGenerator;
 import utilities.Research;
 import utilities.Subject;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -41,10 +42,11 @@ public class ReservationManager extends Subject {
     public void updateReservation(String id, String newDescription, LocalDate newCheckInDate, LocalDate newCheckOutDate) {
 
         Reservation reservation = findReservationById(id);
-        if (reservation == null) throw new RuntimeException("reservation not found");
-        if(newDescription!=null)
+        if (reservation == null)
+            throw new RuntimeException("reservation not found");
+        if(newDescription != null)
             reservation.setDescription(newDescription);
-        if(newCheckInDate!=null && newCheckOutDate!=null){
+        if(newCheckInDate != null && newCheckOutDate != null){
             HotelCalendar calendar = calendarManager.getCalendarByHotelID(reservation.getHotel());
             calendar.setRoomAvailability(reservation.getRoomReserved(), reservation.getCheckIn(), reservation.getCheckOut(), true);
             //FIXME messo questo research temporaneamente perché isRoomAvailable accetta un research
@@ -58,40 +60,41 @@ public class ReservationManager extends Subject {
             reservation.setCheckOut(newCheckOutDate);
         }
     }
-    public List<Reservation> getReservations(Guest guest) {
-        List<Reservation> reservations = new ArrayList<>();
-        for (Reservation reservation: findReservationByGuest(guest.getId()))
-            reservations.add(reservation);
-        return reservations;
+    public ArrayList<Reservation> getReservations(Guest guest) {
+        if (guest == null)
+            throw new RuntimeException("guest is a null reference");
+        return findReservationsByGuest(guest.getId());
     }
-    public List<Reservation> getAllReservations(Hotel hotel) {
-        if (hotel == null) throw new RuntimeException("hotel is a null reference");
-        ArrayList<Reservation> reservationsForHotel = new ArrayList<>();
-        //TODO ricontrollare questo ciclo
-        for (Map.Entry<String, Reservation> entry : reservationMap.entrySet()) {
-            Reservation reservation = entry.getValue();
-            if (reservation.getHotel().equals(hotel.getId()))
-                reservationsForHotel.add(reservation);
-        }
-        return reservationsForHotel;
+    public ArrayList<Reservation> getAllReservations(Hotel hotel) {
+        if (hotel == null)
+            throw new RuntimeException("hotel is a null reference");
+        return findReservationsByHotel(hotel.getId());
     }
 
     //Region helpers
     private Reservation findReservationById(String id) {
         return reservationMap.get(id);
     }
-    private ArrayList<Reservation> findReservationByGuest(String guestID) {
-        ArrayList<Reservation> reservations = new ArrayList<>(reservationMap.values());
-        ArrayList<Reservation> myReservations = new ArrayList<>();
+    private ArrayList<Reservation> findReservationsByGuest(String guestID) {
+        ArrayList<Reservation> reservationsForGuest = new ArrayList<>();
 
-        for (Reservation reservation : reservations) {
-            if (reservation.getClient().equals(guestID)) {
-                myReservations.add(reservation);
-            }
+        for (Map.Entry<String, Reservation> entry : reservationMap.entrySet()) {
+            Reservation reservation = entry.getValue();
+            if (reservation.getClient().equals(guestID))
+                reservationsForGuest.add(reservation);
         }
-        return myReservations;
+        return reservationsForGuest;
     }
+    private ArrayList<Reservation> findReservationsByHotel(String hotelID)  {
+        ArrayList<Reservation> reservationsForHotel = new ArrayList<>();
 
+        for (Map.Entry<String, Reservation> entry : reservationMap.entrySet()) {
+            Reservation reservation = entry.getValue();
+            if (reservation.getHotel().equals(hotelID))
+                reservationsForHotel.add(reservation);
+        }
+        return reservationsForHotel;
+    }
     //End Region helpers
 }
 
