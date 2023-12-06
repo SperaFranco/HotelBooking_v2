@@ -97,8 +97,6 @@ public class HotelCalendar implements Observer {
             getRoomStatusMap().clear(); //cancello anche il calendario
     }
     public boolean isRoomAvailable(Research researchInfo, String roomID) {
-        //Controllo se la camera risulta disponibile per tutti i giorni indicati dal checkin al checkout
-        //TODO Ci sarebbe anche da fare il controllo per il numero minimo di pernottamenti
 
         for (LocalDate date = researchInfo.getCheckIn(); !date.isEqual(researchInfo.getCheckOut()); date = date.plusDays(1)) {
             Map<String, RoomInfo> roomInfoMap = roomStatusMap.get(date);
@@ -107,6 +105,7 @@ public class HotelCalendar implements Observer {
                 return false;
         }
         return true;
+
     }
 
 

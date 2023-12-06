@@ -25,7 +25,7 @@ public class CalendarManager extends Subject {
                 calendar.addRoomToCalendar(date, roomID, roomInfo);
             }
         }
-
+        //FIXME aggiungere DAO pattern
         this.calendars.put(hotelID, calendar);
         return calendar;
     }
