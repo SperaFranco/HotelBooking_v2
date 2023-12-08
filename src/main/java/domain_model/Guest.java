@@ -20,14 +20,14 @@ public class Guest extends User implements Observer {
         this.reservations = new ArrayList<>();
         reservationManager.addObserver(this);
     }
-
+/*
     public Guest(String id, String name, String surname, String telephone, CreditCard card, UserType type) {
         //Cliente senza account
         super(id, name, surname, null, telephone, null, type);
         this.card = card;
         this.reservations = new ArrayList<>();
     }
-
+*/
     //Region getters and setters
     public CreditCard getCard() {
         return card;

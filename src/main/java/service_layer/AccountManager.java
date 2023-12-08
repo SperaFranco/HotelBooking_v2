@@ -1,28 +1,41 @@
 package service_layer;
 
+import data_access.UserDAO;
 import domain_model.User;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class AccountManager {
-    private final ArrayList<User> users = new ArrayList<>();
+    private final UserDAO userDao;
     private final ReservationManager reservationManager;
     private final HotelManager hotelManager;
     private final CalendarManager calendarManager;
 
     public AccountManager(){
-
         this.calendarManager = new CalendarManager();
-        this.reservationManager =  new ReservationManager( this, calendarManager);
+        this.reservationManager =  new ReservationManager(calendarManager);
         this.hotelManager = new HotelManager(reservationManager, calendarManager);
+        this.userDao = new UserDAO(reservationManager, hotelManager);
 
     }
     public void doRegistration(User user) {
         if (user == null)  throw new RuntimeException("user is a null reference");
-        users.add(user);
+        try {
+            userDao.addUser(user);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
     public User login(String email, String password) {
 
-        User loginUser = findUserByEmail(email);
+        User loginUser = null;
+        try {
+            loginUser = userDao.findUserByEmail(email);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         if(loginUser == null)
             throw new RuntimeException("User not found");
 
@@ -34,7 +47,7 @@ public class AccountManager {
 
     }
     public void logout(User user) {
-        users.remove(user);
+       // users.remove(user);
         user = null;
     }
     public ReservationManager getReservationManager() {
@@ -45,15 +58,6 @@ public class AccountManager {
     }
     public CalendarManager getCalendarManager() {
         return calendarManager;
-    }
-    private User findUserByEmail(String email) {
-
-        for (User user:users) {
-            if (user.getEmail().equalsIgnoreCase(email))
-                return user;
-        }
-
-        return null;
     }
 
     //end Region

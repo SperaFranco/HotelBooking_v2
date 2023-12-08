@@ -1,6 +1,10 @@
 package service_layer;
 
 import domain_model.*;
+import service_layer.AccountManager;
+import service_layer.CalendarManager;
+import service_layer.HotelManager;
+import service_layer.ReservationManager;
 import utilities.HotelRating;
 import utilities.IdGenerator;
 import utilities.Research;
@@ -19,7 +23,7 @@ class ReservationManagerTest {
         HotelDirector hotelDirector = new HotelDirector(IdGenerator.generateUserID(UserType.HOTEL_DIRECTOR,"Franco","Spera"), "Franco", "Spera", "info@relaistiffany.it", "+393337001756", "passwordHD", accountManager.getHotelManager(), UserType.HOTEL_DIRECTOR);
         accountManager.doRegistration(hotelDirector);
         CalendarManager calendarManager = new CalendarManager();
-        ReservationManager reservationManager = new ReservationManager(accountManager, calendarManager);
+        ReservationManager reservationManager = new ReservationManager(calendarManager);
         HotelManager hotelManager = new HotelManager(reservationManager, calendarManager);
         Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
         hotelManager.addHotel(hotel);
@@ -58,7 +62,7 @@ class ReservationManagerTest {
         HotelDirector hotelDirector = new HotelDirector(IdGenerator.generateUserID(UserType.HOTEL_DIRECTOR,"Franco","Spera"), "Franco", "Spera", "info@relaistiffany.it", "+393337001756", "passwordHD", accountManager.getHotelManager(), UserType.HOTEL_DIRECTOR);
         accountManager.doRegistration(hotelDirector);
         CalendarManager calendarManager = new CalendarManager();
-        ReservationManager reservationManager = new ReservationManager(accountManager, calendarManager);
+        ReservationManager reservationManager = new ReservationManager(calendarManager);
         HotelManager hotelManager = new HotelManager(reservationManager, calendarManager);
         Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
         hotelManager.addHotel(hotel);

@@ -1,10 +1,9 @@
 package service_layer;
 import domain_model.*;
-import utilities.IdGenerator;
-import utilities.Research;
 import utilities.Subject;
+import utilities.Research;
+import utilities.IdGenerator;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -12,7 +11,7 @@ public class ReservationManager extends Subject {
     private final Map<String, Reservation> reservationMap;
     private final CalendarManager calendarManager;
 
-    public ReservationManager(AccountManager accountManager, CalendarManager calendarManager) {
+    public ReservationManager(CalendarManager calendarManager) {
         reservationMap = new HashMap<>();
         this.calendarManager = calendarManager;
     }
