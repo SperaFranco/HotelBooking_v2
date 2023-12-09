@@ -21,13 +21,12 @@ public class Hotel implements Observer {
 
 
     public Hotel(String id, String name, String city, String address, String telephone,
-                 String email, HotelRating rating, String description, String managerID, CalendarManager calendarManager) {
+                  HotelRating rating, String description, String managerID, CalendarManager calendarManager) {
         this.id = id;
         this.name = name;
         this.city = city;
         this.address = address;
         this.telephone = telephone;
-        this.email = email;
         this.rating = rating;
         this.description = description;
         this.directorID = managerID;

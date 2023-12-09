@@ -53,6 +53,13 @@ public class RoomInfo {
         return availability;
     }
 
+    public String getAvailabilityToString() {
+        if (availability)
+            return "available";
+        else
+            return "not available";
+    }
+
     public void setAvailability(boolean availability) {
         this.availability = availability;
     }

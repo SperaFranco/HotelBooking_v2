@@ -60,6 +60,13 @@ public class AccountManager {
         return calendarManager;
     }
 
+    public void disconnectFromDatabase() {
+        userDao.disconnect();
+        /*
+        userDao.deleteHotelDirector();
+        userDao.deleteGuest();
+        */
+    }
     //end Region
 
 }

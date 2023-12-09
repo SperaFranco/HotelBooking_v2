@@ -25,7 +25,7 @@ class ReservationManagerTest {
         CalendarManager calendarManager = new CalendarManager();
         ReservationManager reservationManager = new ReservationManager(calendarManager);
         HotelManager hotelManager = new HotelManager(reservationManager, calendarManager);
-        Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
+        Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
         hotelManager.addHotel(hotel);
         Guest guest1 = new Guest(IdGenerator.generateUserID(UserType.GUEST,"Regino","Kamberaj"), "Regino", "Kamberaj", "regino.kamberaj@gmail.com", null, "passwordRegino", null, reservationManager, UserType.GUEST);
         LocalDate checkInDate = LocalDate.of(2023, 12, 25);
@@ -64,7 +64,7 @@ class ReservationManagerTest {
         CalendarManager calendarManager = new CalendarManager();
         ReservationManager reservationManager = new ReservationManager(calendarManager);
         HotelManager hotelManager = new HotelManager(reservationManager, calendarManager);
-        Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
+        Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
         hotelManager.addHotel(hotel);
         Guest guest1 = new Guest(IdGenerator.generateUserID(UserType.GUEST,"Regino","Kamberaj"), "Regino", "Kamberaj", "regino.kamberaj@gmail.com", null, "passwordRegino", null, reservationManager, UserType.GUEST);
         LocalDate checkInDate = LocalDate.of(2023, 12, 25);

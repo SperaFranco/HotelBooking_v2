@@ -1,6 +1,7 @@
 package domain_model;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
 public class CreditCard {
@@ -74,9 +75,9 @@ public class CreditCard {
             return false;
 
         //Controllo l'expiryDate
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
-        LocalDate expirationDate = LocalDate.parse(expiryDate, formatter);
-        if(expirationDate.isAfter(LocalDate.now()))
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-yy");
+        YearMonth expirationDate = YearMonth.parse(expiryDate, formatter);
+        if(expirationDate.isBefore(YearMonth.now()))
             return false;
 
         //controllo il cvv
@@ -86,6 +87,7 @@ public class CreditCard {
 
         return true;
     }
+
 
     public void doPayment(double amount) {
         //magari va fatto un controllo al saldo e se sufficiente esegui il pagamento

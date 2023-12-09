@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDAO {
-    private final Connection connection;
+    private Connection connection;
     private final CreditCardDAO creditCardDAO;
 
     private final ReservationManager reservationManager;
@@ -56,36 +56,50 @@ public class UserDAO {
         statement.setString(7, user.getCard().getCardNumber());
         statement.executeUpdate();
         statement.close();
+
+        creditCardDAO.addCreditCard(user.getCard());
     }
 
     public User findUserByEmail(String email) throws SQLException {
-        //TODO Franco lo migliora --> unire le due tabelle
         //Per come ho progettato il db dovrei andare a cercare su due tabelle
         // e a seconda di dove trovo l'user impostare certi campi
         String sql = "SELECT 'HotelDirector' AS userType, *, NULL AS extra_column  FROM HotelDirector WHERE email = ?" +
                 " UNION " + "SELECT 'Guest' AS userType, * FROM Guest WHERE email = ?";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setString(1, email);
-        statement.setString(2, email);
-        ResultSet rs = statement.executeQuery();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+             statement = connection.prepareStatement(sql);
+            statement.setString(1, email);
+            statement.setString(2, email);
+             rs = statement.executeQuery();
 
-        if (rs.next()) {
-            String userType = rs.getString("userType");
-            String id = rs.getString("id");
-            String name = rs.getString("name");
-            String surname = rs.getString("surname");
-            String telephone = rs.getString("telephone");
-            String password = rs.getString("password");
+            if (rs.next()) {
+                String userType = rs.getString("userType");
+                String id = rs.getString("id");
+                String name = rs.getString("name");
+                String surname = rs.getString("surname");
+                String telephone = rs.getString("telephone");
+                String password = rs.getString("password");
 
-            if(userType.equals("Guest")) {
-                String card_number = rs.getString("card_number");
-                CreditCard card = creditCardDAO.findCreditCard(card_number);
-                return new Guest(id, name, surname, email,telephone, password, card, reservationManager, UserType.GUEST);
+                if (userType.equals("Guest")) {
+                    String card_number = rs.getString("card_number");
+                    CreditCard card = creditCardDAO.findCreditCard(card_number);
+                    return new Guest(id, name, surname, email, telephone, password, card, reservationManager, UserType.GUEST);
+                }
+                return new HotelDirector(id, name, surname, email, telephone, password, hotelManager, UserType.HOTEL_DIRECTOR);
             }
-            return new HotelDirector(id, name, surname, email, telephone, password, hotelManager, UserType.HOTEL_DIRECTOR);
+        }
+        finally {
+            if (rs != null)
+                rs.close();
+            if (statement != null)
+                statement.close();
         }
         return null;
     }
 
+    public void disconnect() {
+        this.connection = ConnectionManager.disconnect(this.connection);
+    }
 
 }

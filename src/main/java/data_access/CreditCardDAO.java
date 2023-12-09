@@ -32,4 +32,17 @@ public class CreditCardDAO {
         return null;
     }
 
+    public void addCreditCard(CreditCard card) throws SQLException {
+        String sql = "INSERT OR IGNORE INTO CreditCard (card_holder_name, card_number, expiry_date, cvv, balance) VALUES (?,?,?,?,?)";
+
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, card.getCardHolderName());
+        statement.setString(2, card.getCardNumber());
+        statement.setString(3, card.getExpiryDate());
+        statement.setInt(4, card.getCVV());
+        statement.setDouble(5, card.getBalance());
+        statement.executeUpdate();
+        statement.close();
+
+    }
 }

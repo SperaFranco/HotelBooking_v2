@@ -30,18 +30,17 @@ public class ConnectionManager {
        return connection;
    }
 
-   public static Connection disconnect() {
+   public static Connection disconnect(Connection connection) {
        try {
            if (connection != null && !connection.isClosed()) {
                connection.close();
                System.out.println("Disconnected from database");
-               return connection;
            }
        }catch (SQLException e) {
            System.out.println("Failed to disconnect from database");
            e.printStackTrace();
        }
-       return connection;
+       return null;
    }
 
 }
