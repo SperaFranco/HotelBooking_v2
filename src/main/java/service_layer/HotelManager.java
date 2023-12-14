@@ -9,14 +9,12 @@ import java.util.*;
 
 public class HotelManager extends Subject {
     //Classe per la gestione e la modifica delle strutture degli hotel
-
-    private final ReservationManager reservationManager;
-    private final CalendarManager calendarManager;
     private final HotelDAO hotelDAO;
-
-    public HotelManager(ReservationManager reservationManager, CalendarManager calendarManager){
-        this.reservationManager = reservationManager;
+    private final CalendarManager calendarManager;
+    private final ReservationManager reservationManager;
+    public HotelManager(CalendarManager calendarManager, ReservationManager reservationManager){
         this.calendarManager = calendarManager;
+        this.reservationManager = reservationManager;
         this.hotelDAO = new HotelDAO(calendarManager);
     }
 
@@ -42,9 +40,11 @@ public class HotelManager extends Subject {
         //cancellare un hotel richiede di eliminare tutte le prenotazioni attive per quella struttura
         if(hotel == null) throw new RuntimeException("null reference to hotel");
         //TODO modificare questa parte
+        /*
         List<Reservation> reservationList = reservationManager.getAllReservations(hotel);
         for(Reservation reservation:reservationList)
             reservationManager.deleteReservation(reservation.getId());
+        */
         try {
             hotelDAO.removeHotel(hotel.getId());
         } catch (SQLException e) {
@@ -57,7 +57,7 @@ public class HotelManager extends Subject {
         ArrayList<Hotel> filteredHotels = new ArrayList<>();
         ArrayList<Hotel> allHotels = null;
         try {
-            allHotels = hotelDAO.getAllHotels();
+            allHotels = hotelDAO.getAllHotels(this, reservationManager);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -93,7 +93,7 @@ public class HotelManager extends Subject {
         ArrayList<Hotel> hotelsByDirector = new ArrayList<>();
         ArrayList<Hotel> allHotels = null;
         try {
-            allHotels = hotelDAO.getAllHotels();
+            allHotels = hotelDAO.getAllHotels(this, reservationManager);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -108,7 +108,7 @@ public class HotelManager extends Subject {
     }
     //End Region
 
-    protected Map<String, Hotel> getHotelMap() {
-        return null;
+    public HotelDAO getHotelDAO() {
+        return hotelDAO;
     }
 }

@@ -7,17 +7,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class AccountManager {
+    //Questi non andrebbero qui...
+    private HotelManager hotelManager;
+    private ReservationManager reservationManager;
+    private CalendarManager calendarManager;
     private final UserDAO userDao;
-    private final ReservationManager reservationManager;
-    private final HotelManager hotelManager;
-    private final CalendarManager calendarManager;
 
     public AccountManager(){
-        this.calendarManager = new CalendarManager();
-        this.reservationManager =  new ReservationManager(calendarManager);
-        this.hotelManager = new HotelManager(reservationManager, calendarManager);
-        this.userDao = new UserDAO(reservationManager, hotelManager);
-
+        this.userDao = new UserDAO();
+        calendarManager = new CalendarManager();
+        reservationManager = new ReservationManager(calendarManager);
+        hotelManager = new HotelManager(calendarManager, reservationManager);
     }
     public void doRegistration(User user) {
         if (user == null)  throw new RuntimeException("user is a null reference");
@@ -31,7 +31,7 @@ public class AccountManager {
 
         User loginUser = null;
         try {
-            loginUser = userDao.findUserByEmail(email);
+            loginUser = userDao.findUserByEmail(email, reservationManager, hotelManager );
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -50,23 +50,19 @@ public class AccountManager {
        // users.remove(user);
         user = null;
     }
-    public ReservationManager getReservationManager() {
-        return reservationManager;
-    }
+    public UserDAO getUserDao(){ return userDao; }
+
     public HotelManager getHotelManager() {
         return hotelManager;
     }
+
+    public ReservationManager getReservationManager() {
+        return reservationManager;
+    }
+
     public CalendarManager getCalendarManager() {
         return calendarManager;
     }
-
-    public void disconnectFromDatabase() {
-        userDao.disconnect();
-        /*
-        userDao.deleteHotelDirector();
-        userDao.deleteGuest();
-        */
-    }
-    //end Region
+//end Region
 
 }

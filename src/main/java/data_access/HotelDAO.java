@@ -1,9 +1,10 @@
 package data_access;
 
 import domain_model.Hotel;
-import domain_model.HotelCalendar;
 import domain_model.Room;
 import service_layer.CalendarManager;
+import service_layer.HotelManager;
+import service_layer.ReservationManager;
 import utilities.HotelRating;
 
 import java.sql.Connection;
@@ -11,50 +12,39 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class HotelDAO {
     private final Connection connection;
     private final HotelCalendarDAO hotelCalendarDAO;
+    private final RoomDAO roomDAO;
     private final CalendarManager calendarManager;
 
     public HotelDAO(CalendarManager calendarManager) {
         connection = ConnectionManager.connect();
-        this.hotelCalendarDAO = new HotelCalendarDAO();
         this.calendarManager = calendarManager;
+        this.hotelCalendarDAO = calendarManager.getCalendarDAO();
+        this.roomDAO = new RoomDAO();
     }
 
     public void addHotel(Hotel hotel) throws SQLException {
         String sql = "INSERT OR IGNORE INTO Hotel (id, name , city, address, telephone, rating, description, director_id) VALUES (?, ?, ?, ?, ?, ?,?,?)";
-        PreparedStatement statement = connection.prepareStatement(sql);
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
 
-        statement.setString(1, hotel.getId());
-        statement.setString(2, hotel.getName());
-        statement.setString(3, hotel.getCity());
-        statement.setString(4, hotel.getAddress());
-        statement.setString(5, hotel.getTelephone());
-        statement.setString(6, hotel.getRating().toString());
-        statement.setString(7, hotel.getDescription());
-        statement.setString(8, hotel.getDirectorID());
-        statement.executeUpdate();
-        statement.close();
+            statement.setString(1, hotel.getId());
+            statement.setString(2, hotel.getName());
+            statement.setString(3, hotel.getCity());
+            statement.setString(4, hotel.getAddress());
+            statement.setString(5, hotel.getTelephone());
+            statement.setString(6, hotel.getRating().toString());
+            statement.setString(7, hotel.getDescription());
+            statement.setString(8, hotel.getDirectorID());
+            statement.executeUpdate();
+        }
 
-        addHotelRooms(hotel.getId(), hotel.getRooms());
+        roomDAO.addRooms(hotel.getRooms(), hotel.getId());
         hotelCalendarDAO.addCalendar(hotel.getCalendar());
     }
 
-    private void addHotelRooms(String hotelID, ArrayList<Room> rooms) throws SQLException {
-        //TODO Vedere se è possible inserire piu valori insieme
-        for (Room room : rooms) {
-            String sql = "INSERT OR IGNORE INTO HotelRooms (hotel_id, room_id) VALUES (?,?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, hotelID);
-            statement.setString(2, room.getId());
-            statement.executeUpdate();
-            statement.close();
-        }
-
-    }
 
     public void removeHotel(String id) throws SQLException {
         String sql = "DELETE FROM Hotel WHERE id = ?";
@@ -66,7 +56,7 @@ public class HotelDAO {
 
     }
 
-    public ArrayList<Hotel> getAllHotels() throws SQLException {
+    public ArrayList<Hotel> getAllHotels(HotelManager hotelManager, ReservationManager reservationManager) throws SQLException {
         ArrayList<Hotel> hotels = new ArrayList<>();
         //TODO ovviamente da cambiare
         PreparedStatement statement = null;
@@ -86,9 +76,11 @@ public class HotelDAO {
                 String rating = rs.getString("rating");
                 String description = rs.getString("description");
                 String director_id = rs.getString("director_id");
-
-                hotels.add(new Hotel(id, name, city, address,
-                        telephone, HotelRating.getRatingFromString(rating), description, director_id, calendarManager));
+                Hotel hotel = new Hotel(id, name, city, address,
+                        telephone, HotelRating.getRatingFromString(rating), description, director_id, calendarManager);
+                hotel.setRooms(roomDAO.getRoomsByID(id));
+                hotel.setCalendar(hotelCalendarDAO.getCalendar(id, hotelManager, reservationManager));
+                hotels.add(hotel);
             }
             return hotels;
         }

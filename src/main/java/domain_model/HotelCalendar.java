@@ -16,7 +16,7 @@ public class HotelCalendar implements Observer {
     //(Da capire meglio perchè gli update in realtà si potrebbero fare anche per altre condizioni) --> hotelCalender fà esso stesso da Observable per Room?
 
     //Region fields
-    private final Map<LocalDate, Map<String, RoomInfo>> roomStatusMap; //todo lui deve stare attento quando prenoto/modifico una prenotazione
+    private Map<LocalDate, Map<String, RoomInfo>> roomStatusMap; //todo lui deve stare attento quando prenoto/modifico una prenotazione
     private final String hotelID;
     //end Region
 
@@ -29,6 +29,9 @@ public class HotelCalendar implements Observer {
 
     public Map<LocalDate,Map<String, RoomInfo>> getRoomStatusMap(){
         return roomStatusMap;
+    }
+    public void setRoomStatusMap(Map<LocalDate, Map<String, RoomInfo>> newMap) {
+        this.roomStatusMap = newMap;
     }
 
     public void addRoomToCalendar(LocalDate date, String roomID, RoomInfo roomInfo) {

@@ -23,6 +23,15 @@ public class RoomInfo {
         this.date = date;
     }
 
+    public RoomInfo(String hotelID, String roomID, LocalDate date, double price, int minimumStay, boolean availability) {
+        this.hotelID = hotelID;
+        this.roomID = roomID;
+        this.price = price;
+        this.minimumStay = minimumStay;
+        this.availability = availability;
+        this.date = date;
+    }
+
     //Region Getters and Setters
 
     public String getRoomID() {

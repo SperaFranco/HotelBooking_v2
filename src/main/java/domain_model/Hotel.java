@@ -14,8 +14,8 @@ public class Hotel implements Observer {
     private String email;
     private HotelRating rating;
     private String description;
-    private ArrayList<Room> rooms; //todo lui deve stare attento ai cambiamenti delle camere (per ora non modificabili)
-    private HotelCalendar calendar;
+    private ArrayList<Room> rooms;
+    private HotelCalendar calendar; //todo lui deve stare attento ai cambiamenti del calendario (cambiamenti fatti in altre classi)
     private String directorID;
     //end Region
 
@@ -158,6 +158,7 @@ public class Hotel implements Observer {
         ArrayList<Room> availableRooms = new ArrayList<>();
         boolean roomAvailable = false;
         for (Room room : getRoomsAvailable(researchInfo)) {
+            //Se ho almeno una camera disponibile allora ritorno vero
             roomAvailable = true;
             break;
         }

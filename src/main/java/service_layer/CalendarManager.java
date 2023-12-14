@@ -1,16 +1,20 @@
 package service_layer;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
+import data_access.HotelCalendarDAO;
 import domain_model.*;
 import utilities.Subject;
 
 public class CalendarManager extends Subject {
     private final Map<String, HotelCalendar> calendars; //mappa fra id degli hotel e calendari
+    private final HotelCalendarDAO hotelCalendarDAO;
 
     public CalendarManager(){
         this.calendars = new HashMap<>();
+        this.hotelCalendarDAO = new HotelCalendarDAO();
     }
 
     public HotelCalendar createCalendar(ArrayList<Room> rooms, String hotelID, HotelManager hotelManager, ReservationManager reservationManager){
@@ -53,10 +57,13 @@ public class CalendarManager extends Subject {
     }
     public void setMinimumStay(Hotel hotel, LocalDate date, String roomID, int minStay){
 
-        if(hotel == null) throw new RuntimeException("hotel il null");
-        RoomInfo roomInfo = getRoomInfo(hotel.getId(), date, roomID);
-        if (roomInfo == null) throw new RuntimeException("roomInfo is null");
-        roomInfo.setMinimumStay(minStay);
+        if(hotel == null)
+            throw new RuntimeException("hotel il null");
+        try {
+            hotelCalendarDAO.setMinimumStay(hotel.getId(), date.toString(), roomID, minStay );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         setChanged();
 
     }
@@ -80,6 +87,10 @@ public class CalendarManager extends Subject {
     }
     public HotelCalendar getCalendarByHotelID(String id) {
         return calendars.get(id);
+    }
+
+    public HotelCalendarDAO getCalendarDAO() {
+        return hotelCalendarDAO;
     }
     //EndRegion
 
