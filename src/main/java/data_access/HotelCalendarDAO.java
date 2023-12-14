@@ -82,4 +82,47 @@ public class HotelCalendarDAO {
             statement.executeUpdate();
         }
     }
+
+    public void setAvailability(String hotelID, String date, String roomID, String availability) throws SQLException {
+        String sql = "UPDATE HotelCalendar SET availability = ? WHERE hotel_id = ? AND date = ? AND room_id = ?";
+        try(PreparedStatement statement =  connection.prepareStatement(sql)) {
+            statement.setString(1, availability);
+            statement.setString(2, hotelID);
+            statement.setString(3, date);
+            statement.setString(4, roomID);
+            statement.executeUpdate();
+        }
+    }
+
+    public void setPrice(String hotelID, String date, String roomID, double price) throws SQLException {
+        String sql = "UPDATE HotelCalendar SET price = ? WHERE hotel_id = ? AND date = ? AND room_id = ?";
+        try(PreparedStatement statement =  connection.prepareStatement(sql)) {
+            statement.setDouble(1, price);
+            statement.setString(2, hotelID);
+            statement.setString(3, date);
+            statement.setString(4, roomID);
+            statement.executeUpdate();
+        }
+    }
+
+    public int getMinimumStay() {
+        throw new RuntimeException("not implemented");
+    }
+
+    public double getPrice(String hotelID, String date, String roomID) throws SQLException{
+        String sql = "SELECT price FROM HotelCalendar WHERE hotel_id = ? AND date = ? AND room_id = ?";
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, hotelID);
+            statement.setString(2, date);
+            statement.setString(3, roomID);
+            try(ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("price");
+                }
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

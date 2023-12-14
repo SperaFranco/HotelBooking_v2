@@ -36,7 +36,7 @@ public class HotelManager extends Subject {
         setChanged();
         notifyObservers(hotel, "New hotel added");
     }
-    public void removeHotel(Hotel hotel) {
+    public void removeHotel(String hotel) {
         //cancellare un hotel richiede di eliminare tutte le prenotazioni attive per quella struttura
         if(hotel == null) throw new RuntimeException("null reference to hotel");
         //TODO modificare questa parte
@@ -46,7 +46,7 @@ public class HotelManager extends Subject {
             reservationManager.deleteReservation(reservation.getId());
         */
         try {
-            hotelDAO.removeHotel(hotel.getId());
+            hotelDAO.removeHotel(hotel);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

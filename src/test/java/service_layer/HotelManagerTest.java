@@ -20,9 +20,6 @@ class HotelManagerTest {
     private static AccountManager accountManager;
     private static HotelManager hotelManager;
     private static CalendarManager calendarManager;
-    private static UserDAO userDAO;
-    private static HotelDAO hotelDAO;
-
     private static HotelDirector hotelDirector;
 
     @BeforeAll
@@ -30,8 +27,6 @@ class HotelManagerTest {
         accountManager = new AccountManager();
         hotelManager = accountManager.getHotelManager();
         calendarManager = accountManager.getCalendarManager();
-        userDAO = accountManager.getUserDao();
-        hotelDAO = hotelManager.getHotelDAO();
         //Supponiamo di aver già creato un profilo da hotel director
         hotelDirector = new HotelDirector(IdGenerator.generateUserID(UserType.HOTEL_DIRECTOR,"Franco","Spera"), "Franco", "Spera", "info@relaistiffany.it", "+393337001756", "passwordHD", hotelManager, UserType.HOTEL_DIRECTOR);
         accountManager.doRegistration(hotelDirector);
@@ -47,7 +42,7 @@ class HotelManagerTest {
     @org.junit.jupiter.api.Test
     public void addAndRemoveRoomTest() throws SQLException {
         Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
-        hotelDAO.addHotel(hotel);
+        hotelManager.addHotel(hotel);
         /*
         TODO Franco modifica questi assert
         assert(hotelManager.getHotelMap().isEmpty());
@@ -56,7 +51,7 @@ class HotelManagerTest {
         hotelManager.removeHotel(hotel);
         assert(hotelManager.getHotelMap().isEmpty());
         */
-        hotelDAO.removeHotel(hotel.getId());
+        hotelManager.removeHotel(hotel.getId());
     }
 
     @org.junit.jupiter.api.Test
@@ -73,13 +68,13 @@ class HotelManagerTest {
         calendarManager.setMinimumStay(hotelsAvailable.get(0), checkInDate, hotel.getRooms().get(3).getId(), 3);
         hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.isEmpty());
-        hotelDAO.removeHotel(hotel.getId());
+        hotelManager.removeHotel(hotel.getId());
     }
 
     @AfterAll
     public static void TearDown() throws SQLException {
-        userDAO.DeleteUser(hotelDirector);
-        userDAO.disconnect();
+        accountManager.deleteUser(hotelDirector);
+        accountManager.getUserDao().disconnect();
     }
 
 

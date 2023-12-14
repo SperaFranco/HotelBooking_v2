@@ -10,14 +10,12 @@ class AccountManagerTest {
     private static AccountManager accountManager;
     private static HotelManager hotelManager;
     private static ReservationManager reservationManager;
-    private static UserDAO userDAO;
     @BeforeAll
     public static void setUp(){
         //Mi dice che se fatto con il beforeAll è da fare static
         accountManager = new AccountManager();
         reservationManager = accountManager.getReservationManager();
         hotelManager = accountManager.getHotelManager();
-        userDAO = accountManager.getUserDao();
     }
 
     @org.junit.jupiter.api.Test
@@ -43,7 +41,7 @@ class AccountManagerTest {
         assert(user.getPassword().equals("passwordHD"));
         assert(user.getEmail().equals("info@relaistiffany.it"));
 
-        userDAO.DeleteUser(hotelDirector);
+        accountManager.deleteUser(hotelDirector);
     }
     @org.junit.jupiter.api.Test
     public void logout() throws SQLException{
@@ -54,11 +52,11 @@ class AccountManagerTest {
         accountManager.doRegistration(hotelDirector);
         accountManager.logout(hotelDirector);
 
-        userDAO.DeleteUser(hotelDirector);
+        accountManager.deleteUser(hotelDirector);
     }
 
     @AfterAll
     public static void tearDown() {
-        userDAO.disconnect();
+        accountManager.getUserDao().disconnect();
     }
 }

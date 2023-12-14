@@ -4,7 +4,6 @@ import data_access.UserDAO;
 import domain_model.User;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class AccountManager {
     //Questi non andrebbero qui...
@@ -23,6 +22,15 @@ public class AccountManager {
         if (user == null)  throw new RuntimeException("user is a null reference");
         try {
             userDao.addUser(user);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteUser(User user) {
+        if (user == null)  throw new RuntimeException("user is a null reference");
+        try {
+            userDao.deleteUser(user);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -50,6 +58,14 @@ public class AccountManager {
        // users.remove(user);
         user = null;
     }
+    public User findUserByID(String id, ReservationManager reservationManager, HotelManager hotelManager) {
+        try {
+            return userDao.findUserByID(id, reservationManager, hotelManager);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public UserDAO getUserDao(){ return userDao; }
 
     public HotelManager getHotelManager() {
@@ -63,6 +79,9 @@ public class AccountManager {
     public CalendarManager getCalendarManager() {
         return calendarManager;
     }
+
+
+
 //end Region
 
 }

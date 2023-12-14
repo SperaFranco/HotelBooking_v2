@@ -53,7 +53,6 @@ public class HotelDAO {
         statement.setString(1, id);
         statement.executeUpdate();
         statement.close();
-
     }
 
     public ArrayList<Hotel> getAllHotels(HotelManager hotelManager, ReservationManager reservationManager) throws SQLException {

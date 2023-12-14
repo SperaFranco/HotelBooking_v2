@@ -28,7 +28,7 @@ public class UserDAO {
         }
     }
 
-    public void DeleteUser(User user) throws SQLException {
+    public void deleteUser(User user) throws SQLException {
         switch (user.getType()) {
             case GUEST ->
                     DeleteGuest(user.getId());

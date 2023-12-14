@@ -9,11 +9,9 @@ import domain_model.*;
 import utilities.Subject;
 
 public class CalendarManager extends Subject {
-    private final Map<String, HotelCalendar> calendars; //mappa fra id degli hotel e calendari
     private final HotelCalendarDAO hotelCalendarDAO;
 
     public CalendarManager(){
-        this.calendars = new HashMap<>();
         this.hotelCalendarDAO = new HotelCalendarDAO();
     }
 
@@ -32,25 +30,29 @@ public class CalendarManager extends Subject {
             }
         }
         //FIXME aggiungere DAO pattern
-        this.calendars.put(hotelID, calendar);
         return calendar;
     }
     public void modifyPrice(Hotel hotel, LocalDate date, String roomID, double price){
-
-        if (hotel == null) throw new RuntimeException("hotel is null");
-        RoomInfo roomInfo = getRoomInfo(hotel.getId(), date, roomID);
-        if (roomInfo == null) throw new RuntimeException("roomInfo is null");
-        roomInfo.setPrice(price);
+        if (hotel == null)
+            throw new RuntimeException("hotel is null");
+        try {
+            hotelCalendarDAO.setPrice(hotel.getId(), date.toString(), roomID, price);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         setChanged();
         notifyObservers("Room price changed");
 
     }
     public void closeRoom(Hotel hotel, LocalDate date, String roomID){
 
-        if(hotel == null) throw new RuntimeException("hotel il null");
-        RoomInfo roomInfo = getRoomInfo(hotel.getId(), date, roomID);
-        if(roomInfo == null) throw new RuntimeException("roomInfo is null");
-        roomInfo.setAvailability(false);
+        if(hotel == null)
+            throw new RuntimeException("hotel il null");
+        try {
+            hotelCalendarDAO.setAvailability(hotel.getId(), date.toString(), roomID, "not available");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         setChanged();
         notifyObservers("Room availability changed");
 
@@ -70,27 +72,22 @@ public class CalendarManager extends Subject {
     public int getMinimumStay(Hotel hotel, LocalDate date, String roomID){
 
         if(hotel == null) throw new RuntimeException("hotel il null");
-        RoomInfo roomInfo = getRoomInfo(hotel.getId(), date, roomID);
-        if (roomInfo == null) throw new RuntimeException("roomInfo is null");
-        return roomInfo.getMinimumStay();
+        return hotelCalendarDAO.getMinimumStay();
 
     }
 
     //Region helpers
-    private RoomInfo getRoomInfo(String hotelID, LocalDate date, String roomID) {
-        HotelCalendar calendar = calendars.get(hotelID);
-        Map<String, RoomInfo> roomInfoMap = calendar.getRoomStatusMap().get(date);
-        if (roomInfoMap == null) throw new RuntimeException("roomInfoMap is null");
-        RoomInfo roomInfo = roomInfoMap.get(roomID);
-        if (roomInfo == null) throw new RuntimeException("roomInfo is null");
-        return roomInfo;
-    }
-    public HotelCalendar getCalendarByHotelID(String id) {
-        return calendars.get(id);
-    }
 
     public HotelCalendarDAO getCalendarDAO() {
         return hotelCalendarDAO;
+    }
+
+    public double getPrice(String hotelID, String date, String roomID) {
+        try {
+            return hotelCalendarDAO.getPrice(hotelID, date, roomID);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
     //EndRegion
 

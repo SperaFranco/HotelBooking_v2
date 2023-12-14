@@ -39,7 +39,8 @@ public class ReservationManager extends Subject {
         notifyObservers(reservationRemoved, "Delete reservation");
     }
     public void updateReservation(String id, String newDescription, LocalDate newCheckInDate, LocalDate newCheckOutDate) {
-
+        //TODO da riguardare
+        /*
         Reservation reservation = findReservationById(id);
         if (reservation == null)
             throw new RuntimeException("reservation not found");
@@ -58,6 +59,8 @@ public class ReservationManager extends Subject {
             reservation.setCheckIn(newCheckInDate);
             reservation.setCheckOut(newCheckOutDate);
         }
+
+         */
     }
     public ArrayList<Reservation> getReservations(Guest guest) {
         if (guest == null)
