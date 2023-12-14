@@ -31,6 +31,17 @@ public class Reservation
 
     }
 
+    public Reservation(String id, LocalDate checkIn, LocalDate checkOut, int numOfGuests, String description, String hotelID, String roomReservedID, String userID) {
+        this.id = id;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.numOfGuests = numOfGuests;
+        this.description = description;
+        this.hotelID = hotelID;
+        this.roomReservedID = roomReservedID;
+        this.userID = userID;
+    }
+
     //Region getters and setters
     public String getId() {
         return id;
@@ -68,7 +79,7 @@ public class Reservation
     public void setRoomReserved(String roomReserved) {
         this.roomReservedID = roomReserved;
     }
-    public String getDescription() {
+    public String getNotes() {
         return description;
     }
     public void setDescription(String description) {

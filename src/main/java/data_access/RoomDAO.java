@@ -30,7 +30,6 @@ public class RoomDAO {
         String sql = "INSERT OR IGNORE INTO Room (id, type, description, hotel_id) VALUES " + valuesClause;
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
             int paramIndex = 1;
-            //TODO Vedere se è possible inserire piu valori insieme
             for (Room room : rooms) {
                 statement.setString(paramIndex++, room.getId());
                 statement.setString(paramIndex++, room.getType().toString());
@@ -56,6 +55,17 @@ public class RoomDAO {
                 rooms.add(new Room(id, RoomType.valueOf(type), description));
             }
             return rooms;
+        }
+    }
+
+    public void deleteRooms(ArrayList<Room> rooms) throws SQLException {
+        String sql = "DELETE FROM Room WHERE id = ?";
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (Room room : rooms) {
+                statement.setString(1, room.getId());
+                statement.addBatch();
+            }
+            statement.executeBatch();
         }
     }
 }

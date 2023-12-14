@@ -6,17 +6,18 @@ import java.util.*;
 
 import data_access.HotelCalendarDAO;
 import domain_model.*;
+import utilities.Research;
 import utilities.Subject;
 
 public class CalendarManager extends Subject {
     private final HotelCalendarDAO hotelCalendarDAO;
 
     public CalendarManager(){
-        this.hotelCalendarDAO = new HotelCalendarDAO();
+        this.hotelCalendarDAO = new HotelCalendarDAO(this);
     }
 
     public HotelCalendar createCalendar(ArrayList<Room> rooms, String hotelID, HotelManager hotelManager, ReservationManager reservationManager){
-        HotelCalendar calendar = new HotelCalendar(hotelID, hotelManager, reservationManager);
+        HotelCalendar calendar = new HotelCalendar(hotelID, hotelManager, reservationManager, this);
 
         LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth());
         LocalDate endDate = LocalDate.of(LocalDate.now().plusYears(1).getYear(), LocalDate.now().plusYears(1).getMonth(),
@@ -47,7 +48,7 @@ public class CalendarManager extends Subject {
     public void closeRoom(Hotel hotel, LocalDate date, String roomID){
 
         if(hotel == null)
-            throw new RuntimeException("hotel il null");
+            throw new RuntimeException("hotel is null");
         try {
             hotelCalendarDAO.setAvailability(hotel.getId(), date.toString(), roomID, "not available");
         } catch (SQLException e) {
@@ -60,7 +61,7 @@ public class CalendarManager extends Subject {
     public void setMinimumStay(Hotel hotel, LocalDate date, String roomID, int minStay){
 
         if(hotel == null)
-            throw new RuntimeException("hotel il null");
+            throw new RuntimeException("hotel is null");
         try {
             hotelCalendarDAO.setMinimumStay(hotel.getId(), date.toString(), roomID, minStay );
         } catch (SQLException e) {
@@ -71,7 +72,8 @@ public class CalendarManager extends Subject {
     }
     public int getMinimumStay(Hotel hotel, LocalDate date, String roomID){
 
-        if(hotel == null) throw new RuntimeException("hotel il null");
+        if(hotel == null)
+            throw new RuntimeException("hotel is null");
         return hotelCalendarDAO.getMinimumStay();
 
     }
@@ -88,6 +90,31 @@ public class CalendarManager extends Subject {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean getAvailability(String hotelID, String date, String roomID ) {
+        try {
+            String availabilty = hotelCalendarDAO.getAvailability(hotelID, date, roomID);
+            return availabilty.equals("available");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setAvailability(String hotelID, String date, String roomID, boolean availability) {
+        try {
+            hotelCalendarDAO.setAvailability(hotelID, date, roomID, availability ? "available" : "not available");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isRoomAvailable(String hotelID, Research research, String roomReserved) {
+        for (LocalDate date = research.getCheckIn(); !date.isEqual(research.getCheckOut()); date = date.plusDays(1)) {
+            if (!getAvailability(hotelID, date.toString(), roomReserved))
+                return false;
+        }
+        return true;
     }
     //EndRegion
 

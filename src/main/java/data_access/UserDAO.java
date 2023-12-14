@@ -31,9 +31,9 @@ public class UserDAO {
     public void deleteUser(User user) throws SQLException {
         switch (user.getType()) {
             case GUEST ->
-                    DeleteGuest(user.getId());
+                    deleteGuest((Guest) user);
             case HOTEL_DIRECTOR ->
-                    DeleteHotelDirector(user.getId());
+                    deleteHotelDirector(user.getId());
         }
     }
 
@@ -66,7 +66,7 @@ public class UserDAO {
         creditCardDAO.addCreditCard(user.getCard());
     }
 
-    private void DeleteHotelDirector(String id) throws SQLException {
+    private void deleteHotelDirector(String id) throws SQLException {
         String sql = "DELETE FROM HotelDirector WHERE id = ?";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, id);
@@ -74,12 +74,15 @@ public class UserDAO {
         }
     }
 
-    private void DeleteGuest(String id) throws SQLException {
+    private void deleteGuest(Guest guest) throws SQLException {
         String sql = "DELETE FROM Guest WHERE id = ?";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, id);
+            statement.setString(1, guest.getId());
             statement.executeUpdate();
         }
+        if (guest.getCard() != null)
+            creditCardDAO.deleteCard(guest.getCard().getCardNumber());
+        //TODO ci sarebbero da cancellare anche le sue prenotazioni
     }
 
     public User findUserByEmail(String email, ReservationManager reservationManager, HotelManager hotelManager) throws SQLException {

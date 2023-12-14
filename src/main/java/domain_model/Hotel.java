@@ -116,14 +116,12 @@ public class Hotel implements Observer {
         this.rooms = rooms;
     }
 
-    public ArrayList<Room> getRoomsAvailable(Research researchInfo) {
-
-        ArrayList<Room> roomsAvailable = new ArrayList<>();
-
+    public ArrayList<String> getRoomsAvailable(Research researchInfo) {
+        ArrayList<String> roomsAvailable = new ArrayList<>();
         for (Room room : rooms) {
             if(RoomType.getRoomCapacity(room.getType()) >= researchInfo.getNumOfGuest())
                 if(calendar.isRoomAvailable(researchInfo, room.getId()))
-                    roomsAvailable.add(room);
+                    roomsAvailable.add(room.getId());
         }
         return roomsAvailable;
     }
@@ -154,15 +152,8 @@ public class Hotel implements Observer {
     public boolean isHotelAvailable(Research researchInfo) {
         //Controllo nel calendario se ho delle camere disponibili per le richieste indicate
         // e ritorno vero se il numero di camere è diverso da zero
-
-        ArrayList<Room> availableRooms = new ArrayList<>();
-        boolean roomAvailable = false;
-        for (Room room : getRoomsAvailable(researchInfo)) {
-            //Se ho almeno una camera disponibile allora ritorno vero
-            roomAvailable = true;
-            break;
-        }
-        return roomAvailable;
+        //non più usata
+        return getRoomsAvailable(researchInfo).isEmpty();
     }
 
 

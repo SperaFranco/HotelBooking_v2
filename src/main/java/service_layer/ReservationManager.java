@@ -1,102 +1,125 @@
 package service_layer;
+import data_access.ReservationDAO;
 import domain_model.*;
 import utilities.Subject;
 import utilities.Research;
 import utilities.IdGenerator;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
 public class ReservationManager extends Subject {
-    private final Map<String, Reservation> reservationMap;
     private final CalendarManager calendarManager;
+    private final ReservationDAO reservationDAO;
 
     public ReservationManager(CalendarManager calendarManager) {
-        reservationMap = new HashMap<>();
         this.calendarManager = calendarManager;
+        this.reservationDAO = new ReservationDAO();
     }
-    public Reservation createReservation(Guest user, Research researchInfo, Hotel hotel, String roomID, String description) {
 
-        if(user == null) throw new RuntimeException("user is null");
+    public Reservation createReservation(Guest user, Research researchInfo, Hotel hotel, String roomID, String description) {
+        if (user == null)
+            throw new RuntimeException("user is null");
+
         Reservation newReservation = null;
-        if(hotel.isHotelAvailable(researchInfo) && hotel.getCalendar().isRoomAvailable(researchInfo,roomID)) {
+        //Se l'hotel è disponibile e se la camera è disponibile
+        ArrayList<String> roomsAvailable = hotel.getRoomsAvailable(researchInfo);
+        if (!roomsAvailable.isEmpty() && roomsAvailable.contains(roomID)) {
             newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), researchInfo.getCheckIn()), researchInfo, description, hotel.getId(), roomID, user.getId());
             addReservation(newReservation);
         }
         return newReservation;
     }
-    private  void addReservation(Reservation newReservation) {
+
+    private void addReservation(Reservation newReservation) {
         //TODO guardare come fare per mandare email di notifica prenotazione (qui o nel doReservation)
-        reservationMap.put(newReservation.getId(), newReservation);
+        try {
+            reservationDAO.addReservation(newReservation);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         setChanged();
-        notifyObservers(newReservation,"Add reservation");
+        notifyObservers(newReservation, "Add reservation");
     }
-    public void deleteReservation(String id) {
-        Reservation reservationRemoved = findReservationById(id);
-        if(reservationRemoved==null) throw new RuntimeException("reservation not found");
-        reservationMap.remove(id);
+
+    public void deleteReservation(Reservation reservation) {
+        try {
+            reservationDAO.removeReservation(reservation.getId());
+        } catch (SQLException e) {
+            System.out.println("Reservation not found!");
+            throw new RuntimeException(e);
+        }
         setChanged();
-        notifyObservers(reservationRemoved, "Delete reservation");
+        notifyObservers(reservation, "Delete reservation");
     }
-    public void updateReservation(String id, String newDescription, LocalDate newCheckInDate, LocalDate newCheckOutDate) {
-        //TODO da riguardare
-        /*
-        Reservation reservation = findReservationById(id);
-        if (reservation == null)
-            throw new RuntimeException("reservation not found");
-        if(newDescription != null)
-            reservation.setDescription(newDescription);
+
+    public void updateReservation(Reservation reservation, String newNote, LocalDate newCheckInDate, LocalDate newCheckOutDate) {
+        if(newNote != null)
+            setDescription(reservation.getId(), newNote);
+
         if(newCheckInDate != null && newCheckOutDate != null){
-            HotelCalendar calendar = calendarManager.getCalendarByHotelID(reservation.getHotel());
-            calendar.setRoomAvailability(reservation.getRoomReserved(), reservation.getCheckIn(), reservation.getCheckOut(), true);
+            setChanged();
+            notifyObservers(reservation, "Delete reservation");
             //FIXME messo questo research temporaneamente perché isRoomAvailable accetta un research
-            Research research = new Research(null, newCheckInDate, newCheckOutDate, 0);
-            if(!calendar.isRoomAvailable(research, reservation.getRoomReserved())) {
-                calendar.setRoomAvailability(reservation.getRoomReserved(), reservation.getCheckIn(), reservation.getCheckOut(), false);
-                throw new RuntimeException("the dates requested are not available");
+            Research research = new Research(null, newCheckInDate, newCheckOutDate, reservation.getNumOfGuests());
+            if(calendarManager.isRoomAvailable(reservation.getHotel(), research, reservation.getRoomReserved())) {
+                setCheckIn(reservation.getId(), newCheckInDate);
+                setCheckOut(reservation.getId(), newCheckOutDate);
             }
-            calendar.setRoomAvailability(reservation.getRoomReserved(), newCheckInDate, newCheckOutDate, false);
-            reservation.setCheckIn(newCheckInDate);
-            reservation.setCheckOut(newCheckOutDate);
+            else
+                System.out.println("the dates requested are not available");
+            setChanged();
+            notifyObservers(reservation, "Add reservation");
         }
 
-         */
     }
+
+    private void setDescription(String id, String newDescription) {
+        try {
+            reservationDAO.setNotes(id, newDescription);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setCheckIn(String id, LocalDate checkIn) {
+        try {
+            reservationDAO.setCheckIn(id, checkIn.toString());
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setCheckOut(String id, LocalDate checkOut) {
+        try {
+            reservationDAO.setCheckOut(id, checkOut.toString());
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public ArrayList<Reservation> getReservations(Guest guest) {
         if (guest == null)
             throw new RuntimeException("guest is a null reference");
-        return findReservationsByGuest(guest.getId());
+        try {
+            return reservationDAO.getReservationByGuest(guest.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
+
     public ArrayList<Reservation> getAllReservations(Hotel hotel) {
         if (hotel == null)
             throw new RuntimeException("hotel is a null reference");
-        return findReservationsByHotel(hotel.getId());
-    }
-
-    //Region helpers
-    private Reservation findReservationById(String id) {
-        return reservationMap.get(id);
-    }
-    private ArrayList<Reservation> findReservationsByGuest(String guestID) {
-        ArrayList<Reservation> reservationsForGuest = new ArrayList<>();
-
-        for (Map.Entry<String, Reservation> entry : reservationMap.entrySet()) {
-            Reservation reservation = entry.getValue();
-            if (reservation.getClient().equals(guestID))
-                reservationsForGuest.add(reservation);
+        try {
+            return reservationDAO.getReservationByHotel(hotel.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return reservationsForGuest;
     }
-    private ArrayList<Reservation> findReservationsByHotel(String hotelID)  {
-        ArrayList<Reservation> reservationsForHotel = new ArrayList<>();
 
-        for (Map.Entry<String, Reservation> entry : reservationMap.entrySet()) {
-            Reservation reservation = entry.getValue();
-            if (reservation.getHotel().equals(hotelID))
-                reservationsForHotel.add(reservation);
-        }
-        return reservationsForHotel;
-    }
-    //End Region helpers
 }
-

@@ -36,7 +36,7 @@ public class HotelManager extends Subject {
         setChanged();
         notifyObservers(hotel, "New hotel added");
     }
-    public void removeHotel(String hotel) {
+    public void removeHotel(Hotel hotel) {
         //cancellare un hotel richiede di eliminare tutte le prenotazioni attive per quella struttura
         if(hotel == null) throw new RuntimeException("null reference to hotel");
         //TODO modificare questa parte
@@ -64,7 +64,7 @@ public class HotelManager extends Subject {
 
         for(Hotel hotel:allHotels) {
             if (hotel.getCity().equalsIgnoreCase(researchInfo.getCity())) {
-                if (hotel.isHotelAvailable(researchInfo))
+                if (!hotel.getRoomsAvailable(researchInfo).isEmpty())
                     filteredHotels.add(hotel);
             }
         }

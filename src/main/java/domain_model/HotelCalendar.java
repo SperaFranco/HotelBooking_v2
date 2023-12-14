@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
+import service_layer.CalendarManager;
 import service_layer.HotelManager;
 import service_layer.ReservationManager;
 import utilities.Observer;
@@ -18,13 +19,15 @@ public class HotelCalendar implements Observer {
     //Region fields
     private Map<LocalDate, Map<String, RoomInfo>> roomStatusMap; //todo lui deve stare attento quando prenoto/modifico una prenotazione
     private final String hotelID;
+    private final CalendarManager calendarManager;
     //end Region
 
-    public HotelCalendar(String hotelID, HotelManager manager, ReservationManager reservationManager) {
+    public HotelCalendar(String hotelID, HotelManager manager, ReservationManager reservationManager, CalendarManager calendarManager) {
         this.hotelID = hotelID;
         roomStatusMap = new HashMap<>();
         manager.addObserver(this);
         reservationManager.addObserver(this);
+        this.calendarManager = calendarManager;
     }
 
     public Map<LocalDate,Map<String, RoomInfo>> getRoomStatusMap(){
@@ -52,10 +55,11 @@ public class HotelCalendar implements Observer {
     public void setRoomAvailability(String roomID, LocalDate checkIn, LocalDate checkOut, boolean availability) {
         for (LocalDate date = checkIn; !date.isEqual(checkOut); date = date.plusDays(1)) {
             roomStatusMap.get(date).get(roomID).setAvailability(availability);
+            //Lo setto anche nel db --> sarebbe da discutere su quale tenere se db o roomStatusMap
+            calendarManager.setAvailability(hotelID, date.toString(), roomID, availability);
         }
     }
     public boolean isRoomAvailable(Research researchInfo, String roomID) {
-
         for (LocalDate date = researchInfo.getCheckIn(); !date.isEqual(researchInfo.getCheckOut()); date = date.plusDays(1)) {
             Map<String, RoomInfo> roomInfoMap = roomStatusMap.get(date);
             RoomInfo info = roomInfoMap.get(roomID);
@@ -63,8 +67,8 @@ public class HotelCalendar implements Observer {
                 return false;
         }
         return true;
-
     }
+
     /*
     public double getTotalPrice(LocalDate checkIn, LocalDate checkOut, String id) {
         double sum = 0;
@@ -112,9 +116,6 @@ public class HotelCalendar implements Observer {
             if( ((Reservation)argument).getHotel().equals(this.hotelID) )
                 updateAvailability( ((Reservation)argument), message );
         }
-        else if(argument instanceof Hotel hotel)
-            if (hotel.getId().equals(this.hotelID))
-                updateCalendar(message);
     }
 
 
@@ -135,9 +136,6 @@ public class HotelCalendar implements Observer {
             setRoomAvailability(roomReservedID, newCheckInDate, newCheckOutDate, true);
         }
     }
-    private void updateCalendar(String message) {
-        if (message.contains("Hotel removed")) //controllare
-            getRoomStatusMap().clear(); //cancello anche il calendario
-    }
+
     //end Helpers Methods
 }

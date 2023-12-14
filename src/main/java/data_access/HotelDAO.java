@@ -6,6 +6,7 @@ import service_layer.CalendarManager;
 import service_layer.HotelManager;
 import service_layer.ReservationManager;
 import utilities.HotelRating;
+import utilities.Research;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,13 +47,14 @@ public class HotelDAO {
     }
 
 
-    public void removeHotel(String id) throws SQLException {
+    public void removeHotel(Hotel hotel) throws SQLException {
         String sql = "DELETE FROM Hotel WHERE id = ?";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        //TODO probabilmente vanno cancellate anche altre cose --> delete on cascade?
-        statement.setString(1, id);
-        statement.executeUpdate();
-        statement.close();
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, hotel.getId());
+            statement.executeUpdate();
+        }
+        hotelCalendarDAO.deleteCalendar(hotel.getCalendar());
+        roomDAO.deleteRooms(hotel.getRooms());
     }
 
     public ArrayList<Hotel> getAllHotels(HotelManager hotelManager, ReservationManager reservationManager) throws SQLException {
@@ -89,5 +91,10 @@ public class HotelDAO {
             if (statement != null)
                 statement.close();
         }
+    }
+
+    public ArrayList<Hotel> filterHotels(Research research, HotelManager hotelManager, ReservationManager reservationManager) {
+        //TODO da implementare filtrando gli hotel secondo i parametri della ricerca che faccio
+        return null;
     }
 }

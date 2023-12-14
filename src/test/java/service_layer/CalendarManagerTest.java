@@ -59,7 +59,7 @@ class CalendarManagerTest {
         calendarManager.closeRoom(hotel, dateClosingRoom, hotel.getRooms().get(3).getId());
         hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.isEmpty());
-        hotelManager.removeHotel(hotel.getId());
+        hotelManager.removeHotel(hotel);
     }
     @org.junit.jupiter.api.Test
     public void modifyPrice(){
@@ -68,7 +68,7 @@ class CalendarManagerTest {
         calendarManager.modifyPrice(hotel, LocalDate.of(2023,12,25),hotel.getRooms().get(1).getId(),140);
         assert(calendarManager.getPrice(hotel.getId(),LocalDate.of(2023,12,25).toString(), hotel.getRooms().get(1).getId()) == 140);
 
-        hotelManager.removeHotel(hotel.getId());
+        hotelManager.removeHotel(hotel);
     }
 
     @AfterAll

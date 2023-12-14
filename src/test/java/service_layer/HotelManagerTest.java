@@ -51,7 +51,7 @@ class HotelManagerTest {
         hotelManager.removeHotel(hotel);
         assert(hotelManager.getHotelMap().isEmpty());
         */
-        hotelManager.removeHotel(hotel.getId());
+        hotelManager.removeHotel(hotel);
     }
 
     @org.junit.jupiter.api.Test
@@ -68,7 +68,7 @@ class HotelManagerTest {
         calendarManager.setMinimumStay(hotelsAvailable.get(0), checkInDate, hotel.getRooms().get(3).getId(), 3);
         hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.isEmpty());
-        hotelManager.removeHotel(hotel.getId());
+        hotelManager.removeHotel(hotel);
     }
 
     @AfterAll
