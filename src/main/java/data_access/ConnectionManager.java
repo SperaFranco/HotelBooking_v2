@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectionManager {
-    //TODO vedi se lo possiamo realizzare come singleton
    private static Connection connection;
    private static final String dbPath = "/home/regino/Scrivania/SWE/HotelBooking_v2/HotelBooking.db"; //questo Franco lo devi modificare
 

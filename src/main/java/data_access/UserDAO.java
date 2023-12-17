@@ -71,6 +71,7 @@ public class UserDAO {
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, id);
             statement.executeUpdate();
+            //TODO ci sarebbe da cancellare anche i suoi hotel se presenti
         }
     }
 
@@ -109,9 +110,9 @@ public class UserDAO {
                 if (userType.equals("Guest")) {
                     String card_number = rs.getString("card_number");
                     CreditCard card = creditCardDAO.findCreditCard(card_number);
-                    return new Guest(id, name, surname, email, telephone, password, card, reservationManager, UserType.GUEST);
+                    return new Guest(id, name, surname, email, telephone, password, card, UserType.GUEST);
                 }
-                return new HotelDirector(id, name, surname, email, telephone, password, hotelManager, UserType.HOTEL_DIRECTOR);
+                return new HotelDirector(id, name, surname, email, telephone, password, UserType.HOTEL_DIRECTOR);
             }
         }
         finally {
@@ -146,9 +147,9 @@ public class UserDAO {
                 if (userType.equals("Guest")) {
                     String card_number = rs.getString("card_number");
                     CreditCard card = creditCardDAO.findCreditCard(card_number);
-                    return new Guest(id, name, surname, email, telephone, password, card, reservationManager, UserType.GUEST);
+                    return new Guest(id, name, surname, email, telephone, password, card, UserType.GUEST);
                 }
-                return new HotelDirector(id, name, surname, email, telephone, password, hotelManager, UserType.HOTEL_DIRECTOR);
+                return new HotelDirector(id, name, surname, email, telephone, password, UserType.HOTEL_DIRECTOR);
             }
         }
         finally {

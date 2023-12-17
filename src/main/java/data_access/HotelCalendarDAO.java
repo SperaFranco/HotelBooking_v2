@@ -1,96 +1,62 @@
 package data_access;
 
 import domain_model.HotelCalendar;
+import domain_model.Room;
 import domain_model.RoomInfo;
 import service_layer.CalendarManager;
 import service_layer.HotelManager;
 import service_layer.ReservationManager;
+import utilities.Research;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class HotelCalendarDAO {
     private final Connection connection;
-    private final CalendarManager calendarManager;
 
-    public HotelCalendarDAO(CalendarManager calendarManager) {
+    public HotelCalendarDAO() {
         connection = ConnectionManager.connect();
-        this.calendarManager = calendarManager;
     }
-    public void addCalendar(HotelCalendar calendar) throws SQLException {
-        if (calendar.getRoomStatusMap().isEmpty())
-            return;
-
+    public void addCalendar(HotelCalendar calendar, ArrayList<Room> rooms) throws SQLException {
         String sql = "INSERT OR IGNORE INTO HotelCalendar (hotel_id, date , room_id, availability, price, minimum_stay) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            for (Map.Entry<LocalDate, Map<String, RoomInfo>> entry : calendar.getRoomStatusMap().entrySet()) {
-                LocalDate date = entry.getKey();
-                Map<String, RoomInfo> roomInfoMap = entry.getValue();
-
-                for (Map.Entry<String, RoomInfo> roomEntry : roomInfoMap.entrySet()) {
-                    RoomInfo info = roomEntry.getValue();
-                    String roomID = roomEntry.getKey();
-
+            for (LocalDate date = calendar.getStartDate(); !date.isAfter(calendar.getEndDate()); date = date.plusDays(1)) {
+                for (Room room :rooms) {
                     statement.setString(1, calendar.getHotelID());
                     statement.setString(2, date.toString());
-                    statement.setString(3, roomID);
-                    statement.setString(4, info.getAvailabilityToString());
-                    statement.setDouble(5, info.getPrice());
-                    statement.setInt(6, info.getMinimumStay());
+                    statement.setString(3, room.getId());
+                    RoomInfo roomInfo = new RoomInfo(room.getId());
+                    statement.setString(4, roomInfo.getAvailabilityToString());
+                    statement.setDouble(5, roomInfo.getPrice());
+                    statement.setInt(6, roomInfo.getMinimumStay());
                     statement.addBatch();
                 }
             }
-            statement.executeBatch(); //fa un inserimento di massa
+            statement.executeBatch();
         }
     }
 
-    public void deleteCalendar(HotelCalendar calendar) throws SQLException {
+    public void deleteCalendar(HotelCalendar calendar, ArrayList<Room> rooms) throws SQLException {
         String sql = "DELETE FROM HotelCalendar WHERE hotel_id = ? AND date = ? AND room_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            for (Map.Entry<LocalDate, Map<String, RoomInfo>> entry : calendar.getRoomStatusMap().entrySet()) {
-                LocalDate date = entry.getKey();
-                Map<String, RoomInfo> roomInfoMap = entry.getValue();
-
-                for (String roomID : roomInfoMap.keySet()) {
+            for (LocalDate date = calendar.getStartDate(); !date.isAfter(calendar.getEndDate()); date = date.plusDays(1)) {
+                for (Room room : rooms) {
                     statement.setString(1, calendar.getHotelID());
                     statement.setString(2, date.toString());
-                    statement.setString(3, roomID);
+                    statement.setString(3, room.getId());
                     statement.addBatch();
                 }
             }
-            statement.executeBatch(); //fa un inserimento di massa
-        }
-    }
-    public HotelCalendar getCalendar(String hotelID, HotelManager hotelManager, ReservationManager reservationManager) throws SQLException{
-        //Funziona che torna il calendario intero... potremmo magari specificarlo per giorni o per roomID
-        String sql = "SELECT * FROM HotelCalendar WHERE hotel_id = ?";
-        try(PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, hotelID);
-            ResultSet rs = statement.executeQuery();
-            HotelCalendar hotelCalendar = new HotelCalendar(hotelID, hotelManager, reservationManager, calendarManager );
-            Map<LocalDate, Map<String, RoomInfo>> map = new HashMap<>();
-
-            while (rs.next()) {
-                LocalDate date = LocalDate.parse(rs.getString("date"));
-                String roomID = rs.getString("room_id");
-                double price = rs.getDouble("price");
-                int minimumStay = rs.getInt("minimum_stay");
-                boolean availability = rs.getString("availability").equals("available");
-
-                RoomInfo roomInfo = new RoomInfo(hotelID, roomID, date,price, minimumStay, availability);
-
-                map.computeIfAbsent(date, k -> new HashMap<>()).put(roomID, roomInfo);
-            }
-            hotelCalendar.setRoomStatusMap(map);
-            return hotelCalendar;
+            statement.executeBatch();
         }
     }
 
@@ -127,8 +93,21 @@ public class HotelCalendarDAO {
         }
     }
 
-    public int getMinimumStay() {
-        throw new RuntimeException("not implemented");
+    public int getMinimumStay(String hotelID, String date, String roomID) {
+        String sql = "SELECT minimum_stay FROM HotelCalendar WHERE hotel_id = ? AND date = ? AND room_id = ?";
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, hotelID);
+            statement.setString(2, date);
+            statement.setString(3, roomID);
+            try(ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("minimum_stay");
+                }
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public double getPrice(String hotelID, String date, String roomID) throws SQLException{
@@ -165,5 +144,41 @@ public class HotelCalendarDAO {
 
         }
         return null;
+    }
+
+    public ArrayList<String> getRoomsAvailableIDs(String hotelID, Research research) throws SQLException {
+        ArrayList<String> roomIDs = new ArrayList<>();
+        LocalDate checkIn = research.getCheckIn();
+        LocalDate checkOut = research.getCheckOut();
+
+        String sql = "SELECT DISTINCT room_id " +
+                "FROM HotelCalendar " +
+                "WHERE hotel_id = ? " +
+                "AND date BETWEEN ? AND ? " +
+                "AND availability = 'available' " +
+                "AND NOT EXISTS (" +
+                "SELECT 1 " +
+                "FROM HotelCalendar " +
+                "WHERE room_id = HotelCalendar.room_id " +
+                "AND date BETWEEN ? AND ? " +
+                "AND minimum_stay > ?" +
+                ")";
+
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, hotelID);
+            statement.setString(2, checkIn.toString());
+            statement.setString(3, checkOut.toString());
+            statement.setString(4, checkIn.toString());
+            statement.setString(5, checkOut.toString());
+            statement.setInt(6, (int) checkIn.until(checkOut, ChronoUnit.DAYS));
+
+            try(ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    String id = rs.getString("room_id");
+                    roomIDs.add(id);
+                }
+            }
+            return roomIDs;
+        }
     }
 }

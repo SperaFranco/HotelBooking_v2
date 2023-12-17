@@ -40,22 +40,42 @@ public class RoomDAO {
         }
     }
 
-    public ArrayList<Room> getRoomsByID(String hotelID) throws SQLException {
+    public ArrayList<Room> getRoomsByHotelID(String hotelID) throws SQLException {
         ArrayList<Room> rooms = new ArrayList<>();
 
         String sql = "SELECT * FROM Room WHERE hotel_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, hotelID);
 
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                String id = rs.getString("id");
-                String type = rs.getString("type");
-                String description = rs.getString("description");
-                rooms.add(new Room(id, RoomType.valueOf(type), description));
+            try(ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    String id = rs.getString("id");
+                    RoomType type = RoomType.getRoomType(rs.getString("type"));
+                    String description = rs.getString("description");
+                    rooms.add(new Room(id, type, description));
+                }
             }
-            return rooms;
         }
+        return rooms;
+    }
+
+    public Room getRoomByID(String roomID) throws SQLException {
+        Room room = null;
+
+        String sql = "SELECT * FROM Room WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, roomID);
+
+            try(ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    String id = rs.getString("id");
+                    RoomType type = RoomType.getRoomType(rs.getString("type"));
+                    String description = rs.getString("description");
+                    room = new Room(id, type, description);
+                }
+            }
+        }
+        return room;
     }
 
     public void deleteRooms(ArrayList<Room> rooms) throws SQLException {
@@ -67,5 +87,24 @@ public class RoomDAO {
             }
             statement.executeBatch();
         }
+    }
+
+
+    public boolean canRoomAccomodate(String id, int numOfGuest) throws SQLException {
+        boolean canAccomodate = false;
+
+        String sql = "SELECT * FROM Room WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, id);
+
+            try(ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    RoomType type = RoomType.getRoomType(rs.getString("type"));
+                    if(RoomType.getRoomCapacity(type) >= numOfGuest)
+                        canAccomodate = true;
+                }
+            }
+        }
+        return canAccomodate;
     }
 }

@@ -4,7 +4,7 @@ import java.util.Vector;
 
 public abstract class Subject {
     private boolean changed = false;
-    private Vector<Observer> observers;
+    private final Vector<Observer> observers;
 
     public Subject() {
         observers = new Vector<>();
@@ -35,16 +35,6 @@ public abstract class Subject {
             clearChanged();
         }
         for (int i = arrLocal.length-1; i>=0; i--) {
-            //FIXME ogni if chiama lo stesso update con gli stessi argomenti, può essere tolto
-            /*if (this instanceof ReservationManager) {
-                ((Observer) arrLocal[i]).update(this, arg, message);
-            }
-            else if(this instanceof HotelManager) {
-                ((Observer) arrLocal[i]).update(this, arg, message);
-            }
-            else if (this instanceof CalendarManager) {
-                ((Observer) arrLocal[i]).update(this, arg, message);
-            }*/
             ((Observer) arrLocal[i]).update(this, arg, message);
         }
     }

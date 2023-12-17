@@ -19,22 +19,22 @@ class AccountManagerTest {
     }
 
     @org.junit.jupiter.api.Test
-    public void registerTest() throws SQLException{
+    public void registerTest() {
         String name = "Regino";
         String surname = "Kamberaj";
         UserType type = UserType.GUEST;
         CreditCard card = new CreditCard(name + " " + surname, "1234567890123456", "10-28", 725);
         String id = IdGenerator.generateUserID(type, name, surname);
-        Guest guest = new Guest(id, name, surname, "reginokamberaj@gmail.com", "+39123456789", "password", card, reservationManager, type);
+        Guest guest = new Guest(id, name, surname, "reginokamberaj@gmail.com", "+39123456789", "password", card, type);
         accountManager.doRegistration(guest);
     }
 
     @org.junit.jupiter.api.Test
-    public void loginTest() throws SQLException{
+    public void loginTest() {
         String name = "Franco";
         String surname = "Spera";
         UserType type = UserType.HOTEL_DIRECTOR;
-        HotelDirector hotelDirector = new HotelDirector(IdGenerator.generateUserID(type, name, surname), name, surname, "info@relaistiffany.it", "+393337001756", "passwordHD", hotelManager, type);
+        HotelDirector hotelDirector = new HotelDirector(IdGenerator.generateUserID(type, name, surname), name, surname, "info@relaistiffany.it", "+393337001756", "passwordHD", type);
         accountManager.doRegistration(hotelDirector);
 
         User user = accountManager.login("info@relaistiffany.it","passwordHD");
@@ -44,11 +44,11 @@ class AccountManagerTest {
         accountManager.deleteUser(hotelDirector);
     }
     @org.junit.jupiter.api.Test
-    public void logout() throws SQLException{
+    public void logout() {
         String name = "Franco";
         String surname = "Spera";
         UserType type = UserType.HOTEL_DIRECTOR;
-        HotelDirector hotelDirector = new HotelDirector(IdGenerator.generateUserID(type, name, surname), name, surname, "info@relaistiffany.it", "+393337001756", "passwordHD", hotelManager, type);
+        HotelDirector hotelDirector = new HotelDirector(IdGenerator.generateUserID(type, name, surname), name, surname, "info@relaistiffany.it", "+393337001756", "passwordHD", type);
         accountManager.doRegistration(hotelDirector);
         accountManager.logout(hotelDirector);
 

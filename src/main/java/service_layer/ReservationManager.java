@@ -23,9 +23,8 @@ public class ReservationManager extends Subject {
             throw new RuntimeException("user is null");
 
         Reservation newReservation = null;
-        //Se l'hotel è disponibile e se la camera è disponibile
-        ArrayList<String> roomsAvailable = hotel.getRoomsAvailable(researchInfo);
-        if (!roomsAvailable.isEmpty() && roomsAvailable.contains(roomID)) {
+        //TODO devo veramente controllare se la camera risulta disponibile?
+        if (calendarManager.isRoomAvailable(hotel.getId(), researchInfo, roomID)) {
             newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), researchInfo.getCheckIn()), researchInfo, description, hotel.getId(), roomID, user.getId());
             addReservation(newReservation);
         }
@@ -61,7 +60,6 @@ public class ReservationManager extends Subject {
         if(newCheckInDate != null && newCheckOutDate != null){
             setChanged();
             notifyObservers(reservation, "Delete reservation");
-            //FIXME messo questo research temporaneamente perché isRoomAvailable accetta un research
             Research research = new Research(null, newCheckInDate, newCheckOutDate, reservation.getNumOfGuests());
             if(calendarManager.isRoomAvailable(reservation.getHotel(), research, reservation.getRoomReserved())) {
                 setCheckIn(reservation.getId(), newCheckInDate);
@@ -83,7 +81,6 @@ public class ReservationManager extends Subject {
             e.printStackTrace();
         }
     }
-
     private void setCheckIn(String id, LocalDate checkIn) {
         try {
             reservationDAO.setCheckIn(id, checkIn.toString());
