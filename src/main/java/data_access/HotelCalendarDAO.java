@@ -2,10 +2,7 @@ package data_access;
 
 import domain_model.HotelCalendar;
 import domain_model.Room;
-import domain_model.RoomInfo;
-import service_layer.CalendarManager;
-import service_layer.HotelManager;
-import service_layer.ReservationManager;
+import utilities.RoomInfo;
 import utilities.Research;
 
 import java.sql.Connection;

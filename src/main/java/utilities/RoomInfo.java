@@ -1,4 +1,4 @@
-package domain_model;
+package utilities;
 
 import java.time.LocalDate;
 

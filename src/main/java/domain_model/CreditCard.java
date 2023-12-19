@@ -65,6 +65,9 @@ public class CreditCard {
         this.balance = balance;
     }
 
+    public void addBalance(double balance) {
+        this.balance += balance;
+    }
     //end Region
 
     private boolean isValid(String cardNumber, String expiryDate, int CVV){
@@ -88,12 +91,12 @@ public class CreditCard {
         return true;
     }
 
-
-    public void doPayment(double amount) {
+    public boolean doPayment(double amount) {
         //magari va fatto un controllo al saldo e se sufficiente esegui il pagamento
         if (balance >= amount) {
             balance -= amount;
             System.out.println("Payment successful. Remaining balance: " + balance);
+            return true;
         }else {
             throw new RuntimeException("Insufficient balance for the payment.");
         }

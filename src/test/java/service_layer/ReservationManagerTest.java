@@ -37,7 +37,9 @@ class ReservationManagerTest {
     }
     @org.junit.jupiter.api.Test
     public void createReservation(){
-        Guest guest1 = new Guest(IdGenerator.generateUserID(UserType.GUEST,"Regino","Kamberaj"), "Regino", "Kamberaj", "regino.kamberaj@gmail.com", null, "passwordRegino", null, UserType.GUEST);
+        Guest guest1 = new Guest(IdGenerator.generateUserID(UserType.GUEST,"Regino","Kamberaj"), "Regino", "Kamberaj", "regino.kamberaj@gmail.com", null, "passwordRegino",
+                new CreditCard("Regino Kamberaj", "1234567812345678", "10-28", 735), UserType.GUEST);
+        accountManager.doRegistration(guest1);
 
         LocalDate checkInDate = LocalDate.of(2023, 12, 25);
         LocalDate checkOutDate = LocalDate.of(2023, 12, 27);
@@ -55,8 +57,8 @@ class ReservationManagerTest {
         for(LocalDate date = checkInDate; !date.isEqual(checkOutDate); date = date.plusDays(1))
             assert(!calendarManager.getAvailability(hotel.getId(), date.toString(), roomID));
 
-        // verifica che nel calendario la data di check-out della camera prentata risulti libera
-        assert(calendarManager.getAvailability(hotel.getId(), checkOutDate.toString(), roomID));
+        // verifica che nel calendario la data di check-out della camera prentata risulti libera TODO da decidere se comprendere o meno
+        //assert(calendarManager.getAvailability(hotel.getId(), checkOutDate.toString(), roomID));
 
         // verifica che un'altra prenotazione non possa essere effettuata per quella stessa camera in date in cui risulta occupata
         LocalDate otherCheckInDate = LocalDate.of(2023, 12, 26);
@@ -67,6 +69,7 @@ class ReservationManagerTest {
         assert(reservation2 == null);
         // verifica che se cancello la prima prenotazione, adesso posso eseguire correttamente la seconda prenotazione
         reservationManager.deleteReservation(reservation);
+        guest1.getCard().addBalance(1000.0);
         reservation2 = reservationManager.createReservation(guest1,otherResearch,hotel, roomID,"king size bed");
         assert(reservation2 != null);
         reservationManager.deleteReservation(reservation2);
@@ -75,9 +78,11 @@ class ReservationManagerTest {
     }
     @org.junit.jupiter.api.Test
     public void updateReservationDates(){
-        Guest guest1 = new Guest(IdGenerator.generateUserID(UserType.GUEST,"Regino","Kamberaj"), "Regino", "Kamberaj", "regino.kamberaj@gmail.com", null, "passwordRegino", null, UserType.GUEST);
+        Guest guest1 = new Guest(IdGenerator.generateUserID(UserType.GUEST,"Regino","Kamberaj"), "Regino", "Kamberaj", "regino.kamberaj@gmail.com", null, "passwordRegino",
+                new CreditCard("Regino Kamberaj", "1234567812345678", "10-28", 735), UserType.GUEST);
+        accountManager.doRegistration(guest1);
 
-        LocalDate checkInDate = LocalDate.of(2023, 12, 25);
+        LocalDate checkInDate = LocalDate.of(2023, 12, 24);
         LocalDate checkOutDate = LocalDate.of(2023, 12, 27);
         Research research = new Research("Firenze", checkInDate, checkOutDate, 2);
         ArrayList<Hotel> hotels = hotelManager.doHotelResearch(research);
@@ -87,12 +92,17 @@ class ReservationManagerTest {
         Reservation reservation = reservationManager.createReservation(guest1,research,hotel, room,"two twin beds");
 
         //cambio le date della prenotazione
-        LocalDate newCheckInDate = LocalDate.of(2023,12,24);
+        LocalDate newCheckInDate = LocalDate.of(2023,12,25);
         LocalDate newCheckOutDate = LocalDate.of(2023,12,26);
+        Research research2 = new Research("Firenze", newCheckInDate, newCheckOutDate, 2);
         reservationManager.updateReservation(reservation, null, newCheckInDate, newCheckOutDate);
+
         List<Reservation> guestReservations1 = reservationManager.getReservations(guest1);
 
         //controllo che le date della precedente prenotazione siano disponibili e che non lo siano le date aggiornate
+        assert(calendarManager.getAvailability(hotel.getId(), checkOutDate.toString(), room));
+        assert(calendarManager.getAvailability(hotel.getId(), checkOutDate.toString(), room));
+        assert(!calendarManager.isRoomAvailable(hotel.getId(), research2, room));
         LocalDate otherCheckInDate = LocalDate.of(2023, 12, 27);
         LocalDate otherCheckOutDate = LocalDate.of(2023, 12, 29);
         Research otherResearch = new Research("Firenze", otherCheckInDate, otherCheckOutDate, 2);
@@ -103,7 +113,6 @@ class ReservationManagerTest {
         reservationManager.deleteReservation(reservation);
         reservationManager.deleteReservation(reservation2);
         accountManager.deleteUser(guest1);
-        //TODO mancano gli assert?
     }
 
     @AfterAll

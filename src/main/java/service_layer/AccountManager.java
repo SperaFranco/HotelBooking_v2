@@ -6,10 +6,10 @@ import domain_model.User;
 import java.sql.SQLException;
 
 public class AccountManager {
-    //Questi non andrebbero qui...
-    private HotelManager hotelManager;
-    private ReservationManager reservationManager;
-    private CalendarManager calendarManager;
+    //Questi non andrebbero qui... TODO vedi se fare classe singleton
+    private final HotelManager hotelManager;
+    private final ReservationManager reservationManager;
+    private final CalendarManager calendarManager;
     private final UserDAO userDao;
 
     public AccountManager(){
@@ -55,7 +55,6 @@ public class AccountManager {
 
     }
     public void logout(User user) {
-       // users.remove(user);
         user = null;
     }
     public User findUserByID(String id, ReservationManager reservationManager, HotelManager hotelManager) {

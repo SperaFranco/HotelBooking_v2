@@ -58,6 +58,7 @@ public class HotelManager {
             throw new RuntimeException(e);
         }
 
+        //Lascio poi solo gli hotel che hanno almeno una camera disponibile secondo i parametri di ricerca
         for(String hotel:allHotels) {
             if (!getRoomsAvailable(hotel, researchInfo).isEmpty()) {
                 try {

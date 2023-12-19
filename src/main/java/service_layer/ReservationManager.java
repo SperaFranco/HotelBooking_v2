@@ -23,8 +23,13 @@ public class ReservationManager extends Subject {
             throw new RuntimeException("user is null");
 
         Reservation newReservation = null;
-        //TODO devo veramente controllare se la camera risulta disponibile?
-        if (calendarManager.isRoomAvailable(hotel.getId(), researchInfo, roomID)) {
+        //TODO devo veramente controllare se la camera risulta disponibile? --> controllo invece se ho abbastanza soldi
+        double sum = 0.0;
+        for(LocalDate date = researchInfo.getCheckIn(); !date.isAfter(researchInfo.getCheckOut()); date = date.plusDays(1)) {
+            sum += calendarManager.getPrice(hotel.getId(), date.toString(), roomID);
+        }
+
+        if (user.getCard().doPayment(sum) && calendarManager.isRoomAvailable(hotel.getId(),researchInfo, roomID)) {
             newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), researchInfo.getCheckIn()), researchInfo, description, hotel.getId(), roomID, user.getId());
             addReservation(newReservation);
         }
@@ -62,11 +67,11 @@ public class ReservationManager extends Subject {
             notifyObservers(reservation, "Delete reservation");
             Research research = new Research(null, newCheckInDate, newCheckOutDate, reservation.getNumOfGuests());
             if(calendarManager.isRoomAvailable(reservation.getHotel(), research, reservation.getRoomReserved())) {
-                setCheckIn(reservation.getId(), newCheckInDate);
-                setCheckOut(reservation.getId(), newCheckOutDate);
+                setCheckIn(reservation, newCheckInDate);
+                setCheckOut(reservation, newCheckOutDate);
             }
             else
-                System.out.println("the dates requested are not available");
+                throw new RuntimeException("the dates requested are not available");
             setChanged();
             notifyObservers(reservation, "Add reservation");
         }
@@ -81,18 +86,20 @@ public class ReservationManager extends Subject {
             e.printStackTrace();
         }
     }
-    private void setCheckIn(String id, LocalDate checkIn) {
+    private void setCheckIn(Reservation reservation, LocalDate checkIn) {
         try {
-            reservationDAO.setCheckIn(id, checkIn.toString());
+            reservationDAO.setCheckIn(reservation.getId(), checkIn.toString());
+            reservation.setCheckIn(checkIn);
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void setCheckOut(String id, LocalDate checkOut) {
+    private void setCheckOut(Reservation reservation, LocalDate checkOut) {
         try {
-            reservationDAO.setCheckOut(id, checkOut.toString());
+            reservationDAO.setCheckOut(reservation.getId(), checkOut.toString());
+            reservation.setCheckOut(checkOut);
         }
         catch (SQLException e) {
             e.printStackTrace();
