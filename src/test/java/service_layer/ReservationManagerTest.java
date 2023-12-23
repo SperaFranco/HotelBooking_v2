@@ -20,6 +20,7 @@ class ReservationManagerTest {
     private static HotelDirector hotelDirector;
     private static Hotel hotel1;
     private static HotelCalendar calendar;
+    private static final boolean sendEmail = false; //Se vuoi far partire le email metti questo a true
 
     @BeforeAll
     public static void setUp(){
@@ -29,7 +30,7 @@ class ReservationManagerTest {
         reservationManager = accountManager.getReservationManager();
 
         //Supponiamo di aver già inserito un hotel
-        hotelDirector = new HotelDirector(IdGenerator.generateUserID(UserType.HOTEL_DIRECTOR,"Franco","Spera"), "Franco", "Spera", "info@relaistiffany.it", "+393337001756", "passwordHD", UserType.HOTEL_DIRECTOR);
+        hotelDirector = new HotelDirector(IdGenerator.generateUserID(UserType.HOTEL_DIRECTOR,"Franco","Spera"), "Franco", "Spera", "reginokamberaj@gmail.com", "+393337001756", "Kr29332d", UserType.HOTEL_DIRECTOR);
         accountManager.doRegistration(hotelDirector);
         hotel1 = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
         hotelManager.addHotel(hotel1);
@@ -37,7 +38,7 @@ class ReservationManagerTest {
     }
     @org.junit.jupiter.api.Test
     public void createReservation(){
-        Guest guest1 = new Guest(IdGenerator.generateUserID(UserType.GUEST,"Regino","Kamberaj"), "Regino", "Kamberaj", "regino.kamberaj@gmail.com", null, "passwordRegino",
+        Guest guest1 = new Guest(IdGenerator.generateUserID(UserType.GUEST,"Regino","Kamberaj"), "Regino", "Kamberaj", "regino.kamberaj@edu.unifi.it", null, "passwordRegino",
                 new CreditCard("Regino Kamberaj", "1234567812345678", "10-28", 735), UserType.GUEST);
         accountManager.doRegistration(guest1);
 
@@ -49,7 +50,7 @@ class ReservationManagerTest {
         ArrayList<Room> rooms = hotelManager.getRoomsAvailable(hotel.getId(), research);
         String roomID = rooms.get(0).getId();
 
-        Reservation reservation = reservationManager.createReservation(guest1,research,hotel, roomID,"two twin beds");
+        Reservation reservation = reservationManager.createReservation(guest1,research,hotel, roomID,"two twin beds", sendEmail);
         assert(reservation != null);
         assert(reservation.getNotes().equals("two twin beds"));
 
@@ -65,12 +66,12 @@ class ReservationManagerTest {
         LocalDate otherCheckOutDate = LocalDate.of(2023, 12, 29);
         Research otherResearch = new Research("Firenze", otherCheckInDate, otherCheckOutDate, 2);
         //Beh in realtà qui dovrei filtrare fra gli hotel...
-        Reservation reservation2 = reservationManager.createReservation(guest1,otherResearch,hotel, roomID,"king size bed");
+        Reservation reservation2 = reservationManager.createReservation(guest1,otherResearch,hotel, roomID,"king size bed", sendEmail);
         assert(reservation2 == null);
         // verifica che se cancello la prima prenotazione, adesso posso eseguire correttamente la seconda prenotazione
         reservationManager.deleteReservation(reservation);
         guest1.getCard().addBalance(1000.0);
-        reservation2 = reservationManager.createReservation(guest1,otherResearch,hotel, roomID,"king size bed");
+        reservation2 = reservationManager.createReservation(guest1,otherResearch,hotel, roomID,"king size bed", sendEmail);
         assert(reservation2 != null);
         reservationManager.deleteReservation(reservation2);
 
@@ -89,7 +90,7 @@ class ReservationManagerTest {
         Hotel hotel = hotels.get(0);
         ArrayList<Room> rooms = hotelManager.getRoomsAvailable(hotel.getId(), research);
         String room = rooms.get(0).getId();
-        Reservation reservation = reservationManager.createReservation(guest1,research,hotel, room,"two twin beds");
+        Reservation reservation = reservationManager.createReservation(guest1,research,hotel, room,"two twin beds", sendEmail);
 
         //cambio le date della prenotazione
         LocalDate newCheckInDate = LocalDate.of(2023,12,25);
@@ -106,7 +107,7 @@ class ReservationManagerTest {
         LocalDate otherCheckInDate = LocalDate.of(2023, 12, 27);
         LocalDate otherCheckOutDate = LocalDate.of(2023, 12, 29);
         Research otherResearch = new Research("Firenze", otherCheckInDate, otherCheckOutDate, 2);
-        Reservation reservation2 = reservationManager.createReservation(guest1, otherResearch,hotel, room,"king size bed");
+        Reservation reservation2 = reservationManager.createReservation(guest1, otherResearch,hotel, room,"king size bed", sendEmail);
         List<Reservation> guestReservations2 = reservationManager.getReservations(guest1);
         List<Reservation> hotelReservations = reservationManager.getAllReservations(hotel);
 

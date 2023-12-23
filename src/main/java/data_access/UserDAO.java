@@ -123,7 +123,7 @@ public class UserDAO {
         }
         return null;
     }
-    public User findUserByID(String id, ReservationManager reservationManager, HotelManager hotelManager) throws SQLException {
+    public User findUserByID(String id) throws SQLException {
         //Per come ho progettato il db dovrei andare a cercare su due tabelle
         // e a seconda di dove trovo l'user impostare certi campi
         String sql = "SELECT 'HotelDirector' AS userType, *, NULL AS card_number  FROM HotelDirector WHERE email = ?" +
@@ -164,4 +164,24 @@ public class UserDAO {
         this.connection = ConnectionManager.disconnect(this.connection);
     }
 
+    public HotelDirector findHotelDirector(String hotelID) throws SQLException {
+        String sql = "SELECT hd.id AS director_id, hd.name, hd.surname, hd.email, hd.telephone, hd.password " +
+                    "FROM HotelDirector hd JOIN Hotel h on hd.id = h.director_id WHERE h.id = ?";
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, hotelID);
+
+            try(ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    String id = resultSet.getString("director_id");
+                    String name = resultSet.getString("name");
+                    String surname = resultSet.getString("surname");
+                    String email = resultSet.getString("email");
+                    String telephone = resultSet.getString("telephone");
+                    String password = resultSet.getString("password");
+                    return new HotelDirector(id, name, surname, email, telephone, password, UserType.HOTEL_DIRECTOR);
+                }
+            }
+        }
+        return null;
+    }
 }

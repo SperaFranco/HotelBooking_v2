@@ -1,6 +1,7 @@
 package service_layer;
 
 import data_access.UserDAO;
+import domain_model.HotelDirector;
 import domain_model.User;
 
 import java.sql.SQLException;
@@ -15,7 +16,7 @@ public class AccountManager {
     public AccountManager(){
         this.userDao = new UserDAO();
         calendarManager = new CalendarManager();
-        reservationManager = new ReservationManager(calendarManager);
+        reservationManager = new ReservationManager(this, calendarManager );
         hotelManager = new HotelManager(calendarManager, reservationManager);
     }
     public void doRegistration(User user) {
@@ -57,9 +58,9 @@ public class AccountManager {
     public void logout(User user) {
         user = null;
     }
-    public User findUserByID(String id, ReservationManager reservationManager, HotelManager hotelManager) {
+    public User findUserByID(String id) {
         try {
-            return userDao.findUserByID(id, reservationManager, hotelManager);
+            return userDao.findUserByID(id);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -79,6 +80,13 @@ public class AccountManager {
         return calendarManager;
     }
 
+    public HotelDirector findHotelDirector(String hotelID) {
+        try {
+            return userDao.findHotelDirector(hotelID);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 //end Region

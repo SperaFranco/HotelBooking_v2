@@ -11,19 +11,19 @@ public class Reservation
     private LocalDate checkIn;
     private LocalDate checkOut;
     private int numOfGuests;
-    private String description;
+    private String notes;
     private String hotelID;
     private String roomReservedID;
     private String userID;
     //end Region
 
 
-    public Reservation(String id, Research researchInfo, String description, String hotel, String roomReserved, String client) {
+    public Reservation(String id, Research researchInfo, String notes, String hotel, String roomReserved, String client) {
         this.id = id;
         this.checkIn = researchInfo.getCheckIn();
         this.checkOut = researchInfo.getCheckOut();
         this.numOfGuests = researchInfo.getNumOfGuest();
-        this.description = description;
+        this.notes = notes;
         this.hotelID = hotel;
         this.roomReservedID = roomReserved; //nel uml settiamolo a 1 --> potremmo rendere possibile che uno stesso utente compia
         // più prenotazioni, ma può prenotare solo una camera alla volta
@@ -36,7 +36,7 @@ public class Reservation
         this.checkIn = checkIn;
         this.checkOut = checkOut;
         this.numOfGuests = numOfGuests;
-        this.description = description;
+        this.notes = description;
         this.hotelID = hotelID;
         this.roomReservedID = roomReservedID;
         this.userID = userID;
@@ -80,10 +80,10 @@ public class Reservation
         this.roomReservedID = roomReserved;
     }
     public String getNotes() {
-        return description;
+        return notes;
     }
-    public void setDescription(String description) {
-        this.description = description;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
     public String getHotel() {
         return hotelID;

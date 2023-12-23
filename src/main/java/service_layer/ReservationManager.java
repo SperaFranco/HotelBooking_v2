@@ -1,29 +1,32 @@
 package service_layer;
 import data_access.ReservationDAO;
 import domain_model.*;
+import utilities.MailNotifier;
 import utilities.Subject;
 import utilities.Research;
 import utilities.IdGenerator;
 
+import javax.mail.internet.AddressException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
 public class ReservationManager extends Subject {
+    private final AccountManager accountManager;
     private final CalendarManager calendarManager;
     private final ReservationDAO reservationDAO;
 
-    public ReservationManager(CalendarManager calendarManager) {
+    public ReservationManager(AccountManager accountManager, CalendarManager calendarManager) {
+        this.accountManager = accountManager;
         this.calendarManager = calendarManager;
         this.reservationDAO = new ReservationDAO();
     }
 
-    public Reservation createReservation(Guest user, Research researchInfo, Hotel hotel, String roomID, String description) {
+    public Reservation createReservation(Guest user, Research researchInfo, Hotel hotel, String roomID, String description, boolean sendEmail) {
         if (user == null)
             throw new RuntimeException("user is null");
 
         Reservation newReservation = null;
-        //TODO devo veramente controllare se la camera risulta disponibile? --> controllo invece se ho abbastanza soldi
         double sum = 0.0;
         for(LocalDate date = researchInfo.getCheckIn(); !date.isAfter(researchInfo.getCheckOut()); date = date.plusDays(1)) {
             sum += calendarManager.getPrice(hotel.getId(), date.toString(), roomID);
@@ -32,12 +35,25 @@ public class ReservationManager extends Subject {
         if (user.getCard().doPayment(sum) && calendarManager.isRoomAvailable(hotel.getId(),researchInfo, roomID)) {
             newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), researchInfo.getCheckIn()), researchInfo, description, hotel.getId(), roomID, user.getId());
             addReservation(newReservation);
+
+            if(sendEmail) {
+                //TODO rimane da decidere chi manda le mail
+                HotelDirector sender = accountManager.findHotelDirector(hotel.getId());
+
+                try {
+                    //Invio la mail al cliente
+                    MailNotifier.sendEmail(sender, user, "Confirmation of Reservation", newReservation);
+                    //Invio la mail al gestore
+                    MailNotifier.sendEmail(sender, sender, "New Reservation", newReservation);
+                } catch (AddressException e) {
+                    System.out.println("Email not send correctly!");
+                }
+            }
         }
         return newReservation;
     }
 
     private void addReservation(Reservation newReservation) {
-        //TODO guardare come fare per mandare email di notifica prenotazione (qui o nel doReservation)
         try {
             reservationDAO.addReservation(newReservation);
         } catch (SQLException e) {
