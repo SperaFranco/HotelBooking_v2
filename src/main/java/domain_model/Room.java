@@ -45,15 +45,4 @@ public class Room {
 
     //end Region
 
-    public boolean canRoomAccomodate(int numOfGuests) {
-        return numOfGuests <= RoomType.getRoomCapacity(type);
-    }
-
-    public String getRoomInfo(int index) {
-        return "Room number " + index + " informations:\n" +
-                "RoomID: " + id +
-                "Room type: " + type +
-                "Description: " + description;
-    }
-
 }

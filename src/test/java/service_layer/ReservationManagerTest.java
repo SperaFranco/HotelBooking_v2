@@ -42,8 +42,8 @@ class ReservationManagerTest {
                 new CreditCard("Regino Kamberaj", "1234567812345678", "10-28", 735), UserType.GUEST);
         accountManager.doRegistration(guest1);
 
-        LocalDate checkInDate = LocalDate.of(2023, 12, 25);
-        LocalDate checkOutDate = LocalDate.of(2023, 12, 27);
+        LocalDate checkInDate = LocalDate.of(2024, 1, 25);
+        LocalDate checkOutDate = LocalDate.of(2024, 1, 27);
         Research research = new Research("Firenze", checkInDate, checkOutDate, 2);
         ArrayList<Hotel> hotels = hotelManager.doHotelResearch(research);
         Hotel hotel = hotels.get(0);
@@ -62,15 +62,15 @@ class ReservationManagerTest {
         //assert(calendarManager.getAvailability(hotel.getId(), checkOutDate.toString(), roomID));
 
         // verifica che un'altra prenotazione non possa essere effettuata per quella stessa camera in date in cui risulta occupata
-        LocalDate otherCheckInDate = LocalDate.of(2023, 12, 26);
-        LocalDate otherCheckOutDate = LocalDate.of(2023, 12, 29);
+        LocalDate otherCheckInDate = LocalDate.of(2024, 1, 26);
+        LocalDate otherCheckOutDate = LocalDate.of(2024, 1, 29);
         Research otherResearch = new Research("Firenze", otherCheckInDate, otherCheckOutDate, 2);
         //Beh in realtà qui dovrei filtrare fra gli hotel...
         Reservation reservation2 = reservationManager.createReservation(guest1,otherResearch,hotel, roomID,"king size bed", sendEmail);
         assert(reservation2 == null);
         // verifica che se cancello la prima prenotazione, adesso posso eseguire correttamente la seconda prenotazione
         reservationManager.deleteReservation(reservation);
-        guest1.getCard().addBalance(1000.0);
+        accountManager.addBalance(guest1, 1000.0);
         reservation2 = reservationManager.createReservation(guest1,otherResearch,hotel, roomID,"king size bed", sendEmail);
         assert(reservation2 != null);
         reservationManager.deleteReservation(reservation2);
@@ -83,8 +83,8 @@ class ReservationManagerTest {
                 new CreditCard("Regino Kamberaj", "1234567812345678", "10-28", 735), UserType.GUEST);
         accountManager.doRegistration(guest1);
 
-        LocalDate checkInDate = LocalDate.of(2023, 12, 24);
-        LocalDate checkOutDate = LocalDate.of(2023, 12, 27);
+        LocalDate checkInDate = LocalDate.of(2024, 1, 24);
+        LocalDate checkOutDate = LocalDate.of(2024, 1, 27);
         Research research = new Research("Firenze", checkInDate, checkOutDate, 2);
         ArrayList<Hotel> hotels = hotelManager.doHotelResearch(research);
         Hotel hotel = hotels.get(0);
@@ -93,8 +93,8 @@ class ReservationManagerTest {
         Reservation reservation = reservationManager.createReservation(guest1,research,hotel, room,"two twin beds", sendEmail);
 
         //cambio le date della prenotazione
-        LocalDate newCheckInDate = LocalDate.of(2023,12,25);
-        LocalDate newCheckOutDate = LocalDate.of(2023,12,26);
+        LocalDate newCheckInDate = LocalDate.of(2024,1,25);
+        LocalDate newCheckOutDate = LocalDate.of(2024,1,26);
         Research research2 = new Research("Firenze", newCheckInDate, newCheckOutDate, 2);
         reservationManager.updateReservation(reservation, null, newCheckInDate, newCheckOutDate);
 
@@ -104,8 +104,8 @@ class ReservationManagerTest {
         assert(calendarManager.getAvailability(hotel.getId(), checkOutDate.toString(), room));
         assert(calendarManager.getAvailability(hotel.getId(), checkOutDate.toString(), room));
         assert(!calendarManager.isRoomAvailable(hotel.getId(), research2, room));
-        LocalDate otherCheckInDate = LocalDate.of(2023, 12, 27);
-        LocalDate otherCheckOutDate = LocalDate.of(2023, 12, 29);
+        LocalDate otherCheckInDate = LocalDate.of(2024, 1, 27);
+        LocalDate otherCheckOutDate = LocalDate.of(2024, 1, 29);
         Research otherResearch = new Research("Firenze", otherCheckInDate, otherCheckOutDate, 2);
         Reservation reservation2 = reservationManager.createReservation(guest1, otherResearch,hotel, room,"king size bed", sendEmail);
         List<Reservation> guestReservations2 = reservationManager.getReservations(guest1);
@@ -120,7 +120,7 @@ class ReservationManagerTest {
     public static void tearDown(){
         accountManager.deleteUser(hotelDirector);
         hotelManager.removeHotel(hotel1);
-        calendarManager.removeCalendar(calendar, hotel1.getRooms());
+        calendarManager.removeCalendar(calendar, hotel1.getRooms(), reservationManager);
         accountManager.getUserDao().disconnect();
     }
 }

@@ -37,8 +37,6 @@ public class UserDAO {
         }
     }
 
-
-
     private void addHotelDirector(HotelDirector user) throws SQLException {
         String sql = "INSERT OR IGNORE INTO HotelDirector (id, name , surname, email, telephone, password) VALUES (?, ?, ?, ?, ?, ?)";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -86,7 +84,7 @@ public class UserDAO {
         //TODO ci sarebbero da cancellare anche le sue prenotazioni
     }
 
-    public User findUserByEmail(String email, ReservationManager reservationManager, HotelManager hotelManager) throws SQLException {
+    public User findUserByEmail(String email) throws SQLException {
         //Per come ho progettato il db dovrei andare a cercare su due tabelle
         // e a seconda di dove trovo l'user impostare certi campi
         String sql = "SELECT 'HotelDirector' AS userType, *, NULL AS card_number  FROM HotelDirector WHERE email = ?" +
@@ -183,5 +181,9 @@ public class UserDAO {
             }
         }
         return null;
+    }
+
+    public CreditCardDAO getCreditCardDAO(){
+        return creditCardDAO;
     }
 }

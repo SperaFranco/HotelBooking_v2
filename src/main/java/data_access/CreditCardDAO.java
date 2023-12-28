@@ -52,4 +52,28 @@ public class CreditCardDAO {
             statement.executeUpdate();
         }
     }
+
+    public double getBalance(String cardNumber) throws SQLException{
+        String sql = "SELECT balance FROM CreditCard WHERE card_number = ?";
+
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, cardNumber);
+            try(ResultSet rs = statement.executeQuery()) {
+
+                if (rs.next()) {
+                    return rs.getDouble("balance");
+                }
+            }
+        }
+        return 0;
+    }
+
+    public void setBalance(String cardNumber, double balance) throws SQLException {
+        String sql = "UPDATE CreditCard SET balance = ? WHERE card_number = ?";
+        try(PreparedStatement statement =  connection.prepareStatement(sql)) {
+            statement.setDouble(1, balance);
+            statement.setString(2, cardNumber);
+            statement.executeUpdate();
+        }
+    }
 }

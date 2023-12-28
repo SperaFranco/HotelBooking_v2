@@ -22,7 +22,7 @@ public class ReservationManager extends Subject {
         this.reservationDAO = new ReservationDAO();
     }
 
-    public Reservation createReservation(Guest user, Research researchInfo, Hotel hotel, String roomID, String description, boolean sendEmail) {
+    public Reservation createReservation(Guest user, Research researchInfo, Hotel hotel, String roomID, String notes, boolean sendEmail) {
         if (user == null)
             throw new RuntimeException("user is null");
 
@@ -32,8 +32,8 @@ public class ReservationManager extends Subject {
             sum += calendarManager.getPrice(hotel.getId(), date.toString(), roomID);
         }
 
-        if (user.getCard().doPayment(sum) && calendarManager.isRoomAvailable(hotel.getId(),researchInfo, roomID)) {
-            newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), researchInfo.getCheckIn()), researchInfo, description, hotel.getId(), roomID, user.getId());
+        if (accountManager.doPayment(user, sum) && calendarManager.isRoomAvailable(hotel.getId(),researchInfo, roomID)) {
+            newReservation = new Reservation(IdGenerator.generateReservationID(hotel.getId(), user.getName(), user.getSurname(), researchInfo.getCheckIn()), researchInfo, notes, hotel.getId(), roomID, user.getId());
             addReservation(newReservation);
 
             if(sendEmail) {
@@ -74,9 +74,9 @@ public class ReservationManager extends Subject {
         notifyObservers(reservation, "Delete reservation");
     }
 
-    public void updateReservation(Reservation reservation, String newNote, LocalDate newCheckInDate, LocalDate newCheckOutDate) {
-        if(newNote != null)
-            setDescription(reservation.getId(), newNote);
+    public void updateReservation(Reservation reservation, String newNotes, LocalDate newCheckInDate, LocalDate newCheckOutDate) {
+        if(newNotes != null)
+            setDescription(reservation.getId(), newNotes);
 
         if(newCheckInDate != null && newCheckOutDate != null){
             setChanged();

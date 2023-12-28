@@ -11,14 +11,12 @@ import java.util.*;
 public class HotelManager {
     //Classe per la gestione e la modifica delle strutture degli hotel
     private final HotelDAO hotelDAO;
-    private final RoomDAO roomDAO;
     private final CalendarManager calendarManager;
     private final ReservationManager reservationManager;
     public HotelManager(CalendarManager calendarManager, ReservationManager reservationManager){
         this.calendarManager = calendarManager;
         this.reservationManager = reservationManager;
         this.hotelDAO = new HotelDAO();
-        this.roomDAO = hotelDAO.getRoomDAO();
     }
 
     public Hotel createHotel(HotelDirector hotelDirector,String name, String city, String address, String telephone, String description, HotelRating rating, int numSingleRooms, int numDoubleRooms, int numTripleRooms){
@@ -72,8 +70,9 @@ public class HotelManager {
     }
     public ArrayList<Room> getRoomsAvailable(String hotelID, Research research) {
         ArrayList<Room> roomsAvailable = new ArrayList<>();
+        RoomDAO roomDAO = hotelDAO.getRoomDAO();
 
-        //Prendo le camere di un hotel
+        //Prendo tutte le camere di un hotel
         ArrayList<Room> rooms = null;
         try {
             rooms = roomDAO.getRoomsByHotelID(hotelID);
@@ -96,6 +95,14 @@ public class HotelManager {
 
         return roomsAvailable;
     }
+    public ArrayList<Hotel> findHotelsByDirector(String director) {
+        try {
+            return hotelDAO.getHotelsByDirector(director);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     //Region Helpers
     private ArrayList<Room> createRooms(String id, int singleRooms, int doubleRooms, int tripleRooms){
@@ -114,13 +121,6 @@ public class HotelManager {
             }
         }
         return rooms;
-    }
-    private ArrayList<Hotel> findHotelsByDirector(HotelDirector director) {
-        try {
-            return hotelDAO.getHotelsByDirector(director.getId());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     //End Region

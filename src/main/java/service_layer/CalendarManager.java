@@ -30,13 +30,15 @@ public class CalendarManager{
         }
         return hotelCalendar;
     }
-    public void removeCalendar(HotelCalendar calendar, ArrayList<Room> rooms) {
+    public void removeCalendar(HotelCalendar calendar, ArrayList<Room> rooms, ReservationManager reservationManager) {
         //Devo prendere tutte le camere, l'hotelID e tutte le date fra inizio e fine
         try {
             hotelCalendarDAO.deleteCalendar(calendar, rooms);
+            reservationManager.removeObserver(calendar);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public void modifyPrice(Hotel hotel, LocalDate date, String roomID, double price){

@@ -37,7 +37,6 @@ class CalendarManagerTest {
         AccountManager accountManager = new AccountManager();
         hotelDirector = new HotelDirector(IdGenerator.generateUserID(UserType.HOTEL_DIRECTOR,"Franco","Spera"), "Franco", "Spera", "info@relaistiffany.it", "+393337001756", "passwordHD", UserType.HOTEL_DIRECTOR);
         accountManager.doRegistration(hotelDirector);
-
     }
 
     @org.junit.jupiter.api.Test
@@ -46,13 +45,14 @@ class CalendarManagerTest {
         hotelManager.addHotel(hotel);
         HotelCalendar calendar = calendarManager.createCalendar(hotel.getRooms(), hotel.getId(), accountManager.getReservationManager());
 
-        LocalDate checkInDate = LocalDate.of(2023, 12, 25);
-        LocalDate checkOutDate = LocalDate.of(2023, 12, 27);
+        //TODO ocho a quando si rilanciano i test che i giorni passano...
+        LocalDate checkInDate = LocalDate.of(2024, 1, 25);
+        LocalDate checkOutDate = LocalDate.of(2024, 1, 27);
         Research research = new Research("Firenze", checkInDate, checkOutDate, 2);
         ArrayList<Hotel> hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.size()==1);
         //assert(hotelsAvailable.contains(hotel));
-        LocalDate dateClosingRoom = LocalDate.of(2023,12,25);
+        LocalDate dateClosingRoom = LocalDate.of(2024,1,25);
         calendarManager.closeRoom(hotel, dateClosingRoom, hotel.getRooms().get(1).getId());
         hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.size()==1);
@@ -62,7 +62,7 @@ class CalendarManagerTest {
         hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.isEmpty());
         hotelManager.removeHotel(hotel);
-        calendarManager.removeCalendar(calendar, hotel.getRooms());
+        calendarManager.removeCalendar(calendar, hotel.getRooms(), accountManager.getReservationManager());
 
     }
     @org.junit.jupiter.api.Test
@@ -70,11 +70,11 @@ class CalendarManagerTest {
         Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
         hotelManager.addHotel(hotel);
         HotelCalendar calendar = calendarManager.createCalendar(hotel.getRooms(), hotel.getId(), accountManager.getReservationManager());
-        calendarManager.modifyPrice(hotel, LocalDate.of(2023,12,25),hotel.getRooms().get(1).getId(),140);
-        assert(calendarManager.getPrice(hotel.getId(),LocalDate.of(2023,12,25).toString(), hotel.getRooms().get(1).getId()) == 140);
+        calendarManager.modifyPrice(hotel, LocalDate.of(2024,1,25),hotel.getRooms().get(1).getId(),140);
+        assert(calendarManager.getPrice(hotel.getId(),LocalDate.of(2024,1,25).toString(), hotel.getRooms().get(1).getId()) == 140);
 
         hotelManager.removeHotel(hotel);
-        calendarManager.removeCalendar(calendar, hotel.getRooms());
+        calendarManager.removeCalendar(calendar, hotel.getRooms(), accountManager.getReservationManager());
     }
 
     @AfterAll

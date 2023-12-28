@@ -1,6 +1,8 @@
 package service_layer;
 
+import data_access.CreditCardDAO;
 import data_access.UserDAO;
+import domain_model.Guest;
 import domain_model.HotelDirector;
 import domain_model.User;
 
@@ -27,7 +29,6 @@ public class AccountManager {
             throw new RuntimeException(e);
         }
     }
-
     public void deleteUser(User user) {
         if (user == null)  throw new RuntimeException("user is a null reference");
         try {
@@ -40,7 +41,7 @@ public class AccountManager {
 
         User loginUser = null;
         try {
-            loginUser = userDao.findUserByEmail(email, reservationManager, hotelManager );
+            loginUser = userDao.findUserByEmail(email);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -86,6 +87,43 @@ public class AccountManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean doPayment(Guest user, double sum){
+        double balance = 0;
+        CreditCardDAO creditCardDAO = userDao.getCreditCardDAO();
+        String cardNumber = user.getCard().getCardNumber();
+
+        try {
+            balance = creditCardDAO.getBalance(cardNumber);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (balance >= sum) {
+            balance -= sum;
+            try {
+                creditCardDAO.setBalance(cardNumber, balance);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("Payment successful. Remaining balance: " + balance);
+            return true;
+        }else {
+            throw new RuntimeException("Insufficient balance for the payment.");
+        }
+    }
+
+    public void addBalance(Guest guest, double sum) {
+        CreditCardDAO creditCardDAO = userDao.getCreditCardDAO();
+        String cardNumber = guest.getCard().getCardNumber();
+        try {
+            double balance = creditCardDAO.getBalance(guest.getCard().getCardNumber());
+            creditCardDAO.setBalance(cardNumber, balance+sum);
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+
     }
 
 

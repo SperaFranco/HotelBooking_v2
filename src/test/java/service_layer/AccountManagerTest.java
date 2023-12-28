@@ -8,14 +8,10 @@ import utilities.UserType;
 
 class AccountManagerTest {
     private static AccountManager accountManager;
-    private static HotelManager hotelManager;
-    private static ReservationManager reservationManager;
     @BeforeAll
     public static void setUp(){
         //Mi dice che se fatto con il beforeAll è da fare static
         accountManager = new AccountManager();
-        reservationManager = accountManager.getReservationManager();
-        hotelManager = accountManager.getHotelManager();
     }
 
     @org.junit.jupiter.api.Test

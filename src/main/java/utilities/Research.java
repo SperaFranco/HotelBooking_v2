@@ -10,7 +10,11 @@ public class Research {
 
     public Research(String city, LocalDate checkIn, LocalDate checkOut, int numOfGuest){
         this.city = city;
+        if (checkIn.isBefore(LocalDate.now()))
+            throw new RuntimeException("Please insert a date not in the past");
         this.checkIn = checkIn;
+        if (checkOut.isBefore(LocalDate.now()) && checkOut.isBefore(checkIn))
+            throw new RuntimeException("Please insert a date not in the past");
         this.checkOut = checkOut;
         this.numOfGuest = numOfGuest;
     }

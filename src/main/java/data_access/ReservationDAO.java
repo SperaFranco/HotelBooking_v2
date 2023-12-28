@@ -17,7 +17,7 @@ public class ReservationDAO {
     }
 
     public void addReservation(Reservation reservation) throws SQLException {
-        String sql = "INSERT OR IGNORE INTO Reservation (id, check_in, check_out, num_of_guests, notes, hotel_id, room_reserved_id, user_id) VALUES (?, ?, ?, ?, ?, ?,?,?)";
+        String sql = "INSERT OR IGNORE INTO Reservation (id, check_in, check_out, num_of_guests, notes, hotel_id, room_reserved_id, guest_id) VALUES (?, ?, ?, ?, ?, ?,?,?)";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, reservation.getId());
             statement.setString(2, reservation.getCheckIn().toString());
@@ -31,7 +31,6 @@ public class ReservationDAO {
         }
     }
 
-
     public void removeReservation(String id) throws SQLException {
         String sql = "DELETE FROM Reservation WHERE id = ?";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -43,7 +42,7 @@ public class ReservationDAO {
     public ArrayList<Reservation> getReservationByGuest(String guest_id) throws SQLException{
         ArrayList<Reservation> reservations = new ArrayList<>();
 
-        String sql = "SELECT * FROM Reservation WHERE user_id = ?";
+        String sql = "SELECT * FROM Reservation WHERE guest_id = ?";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, guest_id);
 
@@ -57,7 +56,7 @@ public class ReservationDAO {
                     String notes = resultSet.getString("notes");
                     String hotelID = resultSet.getString("hotel_id");
                     String roomID = resultSet.getString("room_reserved_id");
-                    String userID = resultSet.getString("user_id");
+                    String userID = resultSet.getString("guest_id");
 
                     reservations.add(new Reservation(id, checkIn, checkOut, numOfGuests, notes, hotelID, roomID, userID));
                 }
@@ -82,7 +81,7 @@ public class ReservationDAO {
                     String notes = resultSet.getString("notes");
                     String hotelID = resultSet.getString("hotel_id");
                     String roomID = resultSet.getString("room_reserved_id");
-                    String userID = resultSet.getString("user_id");
+                    String userID = resultSet.getString("guest_id");
 
                     reservations.add(new Reservation(id, checkIn, checkOut, numOfGuests, notes, hotelID, roomID, userID));
                 }
