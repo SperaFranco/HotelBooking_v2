@@ -1,7 +1,6 @@
 package data_access;
 
 import domain_model.*;
-import service_layer.*;
 import utilities.UserType;
 
 import java.sql.Connection;
@@ -27,7 +26,6 @@ public class UserDAO {
                 addHotelDirector((HotelDirector)user);
         }
     }
-
     public void deleteUser(User user) throws SQLException {
         switch (user.getType()) {
             case GUEST ->
@@ -36,7 +34,6 @@ public class UserDAO {
                     deleteHotelDirector(user.getId());
         }
     }
-
     private void addHotelDirector(HotelDirector user) throws SQLException {
         String sql = "INSERT OR IGNORE INTO HotelDirector (id, name , surname, email, telephone, password) VALUES (?, ?, ?, ?, ?, ?)";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -63,7 +60,6 @@ public class UserDAO {
         }
         creditCardDAO.addCreditCard(user.getCard());
     }
-
     private void deleteHotelDirector(String id) throws SQLException {
         String sql = "DELETE FROM HotelDirector WHERE id = ?";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -72,7 +68,6 @@ public class UserDAO {
             //TODO ci sarebbe da cancellare anche i suoi hotel se presenti
         }
     }
-
     private void deleteGuest(Guest guest) throws SQLException {
         String sql = "DELETE FROM Guest WHERE id = ?";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -83,7 +78,6 @@ public class UserDAO {
             creditCardDAO.deleteCard(guest.getCard().getCardNumber());
         //TODO ci sarebbero da cancellare anche le sue prenotazioni
     }
-
     public User findUserByEmail(String email) throws SQLException {
         //Per come ho progettato il db dovrei andare a cercare su due tabelle
         // e a seconda di dove trovo l'user impostare certi campi
@@ -158,10 +152,10 @@ public class UserDAO {
         }
         return null;
     }
+    public void connect(){this.connection = ConnectionManager.connect();}
     public void disconnect() {
         this.connection = ConnectionManager.disconnect(this.connection);
     }
-
     public HotelDirector findHotelDirector(String hotelID) throws SQLException {
         String sql = "SELECT hd.id AS director_id, hd.name, hd.surname, hd.email, hd.telephone, hd.password " +
                     "FROM HotelDirector hd JOIN Hotel h on hd.id = h.director_id WHERE h.id = ?";
@@ -182,8 +176,10 @@ public class UserDAO {
         }
         return null;
     }
-
-    public CreditCardDAO getCreditCardDAO(){
-        return creditCardDAO;
+    public double getBalance(String cardNumber)throws SQLException{
+        return creditCardDAO.getBalance(cardNumber);
+    }
+    public void setBalance(String cardNumber, double newBalance)throws SQLException{
+        creditCardDAO.setBalance(cardNumber, newBalance);
     }
 }

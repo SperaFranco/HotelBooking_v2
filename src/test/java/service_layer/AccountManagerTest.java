@@ -1,21 +1,22 @@
 package service_layer;
 
 import domain_model.*;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.*;
 import utilities.IdGenerator;
 import utilities.UserType;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class AccountManagerTest {
     private static AccountManager accountManager;
     @BeforeAll
-    public static void setUp(){
-        //Mi dice che se fatto con il beforeAll è da fare static
+    static void setUp(){
         accountManager = new AccountManager();
     }
 
-    @org.junit.jupiter.api.Test
-    public void registerTest() {
+    @Test
+    void findUserByIDTest(){
         String name = "Regino";
         String surname = "Kamberaj";
         UserType type = UserType.GUEST;
@@ -23,10 +24,27 @@ class AccountManagerTest {
         String id = IdGenerator.generateUserID(type, name, surname);
         Guest guest = new Guest(id, name, surname, "reginokamberaj@gmail.com", "+39123456789", "password", card, type);
         accountManager.doRegistration(guest);
+        Guest guestInDB = (Guest)accountManager.findUserByID(id);
+        assertThat(guestInDB.getId(), equalTo(id));
+        accountManager.deleteUser(guest);
     }
 
-    @org.junit.jupiter.api.Test
-    public void loginTest() {
+    @Test
+    void deleteUserTest(){
+        String name = "Marco";
+        String surname = "Marchi";
+        UserType type = UserType.GUEST;
+        CreditCard card = new CreditCard(name + " " + surname, "1234567890123456", "10-28", 725);
+        String id = IdGenerator.generateUserID(type, name, surname);
+        Guest guest = new Guest(id, name, surname, "marcomarchi@gmail.com", "+39123456789", "password", card, type);
+        accountManager.doRegistration(guest);
+        accountManager.deleteUser(guest);
+        Guest guestInDB = (Guest)accountManager.findUserByID(id);
+        assertNull(guestInDB);
+    }
+
+    @Test
+    void loginTest() {
         String name = "Franco";
         String surname = "Spera";
         UserType type = UserType.HOTEL_DIRECTOR;
@@ -39,8 +57,8 @@ class AccountManagerTest {
 
         accountManager.deleteUser(hotelDirector);
     }
-    @org.junit.jupiter.api.Test
-    public void logout() {
+    @Test
+    void logout() {
         String name = "Franco";
         String surname = "Spera";
         UserType type = UserType.HOTEL_DIRECTOR;
@@ -52,7 +70,8 @@ class AccountManagerTest {
     }
 
     @AfterAll
-    public static void tearDown() {
+    static void tearDown() {
         accountManager.getUserDao().disconnect();
+        accountManager = null;
     }
 }

@@ -11,12 +11,20 @@ import java.util.*;
 public class HotelManager {
     //Classe per la gestione e la modifica delle strutture degli hotel
     private final HotelDAO hotelDAO;
-    private final CalendarManager calendarManager;
-    private final ReservationManager reservationManager;
-    public HotelManager(CalendarManager calendarManager, ReservationManager reservationManager){
-        this.calendarManager = calendarManager;
-        this.reservationManager = reservationManager;
+    private static CalendarManager calendarManager;
+    private static ReservationManager reservationManager;
+    private static HotelManager hotelManager;
+    private HotelManager(CalendarManager calendarManager, ReservationManager reservationManager){
+        HotelManager.calendarManager = calendarManager;
+        HotelManager.reservationManager = reservationManager;
         this.hotelDAO = new HotelDAO();
+    }
+
+    public static HotelManager createHotelManager(CalendarManager calendarManager, ReservationManager reservationManager){
+        if(hotelManager == null)
+            hotelManager = new HotelManager(calendarManager, reservationManager);
+
+        return hotelManager;
     }
 
     public Hotel createHotel(HotelDirector hotelDirector,String name, String city, String address, String telephone, String description, HotelRating rating, int numSingleRooms, int numDoubleRooms, int numTripleRooms){
@@ -36,11 +44,8 @@ public class HotelManager {
     public void removeHotel(Hotel hotel) {
         //cancellare un hotel richiede di eliminare tutte le prenotazioni attive per quella struttura
         if(hotel == null) throw new RuntimeException("null reference to hotel");
-        //TODO modificare questa parte --> tolto un hotel che facciamo delle sue prenotazioni?
-        //--> le eliminiamo con i trigger (??)
         try {
             hotelDAO.removeHotel(hotel);
-            //questo è il fresco di zona
             for (Reservation reservation : reservationManager.getAllReservations(hotel))
                 reservationManager.deleteReservation(reservation);
         } catch (SQLException e) {

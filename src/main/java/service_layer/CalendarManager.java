@@ -8,14 +8,23 @@ import java.util.*;
 import data_access.HotelCalendarDAO;
 import domain_model.*;
 import utilities.Research;
-import utilities.Subject;
 
 public class CalendarManager{
     private final HotelCalendarDAO hotelCalendarDAO;
+    private static CalendarManager calendarManager;
+    private static AccountManager accountManager;
 
-    public CalendarManager(){
+    private CalendarManager(){
         this.hotelCalendarDAO = new HotelCalendarDAO();
     }
+
+    public static CalendarManager createCalendarManager(){
+        if(calendarManager == null)
+            calendarManager = new CalendarManager();
+
+        return calendarManager;
+    }
+
 
     public HotelCalendar createCalendar(ArrayList<Room> rooms, String hotelID, ReservationManager reservationManager){
         LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth());

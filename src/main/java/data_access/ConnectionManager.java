@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class ConnectionManager {
    private static Connection connection;
-   private static final String dbPath = "/home/regino/Scrivania/SWE/HotelBooking_v2/HotelBooking.db"; //questo Franco lo devi modificare
+   private static final String dbPath = "/home/francospera/University/CurrentWork/SWE/Progetto/HotelBooking_v2.2/HotelBooking.db"; //questo Franco lo devi modificare
 
    public static Connection connect() {
        try {
@@ -15,7 +15,6 @@ public class ConnectionManager {
            }
 
            Class.forName("org.sqlite.JDBC"); //carico il driver di JDBC
-
            connection = DriverManager.getConnection("jdbc:sqlite:" +dbPath);
            System.out.println("Connected to database");
 

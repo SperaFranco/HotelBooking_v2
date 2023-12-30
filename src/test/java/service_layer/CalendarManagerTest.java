@@ -29,12 +29,12 @@ class CalendarManagerTest {
 
     @BeforeAll
     public static void setUp() {
-        accountManager = new AccountManager();
+        accountManager = AccountManager.createAccountManager();
+        accountManager.getUserDao().connect();
         calendarManager = accountManager.getCalendarManager();
         hotelManager = accountManager.getHotelManager();
 
         //Supponiamo di aver già aggiunto un hotelDirector
-        AccountManager accountManager = new AccountManager();
         hotelDirector = new HotelDirector(IdGenerator.generateUserID(UserType.HOTEL_DIRECTOR,"Franco","Spera"), "Franco", "Spera", "info@relaistiffany.it", "+393337001756", "passwordHD", UserType.HOTEL_DIRECTOR);
         accountManager.doRegistration(hotelDirector);
     }
@@ -81,5 +81,6 @@ class CalendarManagerTest {
     public static void TearDown() {
         accountManager.deleteUser(hotelDirector);
         accountManager.getUserDao().disconnect();
+        accountManager = null;
     }
 }

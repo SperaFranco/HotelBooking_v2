@@ -3,6 +3,7 @@ package service_layer;
 import domain_model.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import utilities.HotelRating;
 import utilities.IdGenerator;
 import utilities.Research;
@@ -24,10 +25,10 @@ class ReservationManagerTest {
 
     @BeforeAll
     public static void setUp(){
-        accountManager = new AccountManager();
-        calendarManager = accountManager.getCalendarManager();
-        hotelManager = accountManager.getHotelManager();
-        reservationManager = accountManager.getReservationManager();
+        accountManager = AccountManager.createAccountManager();
+        calendarManager = CalendarManager.createCalendarManager();
+        reservationManager = ReservationManager.createReservationManager(accountManager,calendarManager);
+        hotelManager = HotelManager.createHotelManager(calendarManager, reservationManager);
 
         //Supponiamo di aver già inserito un hotel
         hotelDirector = new HotelDirector(IdGenerator.generateUserID(UserType.HOTEL_DIRECTOR,"Franco","Spera"), "Franco", "Spera", "reginokamberaj@gmail.com", "+393337001756", "Kr29332d", UserType.HOTEL_DIRECTOR);
@@ -36,6 +37,8 @@ class ReservationManagerTest {
         hotelManager.addHotel(hotel1);
         calendar = calendarManager.createCalendar(hotel1.getRooms(), hotel1.getId(), reservationManager);
     }
+
+
     @org.junit.jupiter.api.Test
     public void createReservation(){
         Guest guest1 = new Guest(IdGenerator.generateUserID(UserType.GUEST,"Regino","Kamberaj"), "Regino", "Kamberaj", "regino.kamberaj@edu.unifi.it", null, "passwordRegino",

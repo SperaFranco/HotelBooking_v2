@@ -25,7 +25,7 @@ class HotelManagerTest {
 
     @BeforeAll
     public static void setUp() {
-        accountManager = new AccountManager();
+        accountManager = AccountManager.createAccountManager();
         hotelManager = accountManager.getHotelManager();
         calendarManager = accountManager.getCalendarManager();
         //Supponiamo di aver già creato un profilo da hotel director
@@ -81,6 +81,9 @@ class HotelManagerTest {
     public static void TearDown() {
         accountManager.deleteUser(hotelDirector);
         accountManager.getUserDao().disconnect();
+        accountManager = null;
+        hotelManager = null;
+        calendarManager = null;
     }
 
 

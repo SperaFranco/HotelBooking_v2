@@ -12,14 +12,22 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class ReservationManager extends Subject {
-    private final AccountManager accountManager;
-    private final CalendarManager calendarManager;
+    private static AccountManager accountManager;
+    private static CalendarManager calendarManager;
+    private static ReservationManager reservationManager;
+
     private final ReservationDAO reservationDAO;
 
-    public ReservationManager(AccountManager accountManager, CalendarManager calendarManager) {
-        this.accountManager = accountManager;
-        this.calendarManager = calendarManager;
+    private ReservationManager(AccountManager accountManager, CalendarManager calendarManager) {
+        ReservationManager.accountManager = accountManager;
+        ReservationManager.calendarManager = calendarManager;
         this.reservationDAO = new ReservationDAO();
+    }
+
+    public static ReservationManager createReservationManager(AccountManager accountManager, CalendarManager calendarManager){
+        if(reservationManager == null)
+            reservationManager = new ReservationManager(accountManager, calendarManager);
+        return reservationManager;
     }
 
     public Reservation createReservation(Guest user, Research researchInfo, Hotel hotel, String roomID, String notes, boolean sendEmail) {

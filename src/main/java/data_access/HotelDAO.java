@@ -2,9 +2,6 @@ package data_access;
 
 import domain_model.Hotel;
 import domain_model.Room;
-import service_layer.CalendarManager;
-import service_layer.HotelManager;
-import service_layer.ReservationManager;
 import utilities.HotelRating;
 import utilities.Research;
 import utilities.RoomType;
