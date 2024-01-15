@@ -152,10 +152,6 @@ public class UserDAO {
         }
         return null;
     }
-    public void connect(){this.connection = ConnectionManager.connect();}
-    public void disconnect() {
-        this.connection = ConnectionManager.disconnect(this.connection);
-    }
     public HotelDirector findHotelDirector(String hotelID) throws SQLException {
         String sql = "SELECT hd.id AS director_id, hd.name, hd.surname, hd.email, hd.telephone, hd.password " +
                     "FROM HotelDirector hd JOIN Hotel h on hd.id = h.director_id WHERE h.id = ?";

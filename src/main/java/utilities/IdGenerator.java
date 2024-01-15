@@ -17,9 +17,9 @@ public class IdGenerator {
 
 
 
-    public static String generateUserID(UserType type, String name, String username) {
+    public static String generateUserID(UserType type, String name, String surname) {
         String prefix = getPrefixForUserType(type);
-        String userID = prefix + "-" + name.substring(0,1).toUpperCase() + username.substring(0,1).toUpperCase()+userCounter;
+        String userID = prefix + "-" + name.substring(0,1).toUpperCase() + surname.substring(0,1).toUpperCase()+userCounter;
         userCounter++;
         return userID;
     }

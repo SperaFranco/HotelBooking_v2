@@ -10,20 +10,20 @@ import java.util.*;
 
 public class HotelManager {
     //Classe per la gestione e la modifica delle strutture degli hotel
+
     private final HotelDAO hotelDAO;
     private static CalendarManager calendarManager;
     private static ReservationManager reservationManager;
     private static HotelManager hotelManager;
+
     private HotelManager(CalendarManager calendarManager, ReservationManager reservationManager){
         HotelManager.calendarManager = calendarManager;
         HotelManager.reservationManager = reservationManager;
         this.hotelDAO = new HotelDAO();
     }
-
     public static HotelManager createHotelManager(CalendarManager calendarManager, ReservationManager reservationManager){
         if(hotelManager == null)
             hotelManager = new HotelManager(calendarManager, reservationManager);
-
         return hotelManager;
     }
 
@@ -42,7 +42,7 @@ public class HotelManager {
         }
     }
     public void removeHotel(Hotel hotel) {
-        //cancellare un hotel richiede di eliminare tutte le prenotazioni attive per quella struttura
+        //cancellare un hotel richiede di eliminare tutte le camere e le prenotazioni attive per quella struttura
         if(hotel == null) throw new RuntimeException("null reference to hotel");
         try {
             hotelDAO.removeHotel(hotel);
@@ -54,15 +54,15 @@ public class HotelManager {
     }
     public ArrayList<Hotel> doHotelResearch(Research researchInfo) {
         ArrayList<Hotel> filteredHotels = new ArrayList<>();
-        ArrayList<String> allHotels = null;
+        ArrayList<String> hotelIDsFilteredByCity = null;
         try {
-            allHotels = hotelDAO.filterHotels(researchInfo.getCity());
+            hotelIDsFilteredByCity = hotelDAO.filterHotels(researchInfo.getCity());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         //Lascio poi solo gli hotel che hanno almeno una camera disponibile secondo i parametri di ricerca
-        for(String hotel:allHotels) {
+        for(String hotel:hotelIDsFilteredByCity) {
             if (!getRoomsAvailable(hotel, researchInfo).isEmpty()) {
                 try {
                     filteredHotels.add(hotelDAO.getHotelByID(hotel));
@@ -74,7 +74,7 @@ public class HotelManager {
         return filteredHotels;
     }
     public ArrayList<Room> getRoomsAvailable(String hotelID, Research research) {
-        ArrayList<Room> roomsAvailable = new ArrayList<>();
+        ArrayList<Room> roomsWithRequiredCapacity = new ArrayList<>();
         RoomDAO roomDAO = hotelDAO.getRoomDAO();
 
         //Prendo tutte le camere di un hotel
@@ -87,29 +87,24 @@ public class HotelManager {
 
         //Le filtro se non possono ospitare il numero di ospiti
         for (Room room : rooms) {
-            try {
-                if(roomDAO.canRoomAccomodate(room.getId(), research.getNumOfGuest()))
-                    roomsAvailable.add(room);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            if(RoomType.getRoomCapacity(room.getType())>= research.getNumOfGuest())
+                roomsWithRequiredCapacity.add(room);
         }
 
         //le filtro se non sono disponibili
-        roomsAvailable.removeIf(room -> !calendarManager.isRoomAvailable(hotelID, research, room.getId()));
+        roomsWithRequiredCapacity.removeIf(room -> !calendarManager.isRoomAvailable(hotelID, research, room.getId()));
 
-        return roomsAvailable;
+        return roomsWithRequiredCapacity;
     }
-    public ArrayList<Hotel> findHotelsByDirector(String director) {
+    public Hotel findHotelByID(String id) {
         try {
-            return hotelDAO.getHotelsByDirector(director);
+            return hotelDAO.getHotelByID(id);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-
-    //Region Helpers
+    //Helpers
     private ArrayList<Room> createRooms(String id, int singleRooms, int doubleRooms, int tripleRooms){
         ArrayList<Room> rooms = new ArrayList<>();
         int[] numRooms = RoomType.setNumberOfRoomsPerType(singleRooms, doubleRooms, tripleRooms); //creo il numero di camere singole - doppie - triple
@@ -127,6 +122,4 @@ public class HotelManager {
         }
         return rooms;
     }
-
-    //End Region
 }

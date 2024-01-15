@@ -93,6 +93,7 @@ public class RoomDAO {
     public boolean canRoomAccomodate(String id, int numOfGuest) throws SQLException {
         boolean canAccomodate = false;
 
+
         String sql = "SELECT * FROM Room WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, id);

@@ -1,49 +1,78 @@
 package service_layer;
 
-import data_access.HotelCalendarDAO;
-import data_access.HotelDAO;
-import data_access.UserDAO;
-import domain_model.Hotel;
-import domain_model.HotelCalendar;
-import domain_model.HotelDirector;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import service_layer.AccountManager;
-import service_layer.CalendarManager;
-import service_layer.HotelManager;
-import service_layer.ReservationManager;
+import domain_model.*;
+import org.junit.jupiter.api.*;
 import utilities.HotelRating;
 import utilities.IdGenerator;
 import utilities.Research;
 import utilities.UserType;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 class CalendarManagerTest {
+
+    // managers
     private static AccountManager accountManager;
     private static HotelManager hotelManager;
     private static CalendarManager calendarManager;
-    private static HotelDirector hotelDirector;
+    private static ReservationManager reservationManager;
+
+    //data for testing
+    String hotelDirectorName, hotelDirectorSurname;
+    UserType hotelDirectorType;
+    String hotelDirectorID;
+    HotelDirector hotelDirector;
+    String hotelNameFirenze, hotelCityFirenze, hotelAddressFirenze;
+    int numOfSingleRoomsFirenze, numOfDoubleRoomsFirenze, numOfTripleRoomsFirenze;
+    Hotel hotelFirenze;
+    HotelCalendar hotelCalendarFirenze;
 
     @BeforeAll
-    public static void setUp() {
+    public static void beforeAll() {
         accountManager = AccountManager.createAccountManager();
-        accountManager.getUserDao().connect();
-        calendarManager = accountManager.getCalendarManager();
-        hotelManager = accountManager.getHotelManager();
-
-        //Supponiamo di aver già aggiunto un hotelDirector
-        hotelDirector = new HotelDirector(IdGenerator.generateUserID(UserType.HOTEL_DIRECTOR,"Franco","Spera"), "Franco", "Spera", "info@relaistiffany.it", "+393337001756", "passwordHD", UserType.HOTEL_DIRECTOR);
-        accountManager.doRegistration(hotelDirector);
+        calendarManager = CalendarManager.createCalendarManager();
+        reservationManager = ReservationManager.createReservationManager(accountManager, calendarManager);
+        hotelManager = HotelManager.createHotelManager(calendarManager, reservationManager);
     }
 
-    @org.junit.jupiter.api.Test
+    @BeforeEach
+    void setUp(){
+
+        //creo un direttore di hotel
+        hotelDirectorName = "Franco";
+        hotelDirectorSurname = "Spera";
+        hotelDirectorType = UserType.HOTEL_DIRECTOR;
+        hotelDirectorID = IdGenerator.generateUserID(hotelDirectorType, hotelDirectorName, hotelDirectorSurname);
+        hotelDirector = new HotelDirector(hotelDirectorID, hotelDirectorName, hotelDirectorSurname, "franco.spera@edu.unifi.it", "012932-122832", "HDpassword", hotelDirectorType);
+        accountManager.doRegistration(hotelDirector);
+
+        //creo un hotel
+        hotelNameFirenze = "LEONARDO DA VINCI";
+        hotelCityFirenze = "Firenze";
+        hotelAddressFirenze = "via Guido Monaco 2";
+        numOfSingleRoomsFirenze = 2;
+        numOfDoubleRoomsFirenze = 2;
+        numOfTripleRoomsFirenze = 2;
+        hotelFirenze = hotelManager.createHotel(hotelDirector, hotelNameFirenze, hotelCityFirenze, hotelAddressFirenze, null, null,  HotelRating.FOUR_STAR_HOTEL, numOfSingleRoomsFirenze, numOfDoubleRoomsFirenze, numOfTripleRoomsFirenze);
+    }
+
+    @AfterEach
+    void tearDown(){
+        accountManager.deleteUser(hotelDirector);
+        hotelManager.removeHotel(hotelFirenze);
+    }
+
+    @Test
+    void createCalendarTest(){
+        calendarManager.createCalendar(hotelFirenze.getRooms(),hotelFirenze.getId(), reservationManager);
+    }
+
+    @Test
     public void closeRoom() {
         Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
         hotelManager.addHotel(hotel);
-        HotelCalendar calendar = calendarManager.createCalendar(hotel.getRooms(), hotel.getId(), accountManager.getReservationManager());
+        HotelCalendar calendar = calendarManager.createCalendar(hotel.getRooms(), hotel.getId(), reservationManager);
 
         //TODO ocho a quando si rilanciano i test che i giorni passano...
         LocalDate checkInDate = LocalDate.of(2024, 1, 25);
@@ -62,25 +91,23 @@ class CalendarManagerTest {
         hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.isEmpty());
         hotelManager.removeHotel(hotel);
-        calendarManager.removeCalendar(calendar, hotel.getRooms(), accountManager.getReservationManager());
+        calendarManager.removeCalendar(calendar, hotel.getRooms(), reservationManager);
 
     }
-    @org.junit.jupiter.api.Test
+    @Test
     public void modifyPrice(){
         Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
         hotelManager.addHotel(hotel);
-        HotelCalendar calendar = calendarManager.createCalendar(hotel.getRooms(), hotel.getId(), accountManager.getReservationManager());
+        HotelCalendar calendar = calendarManager.createCalendar(hotel.getRooms(), hotel.getId(), reservationManager);
         calendarManager.modifyPrice(hotel, LocalDate.of(2024,1,25),hotel.getRooms().get(1).getId(),140);
         assert(calendarManager.getPrice(hotel.getId(),LocalDate.of(2024,1,25).toString(), hotel.getRooms().get(1).getId()) == 140);
 
         hotelManager.removeHotel(hotel);
-        calendarManager.removeCalendar(calendar, hotel.getRooms(), accountManager.getReservationManager());
+        calendarManager.removeCalendar(calendar, hotel.getRooms(), reservationManager);
     }
 
     @AfterAll
-    public static void TearDown() {
-        accountManager.deleteUser(hotelDirector);
-        accountManager.getUserDao().disconnect();
-        accountManager = null;
+    public static void afterAll() {
+
     }
 }

@@ -12,19 +12,15 @@ import utilities.Research;
 public class CalendarManager{
     private final HotelCalendarDAO hotelCalendarDAO;
     private static CalendarManager calendarManager;
-    private static AccountManager accountManager;
 
     private CalendarManager(){
         this.hotelCalendarDAO = new HotelCalendarDAO();
     }
-
     public static CalendarManager createCalendarManager(){
         if(calendarManager == null)
             calendarManager = new CalendarManager();
-
         return calendarManager;
     }
-
 
     public HotelCalendar createCalendar(ArrayList<Room> rooms, String hotelID, ReservationManager reservationManager){
         LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth());
@@ -49,7 +45,6 @@ public class CalendarManager{
         }
 
     }
-
     public void modifyPrice(Hotel hotel, LocalDate date, String roomID, double price){
         if (hotel == null)
             throw new RuntimeException("hotel is null");
@@ -86,7 +81,6 @@ public class CalendarManager{
             throw new RuntimeException(e);
         }
     }
-
     public void setMinimumStay(Hotel hotel, LocalDate date, String roomID, int minStay){
 
         if(hotel == null)
@@ -103,7 +97,6 @@ public class CalendarManager{
         return hotelCalendarDAO.getMinimumStay(hotel, date.toString(), roomID);
 
     }
-
     public boolean isRoomAvailable(String hotelID, Research research, String roomID) {
         for (LocalDate date = research.getCheckIn(); !date.isAfter(research.getCheckOut()); date = date.plusDays(1)) {
             if (!getAvailability(hotelID, date.toString(), roomID) || !(research.getCheckIn().until(research.getCheckOut(), ChronoUnit.DAYS) >= getMinimumStay(hotelID, date, roomID)))

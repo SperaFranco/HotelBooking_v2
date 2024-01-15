@@ -2,6 +2,7 @@ package service_layer;
 
 import domain_model.*;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import utilities.HotelRating;
@@ -24,13 +25,15 @@ class ReservationManagerTest {
     private static final boolean sendEmail = false; //Se vuoi far partire le email metti questo a true
 
     @BeforeAll
-    public static void setUp(){
+    public static void beforeAll(){
         accountManager = AccountManager.createAccountManager();
         calendarManager = CalendarManager.createCalendarManager();
         reservationManager = ReservationManager.createReservationManager(accountManager,calendarManager);
         hotelManager = HotelManager.createHotelManager(calendarManager, reservationManager);
+    }
 
-        //Supponiamo di aver già inserito un hotel
+    @BeforeEach
+    public void setUp(){
         hotelDirector = new HotelDirector(IdGenerator.generateUserID(UserType.HOTEL_DIRECTOR,"Franco","Spera"), "Franco", "Spera", "reginokamberaj@gmail.com", "+393337001756", "Kr29332d", UserType.HOTEL_DIRECTOR);
         accountManager.doRegistration(hotelDirector);
         hotel1 = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
@@ -38,6 +41,11 @@ class ReservationManagerTest {
         calendar = calendarManager.createCalendar(hotel1.getRooms(), hotel1.getId(), reservationManager);
     }
 
+    @AfterEach
+    public void tearDown(){
+        accountManager.deleteUser(hotelDirector);
+        hotelManager.removeHotel(hotel1);
+    }
 
     @org.junit.jupiter.api.Test
     public void createReservation(){
@@ -120,10 +128,9 @@ class ReservationManagerTest {
     }
 
     @AfterAll
-    public static void tearDown(){
+    public static void afterAll(){
         accountManager.deleteUser(hotelDirector);
         hotelManager.removeHotel(hotel1);
         calendarManager.removeCalendar(calendar, hotel1.getRooms(), reservationManager);
-        accountManager.getUserDao().disconnect();
     }
 }

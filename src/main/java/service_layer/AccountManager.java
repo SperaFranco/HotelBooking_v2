@@ -1,6 +1,5 @@
 package service_layer;
 
-import data_access.CreditCardDAO;
 import data_access.UserDAO;
 import domain_model.Guest;
 import domain_model.HotelDirector;
@@ -9,24 +8,17 @@ import domain_model.User;
 import java.sql.SQLException;
 
 public class AccountManager {
-    private static HotelManager hotelManager;
-    private static ReservationManager reservationManager;
-    private static CalendarManager calendarManager;
     private static AccountManager accountManager;
     private final UserDAO userDao;
 
     public AccountManager(){
         this.userDao = new UserDAO();
-        calendarManager = CalendarManager.createCalendarManager();
-        reservationManager = ReservationManager.createReservationManager(this, calendarManager );
-        hotelManager = HotelManager.createHotelManager(calendarManager, reservationManager);
     }
     public static AccountManager createAccountManager(){
         if(accountManager == null)
             accountManager = new AccountManager();
         return accountManager;
     }
-
     public void doRegistration(User user) {
         if (user == null)  throw new RuntimeException("user is a null reference");
         try {
@@ -62,25 +54,12 @@ public class AccountManager {
         }
 
     }
-    public void logout(User user) {
-        user = null;
-    }
     public User findUserByID(String id) {
         try {
             return userDao.findUserByID(id);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-    public UserDAO getUserDao(){ return userDao; }
-    public HotelManager getHotelManager() {
-        return hotelManager;
-    }
-    public ReservationManager getReservationManager() {
-        return reservationManager;
-    }
-    public CalendarManager getCalendarManager() {
-        return calendarManager;
     }
     public HotelDirector findHotelDirector(String hotelID) {
         try {
@@ -122,7 +101,5 @@ public class AccountManager {
         }
 
     }
-
-//end Region
 
 }
