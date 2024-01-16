@@ -38,7 +38,6 @@ class CalendarManagerTest {
 
     @BeforeEach
     void setUp(){
-
         //creo un direttore di hotel
         hotelDirectorName = "Franco";
         hotelDirectorSurname = "Spera";
@@ -53,61 +52,71 @@ class CalendarManagerTest {
         hotelAddressFirenze = "via Guido Monaco 2";
         numOfSingleRoomsFirenze = 2;
         numOfDoubleRoomsFirenze = 2;
-        numOfTripleRoomsFirenze = 2;
+        numOfTripleRoomsFirenze = 1;
         hotelFirenze = hotelManager.createHotel(hotelDirector, hotelNameFirenze, hotelCityFirenze, hotelAddressFirenze, null, null,  HotelRating.FOUR_STAR_HOTEL, numOfSingleRoomsFirenze, numOfDoubleRoomsFirenze, numOfTripleRoomsFirenze);
+
+        hotelManager.addHotel(hotelFirenze);
+        hotelCalendarFirenze  = calendarManager.createCalendar(hotelFirenze.getRooms(), hotelFirenze.getId(), reservationManager);
     }
 
     @AfterEach
     void tearDown(){
         accountManager.deleteUser(hotelDirector);
         hotelManager.removeHotel(hotelFirenze);
+        calendarManager.removeCalendar(hotelCalendarFirenze, hotelFirenze.getRooms(), reservationManager);
     }
 
+    @Disabled
     @Test
     void createCalendarTest(){
-        calendarManager.createCalendar(hotelFirenze.getRooms(),hotelFirenze.getId(), reservationManager);
+        hotelCalendarFirenze = calendarManager.createCalendar(hotelFirenze.getRooms(),hotelFirenze.getId(), reservationManager);
     }
 
+    @Disabled
     @Test
-    public void closeRoom() {
-        Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
-        hotelManager.addHotel(hotel);
-        HotelCalendar calendar = calendarManager.createCalendar(hotel.getRooms(), hotel.getId(), reservationManager);
-
-        //TODO ocho a quando si rilanciano i test che i giorni passano...
-        LocalDate checkInDate = LocalDate.of(2024, 1, 25);
-        LocalDate checkOutDate = LocalDate.of(2024, 1, 27);
-        Research research = new Research("Firenze", checkInDate, checkOutDate, 2);
-        ArrayList<Hotel> hotelsAvailable = hotelManager.doHotelResearch(research);
-        assert(hotelsAvailable.size()==1);
-        //assert(hotelsAvailable.contains(hotel));
-        LocalDate dateClosingRoom = LocalDate.of(2024,1,25);
-        calendarManager.closeRoom(hotel, dateClosingRoom, hotel.getRooms().get(1).getId());
-        hotelsAvailable = hotelManager.doHotelResearch(research);
-        assert(hotelsAvailable.size()==1);
-        //assert(hotelsAvailable.contains(hotel));
-        calendarManager.closeRoom(hotel, dateClosingRoom, hotel.getRooms().get(2).getId());
-        calendarManager.closeRoom(hotel, dateClosingRoom, hotel.getRooms().get(3).getId());
-        hotelsAvailable = hotelManager.doHotelResearch(research);
-        assert(hotelsAvailable.isEmpty());
-        hotelManager.removeHotel(hotel);
-        calendarManager.removeCalendar(calendar, hotel.getRooms(), reservationManager);
-
+    void removeCalendarTest(){
+        calendarManager.removeCalendar(hotelCalendarFirenze, hotelFirenze.getRooms(), reservationManager);
     }
+
     @Test
     public void modifyPrice(){
-        Hotel hotel = hotelManager.createHotel(hotelDirector,"Relais Tiffany", "Firenze", "via Guido Monaco 5", null, null, HotelRating.THREE_STAR_HOTEL, 1, 2, 1);
-        hotelManager.addHotel(hotel);
-        HotelCalendar calendar = calendarManager.createCalendar(hotel.getRooms(), hotel.getId(), reservationManager);
-        calendarManager.modifyPrice(hotel, LocalDate.of(2024,1,25),hotel.getRooms().get(1).getId(),140);
-        assert(calendarManager.getPrice(hotel.getId(),LocalDate.of(2024,1,25).toString(), hotel.getRooms().get(1).getId()) == 140);
+        calendarManager.modifyPrice(hotelFirenze, LocalDate.of(2024,1,25),hotelFirenze.getRooms().get(1).getId(),140);
+        assert(calendarManager.getPrice(hotelFirenze.getId(),LocalDate.of(2024,1,25).toString(), hotelFirenze.getRooms().get(1).getId()) == 140);
+    }
 
-        hotelManager.removeHotel(hotel);
-        calendarManager.removeCalendar(calendar, hotel.getRooms(), reservationManager);
+    @Test
+    public void setAvailabilityTest() {
+        Research research = setResearch("Firenze", 3, 2024, 02,12, 2024, 02, 14);
+        ArrayList<Hotel> hotelsAvailable = hotelManager.doHotelResearch(research);
+        assert(hotelsAvailable.size()==1);
+
+        LocalDate dateClosingRoom = LocalDate.of(2024,1,25);
+        calendarManager.setAvailability(hotelFirenze.getId(), dateClosingRoom.toString(), hotelFirenze.getRooms().get(4).getId(), false);
+        hotelsAvailable = hotelManager.doHotelResearch(research);
+        assert(hotelsAvailable.isEmpty());
+    }
+
+    @Test
+    public void setMinimumStayTest(){
+        Research research = setResearch("Firenze", 3, 2024, 2,12, 2024, 2, 14);
+        ArrayList<Hotel> hotelsAvailable = hotelManager.doHotelResearch(research);
+        assert(hotelsAvailable.size()==1);
+
+        LocalDate date = LocalDate.of(2024,2,12);
+        calendarManager.setMinimumStay(hotelFirenze, date,hotelFirenze.getRooms().get(4).getId(), 3);
+        hotelsAvailable = hotelManager.doHotelResearch(research);
+        assert(hotelsAvailable.isEmpty());
     }
 
     @AfterAll
     public static void afterAll() {
 
+    }
+
+    //helper method
+    private Research setResearch(String city, int numOfGuests, int checkInYear, int checkInMounth, int checkInDay, int checkOutYear, int checkOutMounth, int checkOutDay){
+        LocalDate checkInDate = LocalDate.of(checkInYear, checkInMounth, checkInDay);
+        LocalDate checkOutDate = LocalDate.of(checkOutYear, checkOutMounth, checkOutDay);
+        return new Research(city, checkInDate, checkOutDate, numOfGuests);
     }
 }

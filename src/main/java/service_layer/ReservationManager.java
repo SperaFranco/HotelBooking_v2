@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class ReservationManager extends Subject {
+
     private static AccountManager accountManager;
     private static CalendarManager calendarManager;
     private static ReservationManager reservationManager;
@@ -23,7 +24,6 @@ public class ReservationManager extends Subject {
         ReservationManager.calendarManager = calendarManager;
         this.reservationDAO = new ReservationDAO();
     }
-
     public static ReservationManager createReservationManager(AccountManager accountManager, CalendarManager calendarManager){
         if(reservationManager == null)
             reservationManager = new ReservationManager(accountManager, calendarManager);
@@ -60,17 +60,6 @@ public class ReservationManager extends Subject {
         }
         return newReservation;
     }
-
-    private void addReservation(Reservation newReservation) {
-        try {
-            reservationDAO.addReservation(newReservation);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        setChanged();
-        notifyObservers(newReservation, "Add reservation");
-    }
-
     public void deleteReservation(Reservation reservation) {
         try {
             reservationDAO.removeReservation(reservation.getId());
@@ -81,7 +70,6 @@ public class ReservationManager extends Subject {
         setChanged();
         notifyObservers(reservation, "Delete reservation");
     }
-
     public void updateReservation(Reservation reservation, String newNotes, LocalDate newCheckInDate, LocalDate newCheckOutDate) {
         if(newNotes != null)
             setDescription(reservation.getId(), newNotes);
@@ -101,35 +89,6 @@ public class ReservationManager extends Subject {
         }
 
     }
-
-    private void setDescription(String id, String newDescription) {
-        try {
-            reservationDAO.setNotes(id, newDescription);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    private void setCheckIn(Reservation reservation, LocalDate checkIn) {
-        try {
-            reservationDAO.setCheckIn(reservation.getId(), checkIn.toString());
-            reservation.setCheckIn(checkIn);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setCheckOut(Reservation reservation, LocalDate checkOut) {
-        try {
-            reservationDAO.setCheckOut(reservation.getId(), checkOut.toString());
-            reservation.setCheckOut(checkOut);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public ArrayList<Reservation> getReservations(Guest guest) {
         if (guest == null)
             throw new RuntimeException("guest is a null reference");
@@ -139,7 +98,6 @@ public class ReservationManager extends Subject {
             throw new RuntimeException(e);
         }
     }
-
     public ArrayList<Reservation> getAllReservations(Hotel hotel) {
         if (hotel == null)
             throw new RuntimeException("hotel is a null reference");
@@ -150,4 +108,40 @@ public class ReservationManager extends Subject {
         }
     }
 
+    //helper method
+    private void addReservation(Reservation newReservation) {
+        try {
+            reservationDAO.addReservation(newReservation);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        setChanged();
+        notifyObservers(newReservation, "Add reservation");
+    }
+    private void setCheckIn(Reservation reservation, LocalDate checkIn) {
+        try {
+            reservationDAO.setCheckIn(reservation.getId(), checkIn.toString());
+            reservation.setCheckIn(checkIn);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private void setCheckOut(Reservation reservation, LocalDate checkOut) {
+        try {
+            reservationDAO.setCheckOut(reservation.getId(), checkOut.toString());
+            reservation.setCheckOut(checkOut);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private void setDescription(String id, String newDescription) {
+        try {
+            reservationDAO.setNotes(id, newDescription);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -43,8 +43,8 @@ public class CalendarManager{
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
+
     public void modifyPrice(Hotel hotel, LocalDate date, String roomID, double price){
         if (hotel == null)
             throw new RuntimeException("hotel is null");
@@ -60,11 +60,6 @@ public class CalendarManager{
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-    public void closeRoom(Hotel hotel, LocalDate date, String roomID){
-        if(hotel == null)
-            throw new RuntimeException("hotel is null");
-        setAvailability(hotel.getId(), date.toString(), roomID, false);
     }
     public void setAvailability(String hotelID, String date, String roomID, boolean availability) {
         try {
