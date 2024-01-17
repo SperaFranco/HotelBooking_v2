@@ -12,7 +12,7 @@ Franco Spera
 
 # Introduzione
 
-Il presente progetto si propone di sviluppare un sistema di prenotazione
+Il presente progetto si propone di sviluppare l'architettura back-end di un sistema di prenotazione
 per camere d’albergo. La scelta di questo progetto è stata guidata dalla
 prospettiva di uno dei partecipanti, il quale gestisce personalmente un
 Bed and Breakfast. L’obiettivo dunque non è quello di implementare una
