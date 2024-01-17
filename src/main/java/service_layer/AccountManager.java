@@ -69,19 +69,14 @@ public class AccountManager {
         }
     }
     public boolean doPayment(Guest user, double sum){
-        double balance = 0;
         String cardNumber = user.getCard().getCardNumber();
-
-        try {
-            balance = userDao.getBalance(cardNumber);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        double balance = user.getCard().getBalance();
 
         if (balance >= sum) {
-            balance -= sum;
             try {
+                balance -= sum;
                 userDao.setBalance(cardNumber, balance);
+                user.getCard().setBalance(balance);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

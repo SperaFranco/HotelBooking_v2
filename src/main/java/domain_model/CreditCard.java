@@ -91,14 +91,4 @@ public class CreditCard {
         return true;
     }
 
-    public boolean doPayment(double amount) {
-        //magari va fatto un controllo al saldo e se sufficiente esegui il pagamento
-        if (balance >= amount) {
-            balance -= amount;
-            System.out.println("Payment successful. Remaining balance: " + balance);
-            return true;
-        }else {
-            throw new RuntimeException("Insufficient balance for the payment.");
-        }
-    }
 }

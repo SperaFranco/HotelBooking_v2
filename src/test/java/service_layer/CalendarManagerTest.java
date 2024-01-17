@@ -64,6 +64,7 @@ class CalendarManagerTest {
         accountManager.deleteUser(hotelDirector);
         hotelManager.removeHotel(hotelFirenze);
         calendarManager.removeCalendar(hotelCalendarFirenze, hotelFirenze.getRooms(), reservationManager);
+
     }
 
     @Disabled
@@ -86,11 +87,11 @@ class CalendarManagerTest {
 
     @Test
     public void setAvailabilityTest() {
-        Research research = setResearch("Firenze", 3, 2024, 02,12, 2024, 02, 14);
+        Research research = setResearch("Firenze", 3, 2024, 2,12, 2024, 2, 14);
         ArrayList<Hotel> hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.size()==1);
 
-        LocalDate dateClosingRoom = LocalDate.of(2024,1,25);
+        LocalDate dateClosingRoom = LocalDate.of(2024,2,12);
         calendarManager.setAvailability(hotelFirenze.getId(), dateClosingRoom.toString(), hotelFirenze.getRooms().get(4).getId(), false);
         hotelsAvailable = hotelManager.doHotelResearch(research);
         assert(hotelsAvailable.isEmpty());
