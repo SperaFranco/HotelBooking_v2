@@ -16,16 +16,13 @@ public abstract class Subject {
             observers.addElement(o);
         }
     }
-
     public synchronized void removeObserver(Observer o) {
         observers.remove(o);
     }
-
-    public void notifyObservers(String message) {
+    protected void notifyObservers(String message) {
         notifyObservers(null, message);
     }
-
-    public void notifyObservers(Object arg, String message) {
+    protected void notifyObservers(Object arg, String message) {
         Object[] arrLocal;
 
         synchronized (this) {
@@ -38,14 +35,10 @@ public abstract class Subject {
             ((Observer) arrLocal[i]).update(this, arg, message);
         }
     }
-
     private void clearChanged() {
         changed = false;
     }
-
-    public void setChanged() {
+    protected void setChanged() {
         changed = true;
     }
-
-
 }
