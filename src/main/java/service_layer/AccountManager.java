@@ -11,7 +11,7 @@ public class AccountManager {
     private static AccountManager accountManager;
     private final UserDAO userDao;
 
-    public AccountManager(){
+    private AccountManager(){
         this.userDao = new UserDAO();
     }
     public static AccountManager createAccountManager(){

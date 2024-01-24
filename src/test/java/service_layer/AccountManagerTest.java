@@ -23,7 +23,7 @@ class AccountManagerTest {
 
     @BeforeAll
     static void beforeAll(){
-        accountManager = new AccountManager();
+        accountManager = AccountManager.createAccountManager();
     }
 
     @BeforeEach

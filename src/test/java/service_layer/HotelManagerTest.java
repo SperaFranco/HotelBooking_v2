@@ -117,7 +117,9 @@ class HotelManagerTest {
         Hotel hotelInDB = hotelManager.findHotelByID(hotelFirenze.getId());
         assertNull(hotelInDB);
     }
+
     @Test
+    //Ma non è un metodo di HotelManager! 
     void setMinimumStayTest(){
         hotelManager.addHotel(hotelFirenze);
         if(calendarHotelFirenze == null)
