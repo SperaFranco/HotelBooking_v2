@@ -13,8 +13,8 @@ public class Research {
         if (checkIn.isBefore(LocalDate.now()))
             throw new RuntimeException("Please insert a date not in the past");
         this.checkIn = checkIn;
-        if (checkOut.isBefore(LocalDate.now()) && checkOut.isBefore(checkIn))
-            throw new RuntimeException("Please insert a date not in the past");
+        if (!checkOut.isAfter(checkIn))
+            throw new RuntimeException("Check out must be after check in");
         this.checkOut = checkOut;
         this.numOfGuest = numOfGuest;
     }

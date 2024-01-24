@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class HotelManagerTest {
 
@@ -90,11 +90,19 @@ class HotelManagerTest {
         hotelManager.removeHotel(hotelLivorno);
     }
 
-    @Disabled
+
     @Test
-    public void createHotelTest() {
+    void createHotelTest() {
         hotelManager.addHotel(hotelFirenze);
     }
+
+    @Test
+    void createExistingHotel(){
+        hotelManager.addHotel(hotelFirenze);
+        Exception exception = assertThrows(RuntimeException.class, ()->hotelManager.addHotel(hotelFirenze));
+        assertEquals("java.lang.RuntimeException: hotel già esistente", exception.getMessage());
+    }
+
     @Test
     void findHotelByIDTest(){
         hotelManager.addHotel(hotelFirenze);

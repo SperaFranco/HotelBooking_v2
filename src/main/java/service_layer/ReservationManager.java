@@ -36,7 +36,7 @@ public class ReservationManager extends Subject {
 
         Reservation newReservation = null;
         double sum = 0.0;
-        for(LocalDate date = researchInfo.getCheckIn(); !date.isAfter(researchInfo.getCheckOut()); date = date.plusDays(1)) {
+        for(LocalDate date = researchInfo.getCheckIn(); date.isBefore(researchInfo.getCheckOut()); date = date.plusDays(1)) {
             sum += calendarManager.getPrice(hotel.getId(), date.toString(), roomID);
         }
 

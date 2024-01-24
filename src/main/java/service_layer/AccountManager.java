@@ -22,10 +22,13 @@ public class AccountManager {
     public void doRegistration(User user) {
         if (user == null)  throw new RuntimeException("user is a null reference");
         try {
+            if(findUserByID(user.getId()) != null)
+                throw new SQLException("utente già presente");
             userDao.addUser(user);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
+
     }
     public void deleteUser(User user) {
         if (user == null)  throw new RuntimeException("user is a null reference");
@@ -38,12 +41,8 @@ public class AccountManager {
     public User login(String email, String password) {
 
         User loginUser = null;
-        try {
-            loginUser = userDao.findUserByEmail(email);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
+        loginUser = findUserByEmail(email);
         if(loginUser == null)
             throw new RuntimeException("User not found");
 
@@ -52,7 +51,6 @@ public class AccountManager {
         else {
             throw new RuntimeException("Password is not correct");
         }
-
     }
     public User findUserByID(String id) {
         try {
@@ -61,6 +59,16 @@ public class AccountManager {
             throw new RuntimeException(e);
         }
     }
+
+    public User findUserByEmail(String email) {
+        try {
+            return userDao.findUserByEmail(email);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public HotelDirector findHotelDirector(String hotelID) {
         try {
             return userDao.findHotelDirector(hotelID);

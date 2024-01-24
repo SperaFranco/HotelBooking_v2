@@ -67,13 +67,12 @@ class CalendarManagerTest {
 
     }
 
-    @Disabled
     @Test
     void createCalendarTest(){
         hotelCalendarFirenze = calendarManager.createCalendar(hotelFirenze.getRooms(),hotelFirenze.getId(), reservationManager);
     }
 
-    @Disabled
+
     @Test
     void removeCalendarTest(){
         calendarManager.removeCalendar(hotelCalendarFirenze, hotelFirenze.getRooms(), reservationManager);

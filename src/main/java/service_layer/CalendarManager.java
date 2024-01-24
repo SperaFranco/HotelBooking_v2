@@ -93,7 +93,7 @@ public class CalendarManager{
 
     }
     public boolean isRoomAvailable(String hotelID, Research research, String roomID) {
-        for (LocalDate date = research.getCheckIn(); !date.isAfter(research.getCheckOut()); date = date.plusDays(1)) {
+        for (LocalDate date = research.getCheckIn(); date.isBefore(research.getCheckOut()); date = date.plusDays(1)) {
             if (!getAvailability(hotelID, date.toString(), roomID) || !(research.getCheckIn().until(research.getCheckOut(), ChronoUnit.DAYS) >= getMinimumStay(hotelID, date, roomID)))
                 return false;
         }

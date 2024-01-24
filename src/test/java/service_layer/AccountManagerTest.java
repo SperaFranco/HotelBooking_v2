@@ -5,11 +5,13 @@ import domain_model.*;
 import org.junit.jupiter.api.*;
 import utilities.IdGenerator;
 import utilities.UserType;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AccountManagerTest {
+
     private static AccountManager accountManager;
 
     String guestName, guestSurname, hotelDirectorName, hotelDirectorSurname;
@@ -43,16 +45,34 @@ class AccountManagerTest {
         hotelDirector = new HotelDirector(hotelDirectorID, hotelDirectorName, hotelDirectorSurname, "franco.spera@edu.unifi.it", "012932-122832", "HDpassword", hotelDirectorType);
     }
 
-    @Disabled
+    @AfterEach
+    public void tearDown(){
+        accountManager.deleteUser(guest);
+        accountManager.deleteUser(hotelDirector);
+    }
+
     @Test
      void doGuestRegistrationTest(){
         accountManager.doRegistration(guest);
     }
 
-    @Disabled
+    @Test
+    void doSameGuestRegistrationTest(){
+        accountManager.doRegistration(guest);
+        Exception exception = assertThrows(RuntimeException.class, ()->accountManager.doRegistration(guest));
+        assertEquals("utente già presente", exception.getMessage());
+    }
+
     @Test
     void doHotelDirectorRegistrationTest(){
         accountManager.doRegistration(hotelDirector);
+    }
+
+    @Test
+    void doSameHotelDirectorRegistrationTest(){
+        accountManager.doRegistration(hotelDirector);
+        Exception exception = assertThrows(RuntimeException.class, ()->accountManager.doRegistration(hotelDirector));
+        assertEquals("utente già presente", exception.getMessage());
     }
 
     @Test
@@ -60,7 +80,6 @@ class AccountManagerTest {
         accountManager.doRegistration(guest);
         Guest guestInDB = (Guest)accountManager.findUserByID(guestID);
         assertThat(guestInDB.getId(), equalTo(guestID));
-        accountManager.deleteUser(guest);
     }
 
     @Test
@@ -72,12 +91,24 @@ class AccountManagerTest {
     }
 
     @Test
-    void loginTest() {
+    void loginWithCorrectCredentialsTest() {
         accountManager.doRegistration(hotelDirector);
         User user = accountManager.login("franco.spera@edu.unifi.it","HDpassword");
         assertThat(user.getPassword(), equalTo("HDpassword"));
         assertThat(user.getEmail(), equalTo("franco.spera@edu.unifi.it"));
-        accountManager.deleteUser(hotelDirector);
+    }
+
+    @Test
+    void loginWithWrongEmailTest() {
+        accountManager.doRegistration(hotelDirector);
+        Exception exception = assertThrows(RuntimeException.class, ()-> accountManager.login("franco.spera@edu.unifi.com","HDpassword"));
+        assertEquals("User not found", exception.getMessage());
+    }
+    @Test
+    void loginWithWrongPasswordTest() {
+        accountManager.doRegistration(hotelDirector);
+        Exception exception = assertThrows(RuntimeException.class, ()-> accountManager.login("franco.spera@edu.unifi.it","wrongPassword"));
+        assertEquals("Password is not correct", exception.getMessage());
     }
 
 }

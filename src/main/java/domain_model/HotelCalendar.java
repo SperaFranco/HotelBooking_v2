@@ -61,7 +61,7 @@ public class HotelCalendar implements Observer {
     }
 
     private void setRoomAvailability(String roomID, LocalDate checkIn, LocalDate checkOut, boolean availability) {
-        for (LocalDate date = checkIn; !date.isAfter(checkOut); date = date.plusDays(1)) {
+        for (LocalDate date = checkIn; date.isBefore(checkOut); date = date.plusDays(1)) {
             calendarManager.setAvailability(hotelID, date.toString(), roomID, availability);
         }
     }

@@ -24,7 +24,7 @@ public class HotelCalendarDAO {
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            for (LocalDate date = calendar.getStartDate(); !date.isAfter(calendar.getEndDate()); date = date.plusDays(1)) {
+            for (LocalDate date = calendar.getStartDate(); date.isBefore(calendar.getEndDate()); date = date.plusDays(1)) {
                 for (Room room :rooms) {
                     statement.setString(1, calendar.getHotelID());
                     statement.setString(2, date.toString());
@@ -45,7 +45,7 @@ public class HotelCalendarDAO {
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            for (LocalDate date = calendar.getStartDate(); !date.isAfter(calendar.getEndDate()); date = date.plusDays(1)) {
+            for (LocalDate date = calendar.getStartDate(); date.isBefore(calendar.getEndDate()); date = date.plusDays(1)) {
                 for (Room room : rooms) {
                     statement.setString(1, calendar.getHotelID());
                     statement.setString(2, date.toString());

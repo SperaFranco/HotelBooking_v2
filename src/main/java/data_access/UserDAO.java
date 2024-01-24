@@ -118,7 +118,7 @@ public class UserDAO {
     public User findUserByID(String id) throws SQLException {
         //Per come ho progettato il db dovrei andare a cercare su due tabelle
         // e a seconda di dove trovo l'user impostare certi campi
-        String sql = "SELECT 'HotelDirector' AS userType, *, NULL AS card_number  FROM HotelDirector WHERE email = ?" +
+        String sql = "SELECT 'HotelDirector' AS userType, *, NULL AS card_number  FROM HotelDirector WHERE id = ?" +
                 " UNION " + "SELECT 'Guest' AS userType, * FROM Guest WHERE id = ?";
         PreparedStatement statement = null;
         ResultSet rs = null;

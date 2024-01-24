@@ -36,8 +36,10 @@ public class HotelManager {
     }
     public void addHotel(Hotel hotel){
         try {
+            if(findHotelByID(hotel.getId()) != null)
+                throw new RuntimeException("hotel già esistente");
             hotelDAO.addHotel(hotel);
-        } catch (SQLException e) {
+        } catch (SQLException | RuntimeException e) {
             throw new RuntimeException(e);
         }
     }
